@@ -24,14 +24,13 @@ Schema::create('bookings', function (Blueprint $table) {
     $table->timestamps();
     $table->index(['court_id', 'booking_date', 'start_time', 'end_time'], 'bookings_court_slot_idx');
 });
+        
         if (Schema::getConnection()->getDriverName() === 'mysql') {
-            \Illuminate\Support\Facades\DB::statement(
-                'ALTER TABLE bookings ADD CONSTRAINT bookings_actor_chk CHECK (user_id IS NOT NULL OR created_by_admin_id IS NOT NULL)'
-            );
             \Illuminate\Support\Facades\DB::statement(
                 'ALTER TABLE bookings ADD CONSTRAINT bookings_time_chk CHECK (end_time > start_time)'
             );
         }
+
     }
 
     public function down(): void
