@@ -16,7 +16,25 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+
+        // Register custom middleware
+        $middleware->alias([
+            'admin.active' => \App\Http\Middleware\EnsureAdminIsActive::class,
+        ]);
+
+        // Redirect unauthenticated users to their login pages
+        $middleware->redirectGuestsTo(function ($request) {
+
+            if ($request->is('admin/*')) {
+                return route('admin.login');
+            }
+
+            if ($request->is('super-admin/*')) {
+                return route('super_admin.login');
+            }
+
+            return route('login');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
