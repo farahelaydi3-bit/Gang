@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Foundation\Application;
@@ -17,20 +18,25 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
 
-        // Register custom middleware
+        // Language middleware
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLocale::class,
+        ]);
+
+        // Custom admin middleware
         $middleware->alias([
             'admin.active' => \App\Http\Middleware\EnsureAdminIsActive::class,
         ]);
 
-        // Redirect unauthenticated users to their login pages
+        // Login redirects
         $middleware->redirectGuestsTo(function ($request) {
-
-            if ($request->is('admin/*')) {
-                return route('admin.login');
-            }
 
             if ($request->is('super-admin/*')) {
                 return route('super_admin.login');
+            }
+
+            if ($request->is('admin/*')) {
+                return route('admin.login');
             }
 
             return route('login');
