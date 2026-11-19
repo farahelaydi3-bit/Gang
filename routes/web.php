@@ -3,6 +3,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BookingController;
 
 // ==========================================
 // CourtBook - Public Pages
@@ -23,7 +24,7 @@ Route::view('/waitlist', 'pages.waitlist')->name('courtbook.waitlist');
 Route::view('/subscriptions', 'pages.subscriptions')->name('courtbook.subscriptions');
 Route::view('/my-subscriptions', 'pages.my-subscriptions')->name('courtbook.my-subscriptions');
 
-Route::view('/bookings', 'pages.bookings')->name('courtbook.bookings');
+Route::get('/bookings', [BookingController::class, 'index'])->name('courtbook.bookings');
 Route::view('/my-games', 'pages.my-games')->name('courtbook.my-games');
 Route::view('/courtbook/profile', 'pages.profile')->name('courtbook.profile');
 
@@ -54,8 +55,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+
+Route::get('/courts/{court}/availability', [
+    BookingController::class,
+    'availability',
+])->name('courts.availability');
 // ==========================================
 // Breeze Authentication Routes
 // ==========================================
 
 require __DIR__ . '/auth.php';
+
+

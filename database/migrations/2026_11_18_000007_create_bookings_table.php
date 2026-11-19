@@ -10,7 +10,7 @@ return new class extends Migration {
 Schema::create('bookings', function (Blueprint $table) {
     $table->id();
     $table->foreignId('court_id')->constrained('courts')->restrictOnDelete();
-    $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+    $table->foreignId('user_id')->constrained('users')->restrictOnDelete();
     $table->foreignId('created_by_admin_id')->nullable()->constrained('admins')->nullOnDelete();
     $table->foreignId('subscription_id')->nullable()->constrained('subscriptions')->nullOnDelete();
     $table->enum('booking_type', ['individual', 'group', 'subscription']);
