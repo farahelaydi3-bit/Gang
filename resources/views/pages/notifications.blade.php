@@ -4,13 +4,15 @@
 @section('page', 'notifications')
 
 @section('content')
-    <div class="wrap page" data-blade-heading>
-        @include('partials.heading', [
+    <div class="wrap page">
+        @include('pages.heading', [
             'eyebrow' => 'CourtBook',
             'heading' => 'Notifications',
-            'description' => 'Review your booking, game and subscription updates.',
+            'description' => 'Your booking, game and subscription updates.',
         ])
-        <div id="courtbook-demo"></div>
+
+        <section class="panel" aria-live="polite">
+            <p class="muted">{{ __('You have no notifications yet.') }}</p>
+        </section>
     </div>
 @endsection
-

@@ -5,12 +5,12 @@
 
 @section('content')
     <div class="wrap page">
-        @include('partials.heading', [
+        @include('pages.heading', [
             'eyebrow' => 'Find games',
             'heading' => 'Find your next game',
             'description' => 'Join a pickup game and meet players across Amman.',
         ])
-        @include('partials.games')
+        @include('pages.games-section')
     </div>
 @endsection
 

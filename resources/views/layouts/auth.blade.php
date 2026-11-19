@@ -6,7 +6,7 @@
 
     <title>@yield('title', 'حسابي') · GANG</title>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css'])
     <link rel="stylesheet" href="{{ asset('courtbook-assets/styles.css') }}">
 
     <style>

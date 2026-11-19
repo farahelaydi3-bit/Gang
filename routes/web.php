@@ -25,6 +25,11 @@ Route::view('/my-subscriptions', 'pages.my-subscriptions')->name('courtbook.my-s
 
 Route::view('/bookings', 'pages.bookings')->name('courtbook.bookings');
 Route::view('/my-games', 'pages.my-games')->name('courtbook.my-games');
+Route::view('/courtbook/profile', 'pages.profile')->name('courtbook.profile');
+
+Route::view('/courtbook/login', 'pages.login')->name('courtbook.login');
+Route::view('/courtbook/register', 'pages.register')->name('courtbook.register');
+Route::view('/courtbook/forgot-password', 'pages.forgot-password')->name('courtbook.forgot-password');
 
 Route::view('/notifications', 'pages.notifications')->name('courtbook.notifications');
 

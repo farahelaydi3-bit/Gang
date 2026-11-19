@@ -5,7 +5,7 @@
 
 @section('content')
     <div class="wrap page">
-        @include('partials.assistant-chat')
+        @include('pages.assistant-chat')
     </div>
 @endsection
 
