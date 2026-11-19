@@ -4,6 +4,13 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+
+Route::view('/courtbook/profile', 'pages.profile')->name('courtbook.profile');
+
+Route::view('/courtbook/login', 'pages.login')->name('courtbook.login');
+Route::view('/courtbook/register', 'pages.register')->name('courtbook.register');
+Route::view('/courtbook/forgot-password', 'pages.forgot-password')->name('courtbook.forgot-password');
+
 // ==========================================
 // CourtBook - Public Pages
 // ==========================================
