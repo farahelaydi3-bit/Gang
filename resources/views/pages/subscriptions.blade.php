@@ -11,11 +11,16 @@
             'description' => 'Subscription plans will be listed here when they are available.',
         ])
 
-        <section class="panel">
-            <p class="muted">{{ __('No subscription plans are available yet.') }}</p>
-            <a class="button outline" href="{{ route('courtbook.my-subscriptions') }}">
-                {{ __('View my subscriptions') }}
-            </a>
-        </section>
+        <div id="courtbook-demo"></div>
+
+        <h2>Available Subscription Plans</h2>
+
+        @foreach ($durations as $duration)
+            <div>
+                <p>المدة: {{ $duration['days'] }} أيام</p>
+                <p>الخصم: {{ $duration['discount'] }}%</p>
+                <hr>
+            </div>
+        @endforeach
     </div>
 @endsection

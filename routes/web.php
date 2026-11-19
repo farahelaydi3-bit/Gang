@@ -36,8 +36,7 @@ Route::view('/games/{game}', 'pages.game')->name('courtbook.game');
 
 Route::view('/waitlist', 'pages.waitlist')->name('courtbook.waitlist');
 
-Route::view('/subscriptions', 'pages.subscriptions')->name('courtbook.subscriptions');
-Route::view('/my-subscriptions', 'pages.my-subscriptions')->name('courtbook.my-subscriptions');
+
 
 Route::view('/bookings', 'pages.bookings')->name('courtbook.bookings');
 Route::view('/my-games', 'pages.my-games')->name('courtbook.my-games');
@@ -70,8 +69,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// ==========================================
-// Breeze Authentication Routes
-// ==========================================
+
+Route::get('/subscriptions', [SubscriptionController::class, 'create'])
+    ->name('courtbook.subscriptions');
+
+// Authenticated subscription management
+Route::middleware('auth')->group(function () {
+
+    Route::get('/my-subscriptions', [SubscriptionController::class, 'index'])
+        ->name('courtbook.my-subscriptions');
+
+    Route::resource('subscriptions', SubscriptionController::class)
+        ->except(['index', 'create']);
+});
 
 require __DIR__ . '/auth.php';
