@@ -26,14 +26,12 @@ class Courts extends Model
         'status',
     ];
 
-    public function sports()
-    {
-        return $this->belongsTo(Sports::class, 'sport_id');
+    public function sports(){
+        return $this->belongsTo(Sports::class,'sport_id');
     }
-
-    public function reviews()
-    {
-        return $this->hasMany(Reviews::class, 'court_id');
+   
+    public function reviews(){
+        return $this->hasMany(Reviews::class,'court_id');
     }
 
      public function admin()
