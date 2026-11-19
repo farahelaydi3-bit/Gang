@@ -1,0 +1,16 @@
+@extends('layouts.demo')
+
+@section('title', __('Nearby Courts'))
+@section('page', 'nearby')
+
+@section('content')
+    <div class="wrap page">
+        @include('partials.heading', [
+            'eyebrow' => 'Nearby courts',
+            'heading' => 'Courts near you',
+            'description' => 'Search approved facilities across Amman.',
+        ])
+        @include('partials.nearby')
+    </div>
+@endsection
+
