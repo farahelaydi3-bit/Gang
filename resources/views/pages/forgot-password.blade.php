@@ -5,11 +5,14 @@
 
 @section('content')
     <div class="wrap page">
-        @include('partials.heading', [
+        @include('pages.heading', [
             'heading' => 'Reset your password',
-            'description' => isset($submitUrl) ? 'Manage access to your player account.' : 'Demo account interface. Use sample details only.',
+            'description' => 'Request a password reset link for your account.',
         ])
-        @include('partials.auth-form', ['mode' => 'forgot-password'])
+        @include('pages.auth-form', [
+            'mode' => 'forgot-password',
+            'submitUrl' => route('password.email'),
+        ])
     </div>
 @endsection
 

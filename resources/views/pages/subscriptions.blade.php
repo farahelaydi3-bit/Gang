@@ -4,11 +4,11 @@
 @section('page', 'subscriptions')
 
 @section('content')
-    <div class="wrap page" data-blade-heading>
-        @include('partials.heading', [
+    <div class="wrap page">
+        @include('pages.heading', [
             'eyebrow' => 'CourtBook',
-            'heading' => 'Monthly court subscriptions',
-            'description' => 'Build a recurring schedule and see the deterministic monthly quote.',
+            'heading' => 'Court subscriptions',
+            'description' => 'Subscription plans will be listed here when they are available.',
         ])
 
         <div id="courtbook-demo"></div>
