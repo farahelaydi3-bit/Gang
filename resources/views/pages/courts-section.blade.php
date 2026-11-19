@@ -49,11 +49,9 @@
     @forelse ($courts as $court)
         <article class="card">
             <a class="card-photo" href="{{ route('courtbook.court', $court->id) }}">
-                <img
-                    src="{{ $court->image ? asset('storage/' . $court->image) : asset('courtbook-assets/images/hero-football.png') }}"
-                    alt="{{ $court->name }}"
-                    loading="lazy"
-                >
+                <img class="gallery"
+                    src="{{ $court->image ? asset('courtbook-assets/images/' . $court->image) : asset('courtbook-assets/images/hero-football.png') }}"
+                    alt="{{ $court->name }}">
                 <span class="tag">{{ $court->sports->name }}</span>
             </a>
 
