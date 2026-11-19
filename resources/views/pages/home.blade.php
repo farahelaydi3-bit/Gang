@@ -1,29 +1,5 @@
 @extends('layouts.demo')
 
-@php
-    $sports = \App\Models\Sports::query()
-        ->withCount(['courts' => fn ($query) => $query->where('status', 'approved')])
-        ->orderBy('name')
-        ->get();
-
-    $courts = \App\Models\Courts::query()
-        ->with('sports')
-        ->withAvg('reviews', 'rating')
-        ->withCount('reviews')
-        ->where('status', 'approved')
-        ->latest()
-        ->take(4)
-        ->get();
-
-    $games = \App\Models\GroupGame::query()
-        ->with('booking.court.sports')
-        ->withCount(['players' => fn ($query) => $query->where('game_players.status', 'joined')])
-        ->where('status', 'open')
-        ->latest()
-        ->take(4)
-        ->get();
-@endphp
-
 @section('title', __('Home'))
 @section('page', 'home')
 
@@ -49,10 +25,8 @@
                     </a>
                 </div>
             </div>
-            <img
-                src="{{ asset('courtbook-assets/images/hero-football.png') }}"
-                alt="{{ __('Players on a floodlit football pitch') }}"
-            >
+            <img src="{{ asset('courtbook-assets/images/hero-football.png') }}"
+                alt="{{ __('Players on a floodlit football pitch') }}">
         </section>
 
         <form class="search" action="{{ route('courtbook.courts') }}" method="get">
@@ -62,12 +36,7 @@
                     <option value="{{ $sport->id }}">{{ $sport->name }}</option>
                 @endforeach
             </select>
-            <input
-                type="search"
-                name="area"
-                placeholder="{{ __('Area') }}"
-                aria-label="{{ __('Area') }}"
-            >
+            <input type="search" name="area" placeholder="{{ __('Area') }}" aria-label="{{ __('Area') }}">
             <button type="submit">{{ __('Search courts') }}</button>
         </form>
 
@@ -75,13 +44,28 @@
             <h2 id="sports-title">{{ __('Browse by sport') }}</h2>
             <div class="grid sports">
                 @forelse ($sports as $sport)
-                    <a
-                        class="sport"
-                        href="{{ route('courtbook.courts', ['sport_id' => $sport->id]) }}"
-                    >
+
+                    @php
+                        $sportImages = [
+                            'Badminton' => 'badminton.png',
+                            'Basketball' => 'basketball.png',
+                            'Football' => 'football-indoor.png',
+                            'Padel' => 'padel.png',
+                            'Tennis' => 'tennis.png',
+                        ];
+                    @endphp
+
+                    <a class="sport" href="{{ route('courtbook.courts', ['sport_id' => $sport->id]) }}">
+                        <img src="{{ asset('courtbook-assets/images/' . ($sportImages[$sport->name] ?? 'hero-football.png')) }}"
+                            alt="{{ $sport->name }}">
+
                         <strong>{{ $sport->name }}</strong>
-                        <span class="muted">{{ $sport->courts_count }} {{ __('courts') }}</span>
+
+                        <span class="muted">
+                            {{ $sport->courts_count }} {{ __('courts') }}
+                        </span>
                     </a>
+
                 @empty
                     <p class="muted">{{ __('No sports are available yet.') }}</p>
                 @endforelse
@@ -97,15 +81,9 @@
             <div class="grid">
                 @forelse ($courts as $court)
                     <article class="card">
-                        <a
-                            class="card-photo"
-                            href="{{ route('courtbook.court', $court->id) }}"
-                        >
-                            <img
-                                src="{{ $court->image ? asset('storage/' . $court->image) : asset('courtbook-assets/images/hero-football.png') }}"
-                                alt="{{ $court->name }}"
-                                loading="lazy"
-                            >
+                        <a class="card-photo" href="{{ route('courtbook.court', $court->id) }}">
+                            <img src="{{ $court->image ? asset('courtbook-assets/images/' . $court->image) : asset('courtbook-assets/images/hero-football.png') }}"
+                                alt="{{ $court->name }}" loading="lazy">
                             <span class="tag">{{ $court->sports->name }}</span>
                         </a>
                         <div class="card-body">

@@ -20,7 +20,7 @@ class Reviews extends Model
     }
 
     public function courts (){
-        return $this->belongsTo(Courts::class);
+        return $this->belongsTo(Courts::class,'court_id');
     }
     
     public function booking(){
