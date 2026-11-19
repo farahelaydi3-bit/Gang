@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SubscriptionController;
 
+
 // ==========================================
 // CourtBook - Public Pages
 // ==========================================
@@ -49,11 +50,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// ==========================================
-// Subscription Management - Dev 4
-// ==========================================
 
-// Public subscription plans page
 Route::get('/subscriptions', [SubscriptionController::class, 'create'])
     ->name('courtbook.subscriptions');
 
