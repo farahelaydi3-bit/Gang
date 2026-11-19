@@ -5,12 +5,12 @@
 
 @section('content')
     <div class="wrap page">
-        @include('partials.heading', [
+        @include('pages.heading', [
             'eyebrow' => 'Nearby courts',
             'heading' => 'Courts near you',
             'description' => 'Search approved facilities across Amman.',
         ])
-        @include('partials.nearby')
+        @include('pages.nearby-section')
     </div>
 @endsection
 
