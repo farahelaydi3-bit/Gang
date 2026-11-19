@@ -5,11 +5,14 @@
 
 @section('content')
     <div class="wrap page">
-        @include('partials.heading', [
+        @include('pages.heading', [
             'heading' => 'Create your account',
             'description' => isset($submitUrl) ? 'Manage access to your player account.' : 'Demo account interface. Use sample details only.',
         ])
-        @include('partials.auth-form', ['mode' => 'register'])
+        @include('pages.auth-form', [
+            'mode' => 'register',
+            'submitUrl' => route('register'),
+        ])
     </div>
 @endsection
 

@@ -4,13 +4,18 @@
 @section('page', 'create-game')
 
 @section('content')
-    <div class="wrap page" data-blade-heading>
-        @include('partials.heading', [
+    <div class="wrap page">
+        @include('pages.heading', [
             'eyebrow' => 'CourtBook',
             'heading' => 'Create a public game',
             'description' => 'Organize a pickup game with players in Amman.',
         ])
-        <div id="courtbook-demo"></div>
+        <section class="panel">
+            <p class="muted">{{ __('Game creation is not available yet.') }}</p>
+            <a class="button outline" href="{{ route('courtbook.games') }}">
+                {{ __('Browse games') }}
+            </a>
+        </section>
     </div>
 @endsection
 

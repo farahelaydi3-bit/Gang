@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use App\Models\Sports;
-// use App\Models\Reviews;
+use App\Models\Sports;
+use App\Models\Reviews;
 
 class Courts extends Model
 {

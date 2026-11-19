@@ -1,6 +1,6 @@
 <footer>
     <div class="wrap header-row">
-        @include('partials.brand')
+        @include('pages.brand')
         <span>{{ __('Amman, Jordan') }}</span>
         <div class="row">
             <a href="{{ route('courtbook.courts') }}">{{ __('Explore courts') }}</a>
