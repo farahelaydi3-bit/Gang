@@ -9,7 +9,7 @@ use App\Models\Sports;
 class CourtsController extends Controller
 {
     public function index(){
-        $courts = Courts::with(['sports'])->get();
-        // return view('courts.index', compact('courts'));
+        $courts = Courts::with(['sports']);
+        // return view('pages.home', compact('courts'));
     }
 }

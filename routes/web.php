@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SportsController;
+use App\Http\Controllers\CourtsController;
+use App\Http\Controllers\HomeController;
 
 
 Route::view('/courtbook/profile', 'pages.profile')->name('courtbook.profile');
@@ -14,7 +17,8 @@ Route::view('/courtbook/forgot-password', 'pages.forgot-password')->name('courtb
 // CourtBook - Public Pages
 // ==========================================
 
-Route::view('/', 'pages.home')->name('courtbook.home');
+Route::get('/', [HomeController::class, 'index'])
+    ->name('courtbook.home');
 
 Route::view('/courtbook/profile', 'pages.profile')->name('courtbook.profile');
 

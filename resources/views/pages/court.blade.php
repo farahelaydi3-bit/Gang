@@ -24,11 +24,9 @@
 
         <div class="details">
             <section>
-                <img
-                    class="gallery"
-                    src="{{ $court->image ? asset('storage/' . $court->image) : asset('courtbook-assets/images/hero-football.png') }}"
-                    alt="{{ $court->name }}"
-                >
+                <img class="gallery"
+                    src="{{ $court->image ? asset('courtbook-assets/images/' . $court->image) : asset('courtbook-assets/images/hero-football.png') }}"
+                    alt="{{ $court->name }}">
 
                 <h2>{{ __('About this court') }}</h2>
                 <p>{{ $court->address }}</p>
