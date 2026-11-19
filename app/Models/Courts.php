@@ -34,20 +34,20 @@ class Courts extends Model
         return $this->hasMany(Reviews::class);
     }
 
-    //  public function admin()
-    // {
-    //     return $this->belongsTo(Admin::class, 'admin_id');
-    // }
+     public function admin()
+    {
+        return $this->belongsTo(Admin::class, 'admin_id');
+    }
 
 
-    //  public function bookings()
-    // {
-    //     return $this->hasMany(Booking::class, 'court_id');
-    // }
+     public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'court_id');
+    }
 
-    //  public function waitingList()
-    // {
-    //     return $this->hasMany(WaitingList::class, 'court_id');
-    // }
+     public function waitingList()
+    {
+        return $this->hasMany(WaitingList::class, 'court_id');
+    }
     
 }
