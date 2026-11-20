@@ -13,7 +13,6 @@ class Sports extends Model
     protected $fillable = [
         'name',
     ];
-    
 
     public function courts(){
         return $this->hasMany(Courts::class);

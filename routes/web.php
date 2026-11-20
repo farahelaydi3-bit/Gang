@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\SportsController;
 use App\Http\Controllers\CourtsController;
 use App\Http\Controllers\HomeController;
@@ -38,7 +39,7 @@ Route::view('/waitlist', 'pages.waitlist')->name('courtbook.waitlist');
 
 
 
-Route::view('/bookings', 'pages.bookings')->name('courtbook.bookings');
+Route::get('/bookings', [BookingController::class, 'index'])->name('courtbook.bookings');
 Route::view('/my-games', 'pages.my-games')->name('courtbook.my-games');
 Route::view('/courtbook/profile', 'pages.profile')->name('courtbook.profile');
 
@@ -84,3 +85,5 @@ Route::middleware('auth')->group(function () {
 // });
 
 require __DIR__ . '/auth.php';
+
+
