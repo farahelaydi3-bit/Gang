@@ -15,6 +15,16 @@ class Sports extends Model
     ];
 
     public function courts(){
-        return $this->hasMany(Courts::class, 'sport_id');
+        return $this->hasMany(Courts::class,'sport_id');
     }
+
+    public function ownerApplications()
+{
+    return $this->belongsToMany(
+        OwnerApplication::class,
+        'owner_application_sport',
+        'sport_id',
+        'owner_application_id'
+    );
+}
 }

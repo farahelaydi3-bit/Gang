@@ -21,27 +21,26 @@ class AdminAuthController extends Controller
         ]);
 
         if (Auth::guard('admin')->attempt($credentials)) {
-
             $request->session()->regenerate();
 
+            /** @var \App\Models\Admin $admin */
             $admin = Auth::guard('admin')->user();
 
             if ($admin->status === 'active') {
                 return redirect()->route('admin.dashboard');
             }
 
-            if ($admin->status === 'pending') {
+            if (in_array($admin->status, ['pending', 'rejected'])) {
                 return redirect()->route('admin.pending');
             }
 
             Auth::guard('admin')->logout();
-
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
             return redirect()->route('admin.login')
                 ->withErrors([
-                    'email' => 'Your owner account is not active.'
+                    'email' => 'Your account is suspended or unavailable.',
                 ]);
         }
 

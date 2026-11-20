@@ -19,4 +19,9 @@ class Admin extends Authenticatable
     protected $hidden = [
         'password',
     ];
+
+    public function applications()
+    {
+        return $this->hasMany(OwnerApplication::class);
+    }
 }

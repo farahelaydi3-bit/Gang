@@ -34,4 +34,10 @@ class GroupGame extends Model
 		// Many-to-Many using as pivot game_players
 		return $this->belongsToMany(User::class, 'game_players')->withPivot('status', 'joined_at')->withTimestamps();
 	}
+
+	public function joinedPlayers()
+	{
+		return $this->belongsToMany(User::class, 'game_players')->withPivot('status', 'joined_at')->withTimestamps()->wherePivot('status', 'joined');
+	}
+
 }
