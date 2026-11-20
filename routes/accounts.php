@@ -11,7 +11,7 @@ use App\Http\Controllers\SuperAdmin\DashboardController;
 use App\Http\Controllers\SuperAdmin\AdminController;
 use App\Http\Controllers\SuperAdmin\UserController;
 
-use App\Http\Controllers\SuperAdmin\CourtsController ;
+use App\Http\Controllers\SuperAdmin\CourtsController;
 use App\Http\Controllers\SuperAdmin\SportsController;
 use App\Http\Controllers\SuperAdmin\OwnerApplicationController as SuperOwnerApplicationController;
 
@@ -19,6 +19,8 @@ use App\Http\Controllers\Admin\OwnerApplicationController;
 use App\Http\Controllers\admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\admin\MyCourtsController;
 use App\Http\Controllers\admin\ReservationsController;
+use App\Http\Controllers\admin\MyProfileController;
+use App\Http\Controllers\admin\SubscriptionController;
 // =========================
 // Super Admin Routes
 // =========================
@@ -133,40 +135,50 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->name('logout');
 
 
-            // Dashboard
-            Route::get('/dashboard', [AdminDashboardController::class, 'index'])
-                ->name('dashboard');
-            // My Courts
-            Route::get('/courts', [MyCourtsController::class, 'index'])
-                ->name('courts.index');
+        // Dashboard
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+            ->name('dashboard');
+        // My Courts
+        Route::get('/courts', [MyCourtsController::class, 'index'])
+            ->name('courts.index');
 
-            Route::get('/courts/create', [MyCourtsController::class, 'create'])
-                ->name('courts.create');
+        Route::get('/courts/create', [MyCourtsController::class, 'create'])
+            ->name('courts.create');
 
-            Route::post('/courts/store', [MyCourtsController::class, 'store'])
-                ->name('courts.store');
+        Route::post('/courts/store', [MyCourtsController::class, 'store'])
+            ->name('courts.store');
 
-            Route::get('/courts/{id}/edit', [MyCourtsController::class, 'edit'])
-                ->name('courts.edit');
+        Route::get('/courts/{id}/edit', [MyCourtsController::class, 'edit'])
+            ->name('courts.edit');
 
-            Route::put('/courts/{id}', [MyCourtsController::class, 'update'])
-                ->name('courts.update');
+        Route::put('/courts/{id}', [MyCourtsController::class, 'update'])
+            ->name('courts.update');
 
-            Route::delete('/courts/{id}', [MyCourtsController::class, 'destroy'])
-                ->name('courts.destroy');
+        Route::delete('/courts/{id}', [MyCourtsController::class, 'destroy'])
+            ->name('courts.destroy');
 
-            // Reservations
-            Route::get('/reservations', [ReservationsController::class, 'index'])
-                ->name('reservations.index');
+        // Reservations
+        Route::get('/reservations', [ReservationsController::class, 'index'])
+            ->name('reservations.index');
 
-            Route::patch('/reservations/{id}/confirm', [ReservationsController::class, 'confirm'])
-                ->name('reservations.confirm');
+        Route::patch('/reservations/{id}/confirm', [ReservationsController::class, 'confirm'])
+            ->name('reservations.confirm');
 
-            Route::patch('/reservations/{id}/cancel', [ReservationsController::class, 'cancel'])
-                ->name('reservations.cancel');
+        Route::patch('/reservations/{id}/cancel', [ReservationsController::class, 'cancel'])
+            ->name('reservations.cancel');
 
-            Route::patch('/reservations/{id}/complete', [ReservationsController::class, 'complete'])
-                ->name('reservations.complete');
+        Route::patch('/reservations/{id}/complete', [ReservationsController::class, 'complete'])
+            ->name('reservations.complete');
+
+        // Admin Profile
+        Route::get('/profile', [MyProfileController::class, 'index'])
+            ->name('profile.index');
+
+        Route::put('/profile', [MyProfileController::class, 'update'])
+            ->name('profile.update');
+
+            // Subscriptions Management
+        Route::resource('subscriptions', SubscriptionController::class);
 
         Route::middleware('admin.active')->group(function () {
             Route::get('/dashboard', [AdminDashboardController::class, 'index'])

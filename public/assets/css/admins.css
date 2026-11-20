@@ -1764,3 +1764,296 @@ textarea.form-control {
     text-align: center;
     width: 100%;
 }
+
+/* ==========================================
+   SUBSCRIPTIONS PAGE - REDESIGN
+========================================== */
+
+.subscriptions-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Page header */
+.subscriptions-page .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+
+.subscriptions-page .section-header h1,
+.subscriptions-page .section-header h2 {
+    margin: 0 0 8px;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.subscriptions-page .section-header p {
+    margin: 0;
+    color: #64748b;
+}
+
+/* Statistics Grid */
+.subscriptions-stats {
+    display: grid !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+    margin: 0 0 4px;
+}
+
+.subscriptions-stats .stat-card {
+    min-height: 125px !important;
+    height: auto !important;
+    padding: 22px !important;
+    border-radius: 16px;
+    background: #ffffff;
+    border: 1px solid #e8edf2;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.subscriptions-stats .stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+}
+
+.subscriptions-stats .stat-card h3,
+.subscriptions-stats .stat-card .stat-title {
+    margin: 0;
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.subscriptions-stats .stat-card .stat-value,
+.subscriptions-stats .stat-card strong,
+.subscriptions-stats .stat-card h2 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #172033;
+}
+
+/* Statistics colors */
+.subscriptions-stats .stat-card:nth-child(1) {
+    border-top: 3px solid #16a34a;
+}
+
+.subscriptions-stats .stat-card:nth-child(2) {
+    border-top: 3px solid #16a34a;
+}
+
+.subscriptions-stats .stat-card:nth-child(3) {
+    border-top: 3px solid #f59e0b;
+}
+
+.subscriptions-stats .stat-card:nth-child(4) {
+    border-top: 3px solid #64748b;
+}
+
+.subscriptions-stats .stat-card:nth-child(5) {
+    border-top: 3px solid #ef4444;
+}
+
+/* Search and filter section */
+.subscriptions-page .filter-actions {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.subscriptions-page .filter-actions .form-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.subscriptions-page .form-control {
+    min-height: 44px;
+    border-radius: 10px;
+}
+
+/* Table Card */
+.subscriptions-page .admin-card {
+    border-radius: 16px;
+    border: 1px solid #e8edf2;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+    overflow: hidden;
+}
+
+/* Table wrapper */
+.subscriptions-page .admin-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 14px;
+}
+
+/* Table */
+.subscriptions-page .admin-table {
+    width: 100%;
+    min-width: 1000px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.subscriptions-page .admin-table th {
+    padding: 17px 16px;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid #e8edf2;
+}
+
+.subscriptions-page .admin-table td {
+    padding: 17px 16px;
+    color: #475569;
+    font-size: 14px;
+    vertical-align: middle;
+    white-space: nowrap;
+    border-bottom: 1px solid #eef2f6;
+}
+
+.subscriptions-page .admin-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.subscriptions-page .admin-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.subscriptions-page .admin-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Amount */
+.subscriptions-page .admin-table td:nth-child(6) {
+    font-weight: 600;
+    color: #172033;
+}
+
+/* Status */
+.subscriptions-page .status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Actions */
+.subscriptions-page .subscription-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+}
+
+.subscriptions-page .subscription-actions form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.subscriptions-page .subscription-actions .admin-button-sm {
+    min-height: 34px;
+    padding: 7px 11px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+/* View */
+.subscriptions-page .subscription-actions .admin-button-outline {
+    background: #ffffff;
+    color: #475569;
+    border: 1px solid #dbe3eb;
+}
+
+/* Edit */
+.subscriptions-page .subscription-actions .admin-button-edit {
+    background: #16a34a;
+    color: #ffffff !important;
+    border: 1px solid #16a34a;
+}
+
+.subscriptions-page .subscription-actions .admin-button-edit:hover {
+    background: #15803d;
+}
+
+/* Delete */
+.subscriptions-page .subscription-actions .admin-button-danger {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    border: 1px solid #ef4444 !important;
+}
+
+.subscriptions-page .subscription-actions .admin-button-danger:hover {
+    background: #dc2626 !important;
+}
+
+/* Empty state */
+.subscriptions-page .table-empty {
+    padding: 45px 20px !important;
+    text-align: center;
+    color: #94a3b8;
+}
+
+/* Pagination */
+.subscriptions-page .admin-pagination {
+    padding: 18px 20px;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 1200px) {
+    .subscriptions-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .subscriptions-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .subscriptions-page .section-header {
+        align-items: flex-start;
+    }
+
+    .subscriptions-page .filter-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .subscriptions-page .filter-actions .form-group {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .subscriptions-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .subscriptions-stats .stat-card {
+        min-height: 100px !important;
+    }
+}

@@ -57,7 +57,7 @@
                     <span>Reservations</span>
                 </a>
 
-                <a href="{{ url('/admin/availability') }}"
+                <!-- <a href="{{ url('/admin/availability') }}"
                     class="sidebar-link {{ request()->is('admin/availability*') ? 'active' : '' }}">
                     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
                     <span>Availability</span>
@@ -73,9 +73,9 @@
                     class="sidebar-link {{ request()->is('admin/public-games*') ? 'active' : '' }}">
                     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.7a3.5 3.5 0 0 1 0 6.6M18 14.3c2 .8 3.5 2.6 3.5 5.7"/></svg>
                     <span>Public Games</span>
-                </a>
+                </a> -->
 
-                <a href="{{ url('/admin/subscription') }}"
+                <a href="{{ url('/admin/subscriptions') }}"
                     class="sidebar-link {{ request()->is('admin/subscription*') ? 'active' : '' }}">
                     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h4"/></svg>
                     <span>Subscription</span>

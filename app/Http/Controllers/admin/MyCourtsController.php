@@ -4,7 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Courts;
+use App\Models\Court;
 use App\Models\Sports;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,7 +15,7 @@ class MyCourtsController extends Controller
     public function index()
     {
 
-        $courts = Courts::with('sports')
+        $courts = Court::with('sports')
             ->where('admin_id', auth('admin')->id())
             ->latest()
             ->get();
@@ -59,7 +59,7 @@ class MyCourtsController extends Controller
         // New courts must wait for Super Admin approval
         $validated['status'] = 'pending';
 
-        Courts::create($validated);
+        Court::create($validated);
 
         return redirect()
             ->route('admin.courts.index')
@@ -68,7 +68,7 @@ class MyCourtsController extends Controller
 
     public function edit($id)
     {
-        $court = Courts::where('admin_id', auth('admin')->id())
+        $court = Court::where('admin_id', auth('admin')->id())
             ->findOrFail($id);
 
         $sports = Sports::all();
@@ -78,7 +78,7 @@ class MyCourtsController extends Controller
 
     public function update(Request $request, $id)
     {
-        $court = Courts::where('admin_id', auth('admin')->id())
+        $court = Court::where('admin_id', auth('admin')->id())
             ->findOrFail($id);
 
         $validated = $request->validate([
@@ -122,7 +122,7 @@ class MyCourtsController extends Controller
 
     public function destroy($id)
     {
-        $court = Courts::where('admin_id', auth('admin')->id())
+        $court = Court::where('admin_id', auth('admin')->id())
             ->findOrFail($id);
 
         // Prevent deletion if the court has bookings
