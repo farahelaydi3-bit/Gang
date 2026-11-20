@@ -105,8 +105,8 @@ Route::post('/waitlist', [WaitingListController::class, 'store'])->name('waitlis
 Route::delete('/waitlist/{id}', [WaitingListController::class, 'destroy'])->name('waitlist.destroy');
 Route::get('/courtbook/waitlist', [WaitingListController::class, 'index'])
 	->name('courtbook.waitlist');
-//     Route::resource('subscriptions', SubscriptionController::class)
-//         ->except(['index', 'create']);
-// });
+    Route::resource('subscriptions', SubscriptionController::class)
+        ->except(['index', 'create']);
+});
 
 require __DIR__ . '/auth.php';
