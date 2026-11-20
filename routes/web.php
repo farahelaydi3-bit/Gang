@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SportsController;
 use App\Http\Controllers\CourtsController;
+use App\Http\Controllers\GroupGameController;
+use App\Http\Controllers\WaitingListController;
 use App\Http\Controllers\HomeController;
 
 
@@ -31,10 +33,10 @@ Route::view('/courts/{court}', 'pages.court')->name('courtbook.court');
 Route::view('/nearby', 'pages.nearby')->name('courtbook.nearby');
 
 Route::view('/games', 'pages.games')->name('courtbook.games');
-Route::view('/games/create', 'pages.create-game')->name('courtbook.create-game');
-Route::view('/games/{game}', 'pages.game')->name('courtbook.game');
+// Route::view('/games/create', 'pages.create-game')->name('courtbook.create-game');
+// Route::view('/games/{game}', 'pages.game')->name('courtbook.game');
 
-Route::view('/waitlist', 'pages.waitlist')->name('courtbook.waitlist');
+// Route::view('/waitlist', 'pages.waitlist')->name('courtbook.waitlist');
 
 
 
@@ -81,6 +83,24 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('subscriptions', SubscriptionController::class)
         ->except(['index', 'create']);
+		// group Games
+	Route::get('/games', [GroupGameController::class, 'index'])->name('games.index');
+	Route::get('/games/create', [GroupGameController::class, 'create'])->name('games.create');
+	Route::post('/games', [GroupGameController::class, 'store'])->name('games.store');
+	Route::get('/games/{game}', [GroupGameController::class, 'show'])->name('games.show');
+	Route::get('/games/{game}/edit', [GroupGameController::class, 'edit'])->name('games.edit');
+	Route::put('/games/{game}', [GroupGameController::class, 'update'])->name('games.update');
+	Route::delete('/games/{game}', [GroupGameController::class, 'destroy'])->name('games.destroy');
+
+	// Custom Game Actions (Join/Leave)
+	Route::post('/games/{game}/join', [GroupGameController::class, 'join'])->name('games.join');
+	Route::post('/games/{game}/leave', [GroupGameController::class, 'leave'])->name('games.leave');
+
+	// waiting List
+	Route::get('/waitlist', [WaitingListController::class, 'index'])->name('waitlist.index');
+	Route::get('/waitlist/create', [WaitingListController::class, 'create'])->name('waitlist.create');
+	Route::post('/waitlist', [WaitingListController::class, 'store'])->name('waitlist.store');
+	Route::delete('/waitlist/{id}', [WaitingListController::class, 'destroy'])->name('waitlist.destroy');
 });
 
 require __DIR__ . '/auth.php';

@@ -33,7 +33,7 @@
 <form
     id="game-filters"
     class="row filters spread"
-    action="{{ route('courtbook.games') }}"
+    action="{{ route('games.index') }}"
     method="get"
 >
     <label>
@@ -64,7 +64,7 @@
     </label>
 
     <button type="submit">{{ __('Search games') }}</button>
-    <a class="button" href="{{ route('courtbook.create-game') }}">
+    <a class="button" href="{{ route('games.create') }}">
         {{ __('Create a game') }}
     </a>
 </form>
@@ -74,7 +74,7 @@
         <article class="card card-body">
             <p class="eyebrow">{{ $game->booking->court->sports->name }}</p>
             <h2>
-                <a href="{{ route('courtbook.game', $game->id) }}">
+                <a href="{{ route('games.show', $game->id) }}">
                     {{ $game->title }}
                 </a>
             </h2>
