@@ -23,7 +23,7 @@ $activeCourts = Court::where('status', 'approved')->count();
         $totalSports = Sports::count();
 
         $recentOwners = Admin::latest()->take(5)->get();
-        $recentCourts = Courts::with('admin', 'sports')->latest()->take(5)->get();
+        $recentCourts = Court::with('admin', 'sports')->latest()->take(5)->get();
 
         return view('super-admins.dashboard', compact(
             'totalPlayers',
