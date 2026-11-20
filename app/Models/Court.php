@@ -27,7 +27,7 @@ class Court extends Model
     ];
 
     public function sports(){
-        return $this->belongsTo(Sports::class);
+        return $this->belongsTo(Sports::class, 'sport_id');
     }
    
     public function reviews(){

@@ -40,6 +40,12 @@ Route::view('/waitlist', 'pages.waitlist')->name('courtbook.waitlist');
 
 
 Route::get('/bookings', [BookingController::class, 'index'])->name('courtbook.bookings');
+Route::get('/courts/{court}/availability', [BookingController::class, 'availability'])
+    ->name('courtbook.courts.availability');
+Route::middleware('auth')->group(function () {
+    Route::get('/bookings/create', [BookingController::class, 'create'])->name('courtbook.booking.create');
+    Route::post('/bookings', [BookingController::class, 'store'])->name('courtbook.bookings.store');
+});
 Route::view('/my-games', 'pages.my-games')->name('courtbook.my-games');
 Route::view('/courtbook/profile', 'pages.profile')->name('courtbook.profile');
 
