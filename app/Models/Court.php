@@ -49,4 +49,8 @@ class Court extends Model
     {
         return $this->hasMany(WaitingList::class, 'court_id');
     }
+    public function subscriptions()
+{
+    return $this->hasMany(Subscription::class);
+}
 }

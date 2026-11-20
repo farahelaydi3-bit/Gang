@@ -21,6 +21,7 @@
                             <th>{{ __('Date') }}</th>
                             <th>{{ __('Time') }}</th>
                             <th>{{ __('Status') }}</th>
+                            <th>{{ __('Review') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -31,10 +32,25 @@
                                 <td>{{ $booking->booking_date->format('M j, Y') }}</td>
                                 <td>{{ $booking->start_time }} – {{ $booking->end_time }}</td>
                                 <td>{{ __(ucfirst($booking->booking_status)) }}</td>
+                                <td>
+    @if ($booking->booking_status === 'completed')
+        @if ($booking->review)
+            <a href="{{ route('reviews.show', $booking->review) }}">
+                {{ __('View Review') }}
+            </a>
+        @else
+            <a href="{{ route('reviews.create', ['booking_id' => $booking->id]) }}">
+                {{ __('Write Review') }}
+            </a>
+        @endif
+    @else
+        —
+    @endif
+</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5">{{ __('No bookings found.') }}</td>
+                                <td colspan="6">{{ __('No bookings found.') }}</td>
                             </tr>
                         @endforelse
                     </tbody>

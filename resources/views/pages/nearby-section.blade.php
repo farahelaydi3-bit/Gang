@@ -3,7 +3,7 @@
     $selectedSport = request('sport_id');
     $searchArea = trim((string) request('area'));
 
-    $courtsQuery = \App\Models\Courts::query()
+    $courtsQuery = \App\Models\Court::query()
         ->with('sports')
         ->where('status', 'approved');
 

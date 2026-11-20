@@ -6,23 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CourtBook - Reviews</title>
 </head>
-@auth
-    <hr>
 
-    <h3>DEV4 - Authorization Test</h3>
-
-    <form action="{{ route('reviews.update', 1) }}" method="POST">
-        @csrf
-        @method('PATCH')
-
-        <input type="hidden" name="rating" value="1">
-        <input type="hidden" name="comment" value="Unauthorized update test">
-
-        <button type="submit">
-            Test Unauthorized Update
-        </button>
-    </form>
-@endauth
 <body>
 
     <h1>Customer Reviews</h1>

@@ -94,4 +94,10 @@ Route::get('/reviews/{review}', [ReviewController::class, 'show'])
     ->whereNumber('review')
     ->name('reviews.show');
 
+// Accept Waiting List Offer
+
+Route::post('/waiting-list/{waitingList}/accept',
+    [WaitingListController::class, 'accept']
+)->middleware('auth')->name('waiting-list.accept');
+
 require __DIR__ . '/auth.php';

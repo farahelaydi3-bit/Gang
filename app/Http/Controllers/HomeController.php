@@ -16,7 +16,7 @@ class HomeController extends Controller
     ->orderBy('name')
     ->get();
 
-        // Courts query
+        // Court query
      $courts = Court::query()
     ->with('sports')
     ->withAvg('reviews', 'rating')

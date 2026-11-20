@@ -1,8 +1,8 @@
 @extends('layouts.demo')
 
 @php
-    $court = \App\Models\Courts::query()
-        ->with(['sports', 'reviews.users'])
+    $court = \App\Models\Court::query()
+        ->with(['sports', 'reviews.user'])
         ->withAvg('reviews', 'rating')
         ->findOrFail(request()->route('court'));
 @endphp
@@ -54,7 +54,7 @@
                 @forelse ($court->reviews as $review)
                     <article class="panel">
                         <div class="row spread">
-                            <strong>{{ $review->users->name }}</strong>
+                            <strong>{{ $review->user->name }}</strong>
                             <span class="rating">★ {{ $review->rating }} / 5</span>
                         </div>
                         @if ($review->comment)
