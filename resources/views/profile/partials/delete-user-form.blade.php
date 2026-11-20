@@ -8,6 +8,16 @@
         </p>
     </header>
 
+    @if ($errors->userDeletion->has('account'))
+        <div class="profile-delete-blocked" role="alert">
+            <p>{{ $errors->userDeletion->first('account') }}</p>
+            <div>
+                <a href="{{ route('courtbook.bookings') }}">{{ __('My bookings') }}</a>
+                <a href="{{ route('courtbook.my-subscriptions') }}">{{ __('My Subscriptions') }}</a>
+            </div>
+        </div>
+    @endif
+
     <details class="space-y-4">
         <summary class="cursor-pointer text-red-700">
             {{ __('Delete Account') }}

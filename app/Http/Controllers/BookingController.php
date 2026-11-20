@@ -28,16 +28,46 @@ class BookingController extends Controller
     public function index(Request $request)
     {
         $bookings = collect();
+        $upcomingCount = 0;
+        $completedCount = 0;
+        $cancelledCount = 0;
+        $hasAnyBookings = false;
 
         if ($request->user()) {
-            $bookings = Booking::query()
+            $userBookings = Booking::query()
+                ->where('user_id', $request->user()->id);
+
+            $statusCounts = (clone $userBookings)
+                ->selectRaw('booking_status, COUNT(*) as total')
+                ->groupBy('booking_status')
+                ->pluck('total', 'booking_status');
+
+            $upcomingCount = (clone $userBookings)
+                ->whereIn('booking_status', ['pending', 'confirmed'])
+                ->whereDate('booking_date', '>=', today())
+                ->count();
+            $completedCount = (int) ($statusCounts['completed'] ?? 0);
+            $cancelledCount = (int) ($statusCounts['cancelled'] ?? 0);
+            $hasAnyBookings = $statusCounts->isNotEmpty();
+
+            $bookings = (clone $userBookings)
                 ->with(['court.sports', 'review'])
-                ->where('user_id', $request->user()->id)
-                ->latest('booking_date')
-                ->get();
+                ->whereIn('booking_status', ['pending', 'confirmed'])
+                ->orderByRaw('CASE WHEN booking_date >= ? THEN 0 ELSE 1 END', [today()->toDateString()])
+                ->orderBy('booking_date')
+                ->orderBy('start_time')
+                ->paginate(5)
+                ->withQueryString();
         }
 
-        return view('pages.bookings', compact('bookings'));    }
+        return view('pages.bookings', compact(
+            'bookings',
+            'upcomingCount',
+            'completedCount',
+            'cancelledCount',
+            'hasAnyBookings',
+        ));
+    }
     public function show(Request $request, Booking $booking)
     {
         abort_unless(
@@ -120,6 +150,7 @@ public function store(Request $request)
             return Booking::create([
                 'court_id' => $court->id,
                 'user_id' => $request->user()->id,
+                'subscription_id' => $subscription?->id,
                 'booking_type' => $validated['booking_type'],
                 'booking_date' => $validated['booking_date'],
                 'start_time' => $validated['start_time'],
@@ -129,7 +160,34 @@ public function store(Request $request)
                 'deposit_amount' => $depositAmount,
                 'booking_status' => 'pending',
             ]);
-        });
+        }
+
+        $bookingDate = Carbon::parse($validated['booking_date']);
+        $startHour = (int) substr($validated['start_time'], 0, 2);
+        $isWeekend = in_array($bookingDate->dayOfWeek, [Carbon::FRIDAY, Carbon::SATURDAY], true);
+        $hourlyPrice = $isWeekend
+            ? (float) $court->weekend_price
+            : ($startHour >= 18
+                ? (float) $court->evening_price
+                : (float) $court->weekday_price);
+        $totalPrice = round($hourlyPrice * (int) $validated['duration_minutes'] / 60, 2);
+        $depositAmount = (float) $court->deposit_amount > 0
+            ? min((float) $court->deposit_amount, $totalPrice)
+            : $totalPrice;
+
+        return Booking::create([
+            'court_id' => $court->id,
+            'user_id' => $request->user()->id,
+            'booking_type' => $validated['booking_type'],
+            'booking_date' => $validated['booking_date'],
+            'start_time' => $validated['start_time'],
+            'end_time' => $validated['end_time'],
+            'duration_minutes' => $validated['duration_minutes'],
+            'total_price' => $totalPrice,
+            'deposit_amount' => $depositAmount,
+            'booking_status' => 'pending',
+        ]);
+    });
 
         return redirect()
             ->route('courtbook.payments.checkout', [$booking, 'deposit'])
@@ -442,14 +500,9 @@ public function update(Request $request, Booking $booking)
             . ' ' . $currentBooking->start_time
         );
 
-        if (! $request->expectsJson()) {
-            return redirect()->route('courtbook.bookings')
-                ->with('success', __('The booking was cancelled and the time was released.'));
-        }
-
-        return response()->json($cancelledBooking);
-    }
-
+        $newStart = Carbon::parse(
+            $bookingData['booking_date'] . ' ' . $bookingData['start_time']
+        );
         $newEnd = Carbon::parse(
             $bookingData['booking_date'] . ' ' . $bookingData['end_time']
         );

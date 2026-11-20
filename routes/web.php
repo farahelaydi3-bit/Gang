@@ -173,9 +173,6 @@ Route::middleware('auth')->group(function () {
         'update',
     ])->name('bookings.update');
 
-    Route::post('/bookings/{booking}/cancel', [
-        BookingController::class,
-        'cancel',
-    ])->name('bookings.cancel');
+
 });
 require __DIR__ . '/auth.php';
