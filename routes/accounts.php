@@ -4,9 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SuperAdminAuthController;
 use App\Http\Controllers\Auth\AdminRegisteredController;
 use App\Http\Controllers\Auth\AdminAuthController;
+
+
 use App\Http\Controllers\SuperAdmin\DashboardController;
 use App\Http\Controllers\SuperAdmin\AdminController;
-
+use App\Http\Controllers\SuperAdmin\UserController;
 
 // =========================
 // Super Admin Routes
@@ -24,7 +26,6 @@ Route::prefix('super-admin')->name('super_admin.')->group(function () {
     });
 
     Route::middleware('auth:super_admin')->group(function () {
-
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
 
@@ -34,10 +35,18 @@ Route::prefix('super-admin')->name('super_admin.')->group(function () {
         Route::patch('/admins/{admin}/status', [AdminController::class, 'updateStatus'])
             ->name('admins.status');
 
+
+
+        Route::get('/users', [UserController::class, 'index'])
+            ->name('users.index');
+
+        Route::patch('/users/{user}/status', [UserController::class, 'updateStatus'])
+            ->name('users.status');
+
+
         Route::post('/logout', [SuperAdminAuthController::class, 'logout'])
             ->name('logout');
     });
-
 });
 
 // =========================
@@ -75,5 +84,4 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('dashboard');
         });
     });
-
 });
