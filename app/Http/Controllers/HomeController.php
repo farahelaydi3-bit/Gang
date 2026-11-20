@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sports;
-use App\Models\Courts;
+use App\Models\Court;
 use App\Models\GroupGame;
 
 class HomeController extends Controller
@@ -16,8 +16,8 @@ class HomeController extends Controller
     ->orderBy('name')
     ->get();
 
-        // Courts query
-     $courts = Courts::query()
+        // Court query
+     $courts = Court::query()
     ->with('sports')
     ->withAvg('reviews', 'rating')
     ->withCount('reviews')

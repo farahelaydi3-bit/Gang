@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Courts;
+use App\Models\Court;
 use App\Models\Sports;
 
 class CourtsController extends Controller
 {
     public function index(){
-        $courts = Courts::with(['sports']);
+       $courts = Court::with(['sports']);
         // return view('pages.home', compact('courts'));
     }
 }

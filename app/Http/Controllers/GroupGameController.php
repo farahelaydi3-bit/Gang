@@ -2,164 +2,225 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
 use App\Models\GroupGame;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class GroupGameController extends Controller
 {
-	/**
-	 * Display a listing of the games.
-	 */
-	public function index()
-	{
-		// Fetch games, eager load players and booking details
-		$games = GroupGame::with(['players', 'booking.court.sports'])
-			->where('status', '!=', 'cancelled')
-			->orderBy('created_at', 'desc')
-			->paginate(10);
-			
-		return view('pages.games', compact('games'));
-	}
+    public function index()
+    {
+        $games = GroupGame::with(['joinedPlayers', 'booking.court.sports'])
+            ->whereNotIn('status', ['cancelled', 'completed'])
+            ->latest()->paginate(10);
 
-	/**
-	 * Show the form for creating a new game.
-	 */
-	public function create()
-	{
-		return view('pages.create-game');
-	}
+        return view('pages.games', compact('games'));
+    }
 
-	/**
-	 * Store a new game.
-	 */
-	public function store(Request $request)
-	{
-		$valid = $request->validate([
-			'admin_id' => 'required|exists:admins,id',
-			'booking_id' => 'required|exists:bookings,id',
-			'title' => 'required|string|max:255',
-			'description' => 'nullable|string',
-			'max_players' => 'required|integer|min:2',
-			'status' => 'required|in:open,full,cancelled,completed',
-		]);
+    public function create()
+    {
+        $adminId = Auth::guard('admin')->id();
+        abort_unless($adminId, 403);
 
-		GroupGame::create($valid);
-		return redirect()->route('games.index')->with('success', 'Created a new game successfully');
-	}
+        $bookings = Booking::query()
+            ->where('booking_type', 'group')
+            ->where('booking_status', 'confirmed')
+            ->whereHas('court', fn ($q) => $q->where('admin_id', $adminId))
+            ->whereDoesntHave('groupGame')
+            ->with('court')->get();
 
-	/**
-	 * Display the specified game.
-	 */
-	public function show(string $id)
-	{
-		// We don't need to query inside the Blade file. The controller does it.
-		$game = GroupGame::with([
-			'booking.court.sports', 
-			'players' => fn ($query) => $query->wherePivot('status', 'joined')
-		])->findOrFail($id);
+        return view('pages.create-game', compact('bookings'));
+    }
 
-		return view('pages.game', compact('game'));
-	}
+    public function store(Request $request)
+    {
+        $adminId = Auth::guard('admin')->id();
+        abort_unless($adminId, 403);
 
-	/**
-	 * Show the form for editing a game.
-	 */
-	public function edit(string $id)
-	{
-		$game = GroupGame::withCount(['players' => fn ($query) => $query->where('status', 'joined')])
-			->findOrFail($id);
+        $data = $request->validate([
+            'booking_id' => ['required', 'integer', 'exists:bookings,id'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'max_players' => ['required', 'integer', 'min:2', 'max:65535'],
+        ]);
 
-		// BUSINESS RULE: Cannot edit if players have joined
-		if ($game->players_count > 0) {
-			return redirect()->route('games.show', $game->id)
-				->with('error', 'You cannot edit this game because players have already joined.');
-		}
+        DB::transaction(function () use ($data, $adminId) {
+            $booking = Booking::query()->whereKey($data['booking_id'])
+                ->lockForUpdate()->firstOrFail();
 
-		return view('pages.edit-game', compact('game'));
-	}
+            if (
+                $booking->booking_type !== 'group' ||
+                $booking->booking_status !== 'confirmed' ||
+                (int) $booking->court->admin_id !== (int) $adminId ||
+                $this->startsAt($booking)->lte(now()) ||
+                GroupGame::where('booking_id', $booking->id)->exists()
+            ) {
+                throw ValidationException::withMessages([
+                    'booking_id' => 'Select a future confirmed group booking for your own court without a game.',
+                ]);
+            }
 
-	public function update(Request $request, string $id)
-	{
-		$game = GroupGame::withCount(['players' => fn ($query) => $query->where('status', 'joined')])
-			->findOrFail($id);
+            GroupGame::create([
+                'admin_id' => $adminId,
+                'booking_id' => $booking->id,
+                'title' => $data['title'],
+                'description' => $data['description'] ?? null,
+                'max_players' => $data['max_players'],
+                'status' => 'open',
+            ]);
+        });
 
-		// BUSINESS RULE: Double-check before updating
-		if ($game->players_count > 0) {
-			return redirect()->route('games.show', $game->id)
-				->with('error', 'You cannot edit this game because players have already joined.');
-		}
+        return redirect()->route('games.index')->with('success', 'Game created.');
+    }
 
-		$valid = $request->validate([
-			'title' => 'required|string|max:255',
-			'description' => 'nullable|string',
-			'max_players' => 'required|integer|min:2',
-			'status' => 'required|in:open,full,cancelled,completed',
-		]);
+    public function show(GroupGame $game)
+    {
+        $game->load(['booking.court.sports', 'joinedPlayers']);
+        return view('pages.game', compact('game'));
+    }
 
-		$game->update($valid);
-		return redirect()->route('games.index')->with('success', 'Game updated successfully');
-	}
+    public function edit(GroupGame $game)
+    {
+        $this->authorizeAdmin($game);
+        abort_if($game->status !== 'open', 422);
 
-	/**
-	 * Cancel a game.
-	 */
-	public function destroy(string $id)
-	{
-		$game = GroupGame::findOrFail($id);
-		$game->update(['status' => 'cancelled']);
-		return redirect()->route('games.index')->with('success', 'Game cancelled');
-	}
+        if ($game->joinedPlayers()->exists()) {
+            return redirect()->route('games.show', $game)->with('error', 'Cannot edit a game with joined players.');
+        }
 
-	/**
-	 * Join a game (Player Action).
-	 */
-	public function join(Request $request, GroupGame $game)
-	{
-		$user = Auth::user();
+        return view('pages.edit-game', compact('game'));
+    }
 
-		if ($game->status !== 'open') {
-			return back()->with('error', 'This game is not open for joining.');
-		}
+    public function update(Request $request, GroupGame $game)
+    {
+        $this->authorizeAdmin($game);
+        $data = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'max_players' => ['required', 'integer', 'min:2', 'max:65535'],
+        ]);
 
-		if ($game->players()->where('user_id', $user->id)->exists()) {
-			return back()->with('error', 'You have already joined this game.');
-		}
+        DB::transaction(function () use ($game, $data) {
+            $locked = GroupGame::whereKey($game->id)->lockForUpdate()->firstOrFail();
+            if ($locked->status !== 'open' || $locked->joinedPlayers()->exists()) {
+                throw ValidationException::withMessages(['game' => 'Game cannot be edited now.']);
+            }
+            $locked->update($data);
+        });
 
-		if ($game->players()->count() >= $game->max_players) {
-			return back()->with('error', 'This game is full.');
-		}
+        return redirect()->route('games.index')->with('success', 'Game updated.');
+    }
 
-		$game->players()->attach($user->id, [
-			'status' => 'joined',
-			'joined_at' => now(),
-		]);
+    public function destroy(GroupGame $game)
+    {
+        $this->authorizeAdmin($game);
 
-		if ($game->players()->count() >= $game->max_players) {
-			$game->update(['status' => 'full']);
-		}
+        DB::transaction(function () use ($game) {
+            $locked = GroupGame::whereKey($game->id)->lockForUpdate()->firstOrFail();
+            if ($locked->status === 'completed') {
+                throw ValidationException::withMessages(['game' => 'Completed games cannot be cancelled.']);
+            }
+            $locked->update(['status' => 'cancelled']);
+        });
 
-		return back()->with('success', 'You joined the game!');
-	}
+        return redirect()->route('games.index')->with('success', 'Game cancelled.');
+    }
 
-	/**
-	 * Leave a game (Player Action).
-	 */
-	public function leave(Request $request, GroupGame $game)
-	{
-		$user = Auth::user();
+    public function join(Request $request, GroupGame $game)
+    {
+        $userId = $request->user()->id;
 
-		// Only detach if they are actually in the game
-		if ($game->players()->where('user_id', $user->id)->exists()) {
-			$game->players()->detach($user->id);
+        DB::transaction(function () use ($game, $userId) {
+            $locked = GroupGame::whereKey($game->id)->lockForUpdate()->firstOrFail();
+            $booking = $locked->booking;
 
-			if ($game->status === 'full') {
-				$game->update(['status' => 'open']);
-			}
+            if (
+                $locked->status !== 'open' ||
+                !$booking || $booking->booking_status !== 'confirmed' ||
+                $this->startsAt($booking)->lte(now())
+            ) {
+                throw ValidationException::withMessages(['game' => 'This game is not available to join.']);
+            }
 
-			return back()->with('success', 'You left the game.');
-		}
+            $existing = DB::table('game_players')
+                ->where('group_game_id', $locked->id)
+                ->where('user_id', $userId)->first();
 
-		return back()->with('error', 'You are not part of this game.');
-	}
+            if ($existing && $existing->status !== 'cancelled') {
+                throw ValidationException::withMessages(['game' => 'You have already joined.']);
+            }
+
+            $count = $locked->joinedPlayers()->count();
+            if ($count >= $locked->max_players) {
+                $locked->update(['status' => 'full']);
+                throw ValidationException::withMessages(['game' => 'Game is full.']);
+            }
+
+            if ($existing) {
+                $locked->players()->updateExistingPivot($userId, [
+                    'status' => 'joined', 'joined_at' => now(),
+                ]);
+            } else {
+                $locked->players()->attach($userId, [
+                    'status' => 'joined', 'joined_at' => now(),
+                ]);
+            }
+
+            if ($count + 1 >= $locked->max_players) {
+                $locked->update(['status' => 'full']);
+            }
+        });
+
+        return back()->with('success', 'You joined the game.');
+    }
+
+    public function leave(Request $request, GroupGame $game)
+    {
+        $userId = $request->user()->id;
+
+        DB::transaction(function () use ($game, $userId) {
+            $locked = GroupGame::whereKey($game->id)->lockForUpdate()->firstOrFail();
+            if (!in_array($locked->status, ['open', 'full'], true) ||
+                !$locked->booking || $this->startsAt($locked->booking)->lte(now())) {
+                throw ValidationException::withMessages(['game' => 'You cannot leave this game now.']);
+            }
+
+            $pivot = DB::table('game_players')
+                ->where('group_game_id', $locked->id)
+                ->where('user_id', $userId)->first();
+
+            if (!$pivot || $pivot->status !== 'joined') {
+                throw ValidationException::withMessages(['game' => 'You are not a joined player.']);
+            }
+
+            $locked->players()->updateExistingPivot($userId, ['status' => 'cancelled']);
+            if ($locked->status === 'full') {
+                $locked->update(['status' => 'open']);
+            }
+        });
+
+        return back()->with('success', 'You left the game.');
+    }
+
+    private function authorizeAdmin(GroupGame $game): void
+    {
+        abort_unless(
+            Auth::guard('admin')->check() &&
+            (int) $game->admin_id === (int) Auth::guard('admin')->id(),
+            403
+        );
+    }
+
+    private function startsAt(Booking $booking): Carbon
+    {
+        $date = $booking->booking_date instanceof \DateTimeInterface
+            ? $booking->booking_date->format('Y-m-d')
+            : substr((string) $booking->booking_date, 0, 10);
+
+        return Carbon::parse($date . ' ' . $booking->start_time);
+    }
 }

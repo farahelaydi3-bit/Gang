@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Sports;
-use App\Models\Courts;
+use App\Models\Court;
 class SportsController extends Controller
 {
 
