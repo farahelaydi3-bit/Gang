@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\CourtsController;
+// use App\Http\Controllers\CourtsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SuperAdminAuthController;
 use App\Http\Controllers\Auth\AdminRegisteredController;
@@ -11,7 +11,7 @@ use App\Http\Controllers\SuperAdmin\DashboardController;
 use App\Http\Controllers\SuperAdmin\AdminController;
 use App\Http\Controllers\SuperAdmin\UserController;
 
-// use App\Http\Controllers\SuperAdmin\CourtsController;
+use App\Http\Controllers\SuperAdmin\CourtsController ;
 use App\Http\Controllers\SuperAdmin\SportsController;
 use App\Http\Controllers\SuperAdmin\OwnerApplicationController as SuperOwnerApplicationController;
 
