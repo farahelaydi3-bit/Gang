@@ -215,4 +215,131 @@ class BookingTest extends TestCase
             ])
             ->assertForbidden();
     }
+
+public function test_weekday_price_is_correct(): void
+{
+    $courtId = $this->createCourt();
+
+    $court = \App\Models\Court::findOrFail($courtId);
+
+    $price = app(\App\Services\BookingPricingService::class)
+        ->calculate($court, '2026-11-23', '10:00', '11:00');
+
+    $this->assertEquals('20.00', $price['total_price']);
+    $this->assertEquals('5.00', $price['deposit_amount']);
+}
+
+public function test_weekend_price_is_correct(): void
+{
+    $courtId = $this->createCourt();
+
+    $court = \App\Models\Court::findOrFail($courtId);
+
+    $price = app(\App\Services\BookingPricingService::class)
+        ->calculate($court, '2026-11-27', '10:00', '11:00');
+
+    $this->assertEquals('25.00', $price['total_price']);
+    $this->assertEquals('5.00', $price['deposit_amount']);
+}
+
+public function test_evening_price_is_correct(): void
+{
+    $courtId = $this->createCourt();
+
+    $court = \App\Models\Court::findOrFail($courtId);
+
+    $price = app(\App\Services\BookingPricingService::class)
+        ->calculate($court, '2026-11-23', '18:00', '19:00');
+
+    $this->assertEquals('30.00', $price['total_price']);
+    $this->assertEquals('5.00', $price['deposit_amount']);
+}
+
+public function test_weekend_and_evening_prices_are_correct(): void
+{
+    $courtId = $this->createCourt();
+
+    $court = \App\Models\Court::findOrFail($courtId);
+
+    $price = app(\App\Services\BookingPricingService::class)
+        ->calculate($court, '2026-11-27', '17:00', '19:00');
+
+    $this->assertEquals('55.00', $price['total_price']);
+    $this->assertEquals('5.00', $price['deposit_amount']);
+}
+
+public function test_owner_can_update_booking(): void
+{
+    $user = User::factory()->create();
+    $courtId = $this->createCourt();
+
+    $response = $this->actingAs($user)
+        ->post('/bookings', $this->bookingData($courtId));
+
+    $response->assertCreated();
+
+    $bookingId = $response->json('id');
+
+    $this->actingAs($user)
+        ->put("/bookings/{$bookingId}", [
+            'start_time' => '12:00',
+            'end_time' => '13:00',
+        ])
+        ->assertOk();
+
+    $this->assertDatabaseHas('bookings', [
+        'id' => $bookingId,
+        'start_time' => '12:00',
+        'end_time' => '13:00',
+    ]);
+}
+
+public function test_owner_can_cancel_booking(): void
+{
+    $user = User::factory()->create();
+    $courtId = $this->createCourt();
+
+    $response = $this->actingAs($user)
+        ->post('/bookings', $this->bookingData($courtId));
+
+    $response->assertCreated();
+
+    $bookingId = $response->json('id');
+
+    $this->actingAs($user)
+        ->post("/bookings/{$bookingId}/cancel")
+        ->assertOk();
+
+    $this->assertDatabaseHas('bookings', [
+        'id' => $bookingId,
+        'booking_status' => 'cancelled',
+    ]);
+}
+
+public function test_cancelled_booking_slot_becomes_available(): void
+{
+    $owner = User::factory()->create();
+    $otherUser = User::factory()->create();
+    $courtId = $this->createCourt();
+
+    $data = $this->bookingData($courtId);
+
+    $response = $this->actingAs($owner)
+        ->post('/bookings', $data);
+
+    $response->assertCreated();
+
+    $bookingId = $response->json('id');
+
+    $this->actingAs($owner)
+        ->post("/bookings/{$bookingId}/cancel")
+        ->assertOk();
+
+    $this->actingAs($otherUser)
+        ->post('/bookings', $data)
+        ->assertCreated();
+
+    $this->assertDatabaseCount('bookings', 2);
+}
+
 }

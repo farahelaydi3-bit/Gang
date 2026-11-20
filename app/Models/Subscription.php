@@ -20,7 +20,14 @@ class Subscription extends Model
         'end_date',
         'status',
         'discount_percentage',
-        'court_id'];
+        'court_id',
+'paid_at',
+'activated_at',
+'reserved_carryover_hours',
+'carryover_finalized_at',
+'low_balance_notified_at',
+'expiry_reminder_sent_at',
+];
 
         protected function casts():array
         {

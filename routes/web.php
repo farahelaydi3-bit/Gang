@@ -106,5 +106,30 @@ Route::middleware('auth')->group(function () {
 Route::get('/reviews/{review}', [ReviewController::class, 'show'])
     ->whereNumber('review')
     ->name('reviews.show');
+Route::get('/courts/{court}/availability', [
+    BookingController::class,
+    'availability',
+])->name('bookings.availability');
 
+Route::middleware('auth')->group(function () {
+    Route::post('/bookings', [
+        BookingController::class,
+        'store',
+    ])->name('bookings.store');
+
+    Route::get('/bookings/{booking}', [
+        BookingController::class,
+        'show',
+    ])->name('bookings.show');
+
+    Route::put('/bookings/{booking}', [
+        BookingController::class,
+        'update',
+    ])->name('bookings.update');
+
+    Route::post('/bookings/{booking}/cancel', [
+        BookingController::class,
+        'cancel',
+    ])->name('bookings.cancel');
+});
 require __DIR__ . '/auth.php';
