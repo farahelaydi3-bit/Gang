@@ -21,7 +21,7 @@
                 <span lang="{{ app()->isLocale('ar') ? 'en' : 'ar' }}">{{ app()->isLocale('ar') ? 'English' : 'عربي' }}</span>
             </a>
             <button type="button" class="outline" data-action="alerts" aria-label="{{ __('Notifications') }}">{{ __('Alerts') }}</button>
-            <a class="button outline" href="{{ route('courtbook.profile') }}">{{ __('Profile') }}</a>
+            <a class="button outline" href="{{ route('profile.edit') }}">{{ __('Profile') }}</a>
         </div>
     </div>
 </header>

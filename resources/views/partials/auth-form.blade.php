@@ -26,10 +26,10 @@
 </div>
 <div class="row section">
     @if ($mode === 'login')
-        <a class="button outline" href="{{ route('courtbook.register') }}">{{ __('Create account') }}</a>
-        <a class="button outline" href="{{ route('courtbook.forgot-password') }}">{{ __('Forgot password?') }}</a>
+        <a class="button outline" href="{{ route('register') }}">{{ __('Create account') }}</a>
+        <a class="button outline" href="{{ route('password.request') }}">{{ __('Forgot password?') }}</a>
     @else
-        <a class="button outline" href="{{ route('courtbook.login') }}">{{ __('Back to login') }}</a>
+        <a class="button outline" href="{{ route('login') }}">{{ __('Back to login') }}</a>
     @endif
 </div>
 

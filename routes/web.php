@@ -4,6 +4,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\ReviewController;
 
 
 // ==========================================
@@ -50,7 +51,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-
+// TARIFI
 Route::get('/subscriptions', [SubscriptionController::class, 'create'])
     ->name('courtbook.subscriptions');
 
@@ -63,5 +64,18 @@ Route::middleware('auth')->group(function () {
     Route::resource('subscriptions', SubscriptionController::class)
         ->except(['index', 'create']);
 });
+
+// Reviews Management
+Route::get('/reviews', [ReviewController::class, 'index'])
+    ->name('reviews.index');
+
+Route::middleware('auth')->group(function () {
+    Route::resource('reviews', ReviewController::class)
+        ->except(['index', 'show']);
+});
+
+Route::get('/reviews/{review}', [ReviewController::class, 'show'])
+    ->whereNumber('review')
+    ->name('reviews.show');
 
 require __DIR__ . '/auth.php';

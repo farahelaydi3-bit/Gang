@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use App\Models\Sports;
 // use App\Models\Reviews;
 
-class Courts extends Model
+class Court extends Model
 {
     use HasFactory;
     protected $fillable = [
@@ -34,20 +34,6 @@ class Courts extends Model
         return $this->hasMany(Reviews::class);
     }
 
-    //  public function admin()
-    // {
-    //     return $this->belongsTo(Admin::class, 'admin_id');
-    // }
-
-
-    //  public function bookings()
-    // {
-    //     return $this->hasMany(Booking::class, 'court_id');
-    // }
-
-    //  public function waitingList()
-    // {
-    //     return $this->hasMany(WaitingList::class, 'court_id');
-    // }
+   
     
 }
