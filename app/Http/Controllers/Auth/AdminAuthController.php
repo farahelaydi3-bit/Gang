@@ -10,7 +10,7 @@ class AdminAuthController extends Controller
 {
     public function showLogin()
     {
-        return view('auth.admin-login');
+        return view('pages.owner-login');
     }
 
     public function login(Request $request)
@@ -21,9 +21,28 @@ class AdminAuthController extends Controller
         ]);
 
         if (Auth::guard('admin')->attempt($credentials)) {
+
             $request->session()->regenerate();
 
-            return redirect()->route('admin.dashboard');
+            $admin = Auth::guard('admin')->user();
+
+            if ($admin->status === 'active') {
+                return redirect()->route('admin.dashboard');
+            }
+
+            if ($admin->status === 'pending') {
+                return redirect()->route('admin.pending');
+            }
+
+            Auth::guard('admin')->logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('admin.login')
+                ->withErrors([
+                    'email' => 'Your owner account is not active.'
+                ]);
         }
 
         return back()->withErrors([

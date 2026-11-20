@@ -13,7 +13,7 @@ class AdminRegisteredController extends Controller
 {
     public function create()
     {
-        return view('auth.admin-register');
+        return view('pages.owner-register');
     }
 
     public function store(Request $request)
