@@ -20,7 +20,7 @@
                     <a class="button" href="{{ route('courtbook.courts') }}">
                         {{ __('Find a Court') }}
                     </a>
-                    <a class="button outline" href="{{ route('courtbook.games') }}">
+                    <a class="button outline" href="{{ route('games.index') }}">
                         {{ __('Join a Game') }}
                     </a>
                 </div>
@@ -117,7 +117,7 @@
         <section class="section" aria-labelledby="upcoming-games-title">
             <div class="row spread">
                 <h2 id="upcoming-games-title">{{ __('Upcoming games') }}</h2>
-                <a href="{{ route('courtbook.games') }}">{{ __('Find games') }}</a>
+                <a href="{{ route('games.index') }}">{{ __('Find games') }}</a>
             </div>
 
             <div class="grid">

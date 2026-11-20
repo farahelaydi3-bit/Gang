@@ -7,13 +7,16 @@ use App\Models\Booking;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Models\Courts;
+use App\Models\Court;
+use App\Models\Subscription;
 use App\Events\BookingCancelled;
+use App\Services\WaitingListOfferService;
+use App\Services\BookingPricingService;
 class BookingController extends Controller
 {
     public function create(Request $request)
     {
-        $courts = Courts::query()
+        $courts = Court::query()
             ->with('sports')
             ->where('status', 'approved')
             ->orderBy('name')
@@ -28,7 +31,7 @@ class BookingController extends Controller
 
         if ($request->user()) {
             $bookings = Booking::query()
-                ->with('court.sports')
+                ->with(['court.sports', 'review'])
                 ->where('user_id', $request->user()->id)
                 ->latest('booking_date')
                 ->get();
@@ -45,20 +48,57 @@ class BookingController extends Controller
         return response()->json($booking);
     }
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'court_id' => ['required', 'integer', 'exists:courts,id'],
-            'booking_type' => ['required', 'in:individual,group,subscription'],
-            'booking_date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
-            'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['required', 'date_format:H:i'],
-            'duration_minutes' => ['required', 'integer', 'min:1', 'max:65535'],
-        ]);
+    
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'court_id' => ['required', 'integer', 'exists:courts,id'],
+        'booking_type' => ['required', 'in:individual,group,subscription'],
+        'subscription_id' => [
+            'required_if:booking_type,subscription',
+            'nullable',
+            'integer',
+            'exists:subscriptions,id',
+        ],
+        'booking_date' => [
+            'required', 'date_format:Y-m-d', 'after_or_equal:today',
+        ],
+        'start_time' => ['required', 'date_format:H:i'],
+        'end_time' => ['required', 'date_format:H:i'],
+        'duration_minutes' => [
+            'required', 'integer', 'min:60', 'multiple_of:30',
+        ],
+    ]);
 
-        $booking = DB::transaction(function () use ($request, $validated) {
-            $court = Courts::query()
-                ->whereKey($validated['court_id'])
+    $booking = DB::transaction(function () use ($request, $validated) 
+    {
+
+        $court = Court::query()
+            ->whereKey($validated['court_id'])
+            ->lockForUpdate()
+            ->firstOrFail();
+
+        if ($court->status !== 'approved') {
+            throw ValidationException::withMessages([
+                'court_id' => 'This court is not available for booking.',
+            ]);
+        }
+
+        if (Carbon::parse($validated['booking_date'] . ' ' . $validated['start_time'])->lte(now())) {
+            throw ValidationException::withMessages([
+                'start_time' => 'Booking must start in the future.',
+            ]);
+        }
+
+        $this->checkAvailability($court, $validated);
+
+        $subscription = null;
+        $status = 'pending';
+
+        if ($validated['booking_type'] === 'subscription') {
+
+            $subscription = Subscription::query()
+                ->whereKey($validated['subscription_id'])
                 ->lockForUpdate()
                 ->firstOrFail();
 
@@ -98,7 +138,7 @@ class BookingController extends Controller
 
 
     private function checkAvailability(
-        Courts $court,
+        Court $court,
         array $bookingData,
         ?int $ignoreBookingId = null
     ): void {
@@ -150,43 +190,50 @@ class BookingController extends Controller
         }
 
         $conflictingBookings = Booking::query()
-            ->where('court_id', $court->id)
-            ->whereBetween('booking_date', [
-                $startTime->copy()->subDay()->toDateString(),
-                $endTime->toDateString(),
-            ])
-            ->whereIn('booking_status', ['pending', 'confirmed'])
-            ->when(
-                $ignoreBookingId !== null,
-                fn($query) => $query->where('id', '!=', $ignoreBookingId)
-            )
-            ->lockForUpdate()
-            ->get(['id', 'booking_date', 'start_time', 'end_time']);
+    ->where('court_id', $court->id)
+    ->whereIn('booking_status', ['pending', 'confirmed'])
+    ->when(
+        $ignoreBookingId !== null,
+        fn ($query) => $query->where('id', '!=', $ignoreBookingId)
+    )
+    ->lockForUpdate()
+    ->get(['id', 'booking_date', 'start_time', 'end_time']);
 
-        $conflictingBooking = $conflictingBookings->first(function ($booking) use ($startTime, $endTime) {
-            $existingStart = Carbon::parse($booking->booking_date->toDateString() . ' ' . $booking->start_time);
-            $existingEnd = Carbon::parse($booking->booking_date->toDateString() . ' ' . $booking->end_time);
-            if ($existingEnd->lte($existingStart)) {
-                $existingEnd->addDay();
-            }
+foreach ($conflictingBookings as $existingBooking) {
+    $existingDate = Carbon::parse($existingBooking->booking_date)
+        ->format('Y-m-d');
 
-            return $existingStart->lt($endTime) && $existingEnd->gt($startTime);
-        });
+    $existingStart = Carbon::parse(
+        $existingDate . ' ' . $existingBooking->start_time
+    );
 
-        if ($conflictingBooking) {
-            throw ValidationException::withMessages([
-                'start_time' => __('This time slot is no longer available.'),
-            ]);
-        }
+    $existingEnd = Carbon::parse(
+        $existingDate . ' ' . $existingBooking->end_time
+    );
+
+    // Support bookings that end after midnight
+    if ($existingEnd->lte($existingStart)) {
+        $existingEnd->addDay();
     }
-    public function availability(Request $request, Courts $court)
+
+    if (
+        $existingStart->lt($endTime) &&
+        $existingEnd->gt($startTime)
+    ) {
+        throw ValidationException::withMessages([
+            'start_time' => 'This time slot is already booked.',
+        ]);
+    }
+}
+    }
+    public function availability(Request $request, Court $court)
     {
         $validated = $request->validate([
             'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
         ]);
 
         $date = $validated['date'];
-        $slotMinutes = max(1, (int) $court->min_booking_minutes);
+        $slotMinutes = max(60, (int) (ceil($court->min_booking_minutes / 30) * 30));
         $now = Carbon::now();
         $today = $now->toDateString();
 
@@ -266,43 +313,134 @@ class BookingController extends Controller
         ]);
     }
 
-    public function cancel(Request $request, Booking $booking)
-    {
-        $cancelledBooking = DB::transaction(function () use ($request, $booking) {
-            $booking = Booking::query()
-                ->whereKey($booking->id)
+   
+public function cancel(Request $request, Booking $booking)
+{
+    $cancelledBooking = DB::transaction(function () use ($request, $booking) {
+
+        // Lock court first to preserve consistent lock order.
+        $court = Court::whereKey($booking->court_id)
+            ->lockForUpdate()
+            ->firstOrFail();
+
+        $booking = Booking::whereKey($booking->id)
+            ->lockForUpdate()
+            ->firstOrFail();
+            
+
+        abort_unless(
+            (int) $booking->user_id === (int) $request->user()->id,
+            403
+        );
+        
+
+        if (! in_array($booking->booking_status, ['pending', 'confirmed'], true)) {
+            throw ValidationException::withMessages([
+                'booking' => 'This booking cannot be cancelled.',
+            ]);
+        }
+
+        $startsAt = Carbon::parse(
+            $booking->booking_date->format('Y-m-d')
+            . ' ' . $booking->start_time
+        );
+
+        if (now()->gte($startsAt)) {
+            throw ValidationException::withMessages([
+                'booking' => 'A booking cannot be cancelled after it has started.',
+            ]);
+        }
+
+        if (
+            $booking->booking_type === 'subscription' &&
+            $booking->subscription_id !== null &&
+            $booking->booking_status === 'confirmed'
+        ) {
+            $subscription = Subscription::whereKey($booking->subscription_id)
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            abort_unless(
-                (int) $booking->user_id === (int) $request->user()->id,
-                403
-            );
-
-            if (! in_array($booking->booking_status, ['pending', 'confirmed'], true)) {
+            if ($subscription->carryover_finalized_at !== null) {
                 throw ValidationException::withMessages([
-                    'booking' => __('This booking cannot be cancelled.'),
+                    'subscription_id' => 'This subscription has already been renewed. Booking changes are restricted.',
                 ]);
             }
 
-            $startsAt = Carbon::parse(
-                $booking->booking_date->format('Y-m-d') . ' ' . $booking->start_time
-            );
+            $hours = $booking->duration_minutes / 60;
 
-            if (now()->greaterThanOrEqualTo($startsAt)) {
-                throw ValidationException::withMessages([
-                    'booking' => __('A booking cannot be cancelled after it has started.'),
-                ]);
-            }
+            $subscription->decrement('used_hours', $hours);
+        }
 
-            $booking->update([
-                'booking_status' => 'cancelled',
+        $booking->update([
+            'booking_status' => 'cancelled',
+        ]);
+
+        return $booking->refresh();
+    });
+
+    BookingCancelled::dispatch($cancelledBooking);
+    app(WaitingListOfferService::class)->afterCancellation($cancelledBooking);
+
+    return response()->json($cancelledBooking);
+}
+
+
+public function update(Request $request, Booking $booking)
+{
+    $validated = $request->validate([
+        'booking_type' => ['sometimes', 'required', 'in:individual,group,subscription'],
+        'booking_date' => ['sometimes', 'required', 'date_format:Y-m-d', 'after_or_equal:today'],
+        'start_time' => ['sometimes', 'required', 'date_format:H:i'],
+        'end_time' => ['sometimes', 'required', 'date_format:H:i'],
+        'duration_minutes' => [
+            'sometimes', 'required', 'integer',
+            'min:60', 'multiple_of:30',
+        ],
+    ]);
+
+    $updatedBooking = DB::transaction(function () use ($request, $booking, $validated) {
+
+        $court = Court::whereKey($booking->court_id)
+            ->lockForUpdate()
+            ->firstOrFail();
+
+        $currentBooking = Booking::whereKey($booking->id)
+            ->lockForUpdate()
+            ->firstOrFail();
+
+        abort_unless(
+            (int) $currentBooking->user_id === (int) $request->user()->id,
+            403
+        );
+
+        if (! in_array($currentBooking->booking_status, ['pending', 'confirmed'], true)) {
+            throw ValidationException::withMessages([
+                'booking' => 'This booking cannot be updated.',
             ]);
+        }
 
-            return $booking;
-        });
+        $bookingData = [
+            'booking_type' => $validated['booking_type'] ?? $currentBooking->booking_type,
+            'booking_date' => $validated['booking_date']
+                ?? $currentBooking->booking_date->format('Y-m-d'),
+            'start_time' => $validated['start_time']
+                ?? substr((string) $currentBooking->start_time, 0, 5),
+            'end_time' => $validated['end_time']
+                ?? substr((string) $currentBooking->end_time, 0, 5),
+            'duration_minutes' => $validated['duration_minutes']
+                ?? $currentBooking->duration_minutes,
+        ];
 
-        BookingCancelled::dispatch($cancelledBooking);
+        if ($bookingData['booking_type'] !== $currentBooking->booking_type) {
+            throw ValidationException::withMessages([
+                'booking_type' => 'Booking type cannot be changed.',
+            ]);
+        }
+
+        $oldStart = Carbon::parse(
+            $currentBooking->booking_date->format('Y-m-d')
+            . ' ' . $currentBooking->start_time
+        );
 
         if (! $request->expectsJson()) {
             return redirect()->route('courtbook.bookings')
@@ -312,72 +450,90 @@ class BookingController extends Controller
         return response()->json($cancelledBooking);
     }
 
-    public function update(Request $request, Booking $booking)
-    {
-        $validated = $request->validate([
-            'booking_type' => ['sometimes', 'required', 'in:individual,group,subscription'],
-            'booking_date' => ['sometimes', 'required', 'date_format:Y-m-d', 'after_or_equal:today'],
-            'start_time' => ['sometimes', 'required', 'date_format:H:i'],
-            'end_time' => ['sometimes', 'required', 'date_format:H:i', 'after:start_time'],
-            'duration_minutes' => ['sometimes', 'required', 'integer', 'min:1', 'max:65535'],
-        ]);
+        $newEnd = Carbon::parse(
+            $bookingData['booking_date'] . ' ' . $bookingData['end_time']
+        );
 
-        $updatedBooking = DB::transaction(function () use ($request, $booking, $validated) {
-            $court = Courts::query()
-                ->whereKey($booking->court_id)
+        if (now()->gte($oldStart) || now()->gte($newStart)) {
+            throw ValidationException::withMessages([
+                'booking_date' => 'Booking must be changed before it starts.',
+            ]);
+        }
+
+        if ($newEnd->lte($newStart)) {
+            throw ValidationException::withMessages([
+                'end_time' => 'End time must be after start time.',
+            ]);
+        }
+
+        $this->checkAvailability(
+            $court,
+            $bookingData,
+            $currentBooking->id
+        );
+
+        if ($currentBooking->booking_type === 'subscription') {
+
+            $subscription = Subscription::whereKey($currentBooking->subscription_id)
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            $currentBooking = Booking::query()
-                ->whereKey($booking->id)
-                ->lockForUpdate()
-                ->firstOrFail();
-
-            abort_unless(
-                (int) $currentBooking->user_id === (int) $request->user()->id,
-                403
-            );
-
-            if (! in_array($currentBooking->booking_status, ['pending', 'confirmed'], true)) {
+            if ($subscription->carryover_finalized_at !== null) {
                 throw ValidationException::withMessages([
-                    'booking' => __('This booking cannot be updated.'),
+                    'subscription_id' => 'This subscription has already been renewed. Booking changes are restricted.',
                 ]);
             }
 
-            $bookingData = [
-                'booking_type' => $validated['booking_type'] ?? $currentBooking->booking_type,
-                'booking_date' => $validated['booking_date']
-                    ?? $currentBooking->booking_date->format('Y-m-d'),
-                'start_time' => $validated['start_time']
-                    ?? substr((string) $currentBooking->start_time, 0, 5),
-                'end_time' => $validated['end_time']
-                    ?? substr((string) $currentBooking->end_time, 0, 5),
-                'duration_minutes' => $validated['duration_minutes']
-                    ?? $currentBooking->duration_minutes,
-            ];
-
-            $newStart = Carbon::parse(
-                $bookingData['booking_date'] . ' ' . $bookingData['start_time']
-            );
-
-            if (now()->greaterThanOrEqualTo($newStart)) {
+            if ($subscription->status !== 'active') {
                 throw ValidationException::withMessages([
-                    'booking_date' => __('The booking must be changed before it starts.'),
+                    'subscription_id' => 'Subscription is not active.',
                 ]);
             }
 
-            $this->checkAvailability(
-                $court,
-                $bookingData,
-                $currentBooking->id
+            if (
+                $newStart->lt($subscription->start_date->copy()->startOfDay()) ||
+                $newEnd->gt($subscription->end_date)
+            ) {
+                throw ValidationException::withMessages([
+                    'booking_date' => 'Booking must be within subscription period.',
+                ]);
+            }
+
+            $oldHours = $currentBooking->duration_minutes / 60;
+            $newHours = $bookingData['duration_minutes'] / 60;
+            $difference = $newHours - $oldHours;
+
+            if ($difference > 0 && $subscription->remaining_hours < $difference) {
+                throw ValidationException::withMessages([
+                    'duration_minutes' => 'Insufficient subscription hours.',
+                ]);
+            }
+
+            if ($difference > 0) {
+                $subscription->increment('used_hours', $difference);
+            } elseif ($difference < 0) {
+                $subscription->decrement('used_hours', abs($difference));
+            }
+        }
+
+        $prices = $currentBooking->booking_type === 'subscription'
+            ? ['total_price' => '0.00', 'deposit_amount' => '0.00']
+            : app(BookingPricingService::class)->calculate(
+                $court, $bookingData['booking_date'],
+                $bookingData['start_time'], $bookingData['end_time']
             );
 
-            $currentBooking->update($bookingData);
+        $currentBooking->update(array_merge($bookingData, $prices));
 
-            return $currentBooking->refresh();
-        });
+        return $currentBooking->refresh();
+    });
 
-        return response()->json($updatedBooking);
+    if ($updatedBooking->subscription_id !== null) {
+        $updatedBooking->subscription->notifyIfLowBalance();
     }
+
+    return response()->json($updatedBooking);
+}
+
 
 }
