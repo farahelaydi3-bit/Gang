@@ -8,6 +8,7 @@ use App\Http\Controllers\CourtsController;
 use App\Http\Controllers\GroupGameController;
 use App\Http\Controllers\WaitingListController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SubscriptionController;
 
 
 Route::view('/courtbook/profile', 'pages.profile')->name('courtbook.profile');
@@ -77,7 +78,7 @@ Route::middleware('auth')->group(function () {
 //     ->name('courtbook.subscriptions');
 
 // // Authenticated subscription management
-// Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function () {
 
 //     Route::get('/my-subscriptions', [SubscriptionController::class, 'index'])
 //         ->name('courtbook.my-subscriptions');
