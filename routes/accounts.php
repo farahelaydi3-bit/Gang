@@ -13,6 +13,7 @@ use App\Http\Controllers\SuperAdmin\UserController;
 use App\Http\Controllers\SuperAdmin\CourtsController;
 use App\Http\Controllers\SuperAdmin\SportsController;
 
+use App\Http\Controllers\admin\DashboardController as AdminDashboardController;
 // =========================
 // Super Admin Routes
 // =========================
@@ -99,7 +100,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::middleware('auth:admin')->group(function () {
 
-        Route::view('/pending', 'admins.pending')
+        Route::view('/pending', 'admins.dashboard.pending')
             ->name('pending');
 
         Route::post('/logout', [AdminAuthController::class, 'logout'])
@@ -107,8 +108,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::middleware('admin.active')->group(function () {
 
-            Route::view('/dashboard', 'admins.dashboard')
-                ->name('dashboard');
+            Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+               ->name('dashboard');
         });
     });
 });
