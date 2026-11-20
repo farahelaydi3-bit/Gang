@@ -34,7 +34,7 @@ class Booking extends Model
 
     public function court(): BelongsTo
     {
-        return $this->belongsTo(Courts::class);
+        return $this->belongsTo(Court::class);
     }
 
     public function user(): BelongsTo
@@ -49,5 +49,10 @@ class Booking extends Model
     public function subscription(): BelongsTo
     {
         return $this->belongsTo(Subscription::class);
+    }
+
+    public function review(){
+     return $this->hasOne(Review::class);
+
     }
 }

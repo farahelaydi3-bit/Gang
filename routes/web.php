@@ -71,25 +71,18 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('/courts/{court}/availability', [
-    BookingController::class,
-    'availability',
-])->name('courts.availability');
-// ==========================================
-// Breeze Authentication Routes
-// ==========================================
-Route::get('/subscriptions', [SubscriptionController::class, 'create'])
-    ->name('courtbook.subscriptions');
+// Route::get('/subscriptions', [SubscriptionController::class, 'create'])
+//     ->name('courtbook.subscriptions');
 
-// Authenticated subscription management
-Route::middleware('auth')->group(function () {
+// // Authenticated subscription management
+// Route::middleware('auth')->group(function () {
 
-    Route::get('/my-subscriptions', [SubscriptionController::class, 'index'])
-        ->name('courtbook.my-subscriptions');
+//     Route::get('/my-subscriptions', [SubscriptionController::class, 'index'])
+//         ->name('courtbook.my-subscriptions');
 
-    Route::resource('subscriptions', SubscriptionController::class)
-        ->except(['index', 'create']);
-});
+//     Route::resource('subscriptions', SubscriptionController::class)
+//         ->except(['index', 'create']);
+// });
 
 require __DIR__ . '/auth.php';
 

@@ -6,10 +6,18 @@ use App\Http\Controllers\Auth\AdminRegisteredController;
 use App\Http\Controllers\Auth\AdminAuthController;
 
 
+use App\Http\Controllers\SuperAdmin\DashboardController;
+use App\Http\Controllers\SuperAdmin\AdminController;
+use App\Http\Controllers\SuperAdmin\UserController;
+
+// =========================
+// Super Admin Routes
+// =========================
 
 Route::prefix('super-admin')->name('super_admin.')->group(function () {
 
     Route::middleware('guest:super_admin')->group(function () {
+
         Route::get('/login', [SuperAdminAuthController::class, 'showLogin'])
             ->name('login');
 
@@ -18,27 +26,43 @@ Route::prefix('super-admin')->name('super_admin.')->group(function () {
     });
 
     Route::middleware('auth:super_admin')->group(function () {
-        Route::view('/dashboard', 'super-admins.dashboard')
+        Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
+
+        Route::get('/admins', [AdminController::class, 'index'])
+            ->name('admins.index');
+
+        Route::patch('/admins/{admin}/status', [AdminController::class, 'updateStatus'])
+            ->name('admins.status');
+
+
+
+        Route::get('/users', [UserController::class, 'index'])
+            ->name('users.index');
+
+        Route::patch('/users/{user}/status', [UserController::class, 'updateStatus'])
+            ->name('users.status');
+
 
         Route::post('/logout', [SuperAdminAuthController::class, 'logout'])
             ->name('logout');
     });
 });
 
+// =========================
+// Court Owner Routes
+// =========================
+
 Route::prefix('admin')->name('admin.')->group(function () {
 
-    // Routes for guests only
     Route::middleware('guest:admin')->group(function () {
 
-        // Registration
         Route::get('/register', [AdminRegisteredController::class, 'create'])
             ->name('register');
 
         Route::post('/register', [AdminRegisteredController::class, 'store'])
             ->name('register.store');
 
-        // Login
         Route::get('/login', [AdminAuthController::class, 'showLogin'])
             ->name('login');
 
@@ -48,14 +72,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::middleware('auth:admin')->group(function () {
 
-        // Available to all authenticated admins
         Route::view('/pending', 'admins.pending')
             ->name('pending');
 
         Route::post('/logout', [AdminAuthController::class, 'logout'])
             ->name('logout');
 
-        // Available only to active admins
         Route::middleware('admin.active')->group(function () {
 
             Route::view('/dashboard', 'admins.dashboard')
