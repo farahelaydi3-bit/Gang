@@ -1,15 +1,5 @@
 @extends('layouts.demo')
 
-@php
-    $bookings = auth()->check()
-        ? \App\Models\Booking::query()
-            ->with('court.sports')
-            ->where('user_id', auth()->id())
-            ->latest('booking_date')
-            ->get()
-        : collect();
-@endphp
-
 @section('title', __('My Bookings'))
 @section('page', 'bookings')
 

@@ -33,6 +33,10 @@ return [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
+	'textbee' => [
+		'api_key' => env('TEXTBEE_API_KEY'),
+		'device_id' => env('TEXTBEE_DEVICE_ID'),
+		],
     ],
 
 ];

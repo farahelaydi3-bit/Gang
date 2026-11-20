@@ -19,19 +19,25 @@ class GroupGame extends Model
 		'status',
 	];
 
-	public function admin()
-	{
-		return $this->belongsTo(Admin::class);
-	}
+	// public function admin()
+	// {
+	// 	return $this->belongsTo(Admin::class);
+	// }
 
-	public function booking()
-	{
-		return $this->belongsTo(Booking::class);
-	}
+	// public function booking()
+	// {
+	// 	return $this->belongsTo(Booking::class);
+	// }
 
 	public function players()
 	{
 		// Many-to-Many using as pivot game_players
 		return $this->belongsToMany(User::class, 'game_players')->withPivot('status', 'joined_at')->withTimestamps();
 	}
+
+	public function joinedPlayers()
+	{
+		return $this->belongsToMany(User::class, 'game_players')->withPivot('status', 'joined_at')->withTimestamps()->wherePivot('status', 'joined');
+	}
+
 }
