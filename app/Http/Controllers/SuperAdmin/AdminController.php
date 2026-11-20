@@ -16,21 +16,38 @@ class AdminController extends Controller
         return view('super-admins.admins', compact('admins'));
     }
 
+
+
     public function updateStatus(Request $request, Admin $admin)
     {
         $request->validate([
-            'status' => ['required', Rule::in([
-                'pending',
-                'active',
-                'rejected',
-                'suspended',
-            ])],
+            'status' => 'required|in:pending,active,suspended',
         ]);
+
+        $status = $request->status;
+
+        if ($status === 'pending' && $admin->status !== 'rejected') {
+            return back()->with('error', 'Only rejected accounts can be reset to pending.');
+        }
+
+        if ($status === 'active') {
+            $approved = $admin->applications()
+                ->where('status', 'approved')
+                ->exists();
+
+            if (!$approved || $admin->status !== 'suspended') {
+                return back()->with('error', 'Approve the application first.');
+            }
+        }
+
+        if ($status === 'suspended' && $admin->status !== 'active') {
+            return back()->with('error', 'Only active accounts can be suspended.');
+        }
 
         $admin->update([
-            'status' => $request->status,
+            'status' => $status,
         ]);
 
-        return back()->with('success', 'Owner status updated successfully.');
+        return back()->with('success', 'Owner status updated.');
     }
 }

@@ -8,6 +8,7 @@ use App\Models\Admin;
 use App\Models\Courts;
 use App\Models\GroupGame;
 use App\Models\Booking;
+use App\Models\Sports;
 
 class DashboardController extends Controller
 {
@@ -16,9 +17,13 @@ class DashboardController extends Controller
         $totalPlayers = User::count();
         $totalOwners = Admin::count();
         $pendingOwners = Admin::where('status', 'pending')->count();
-        $activeCourts = Courts::where('status', 'active')->count();
+        $activeCourts = Courts::where('status', 'approved')->count();
         $publicGames = GroupGame::count();
         $totalBookings = Booking::count();
+        $totalSports = Sports::count();
+
+        $recentOwners = Admin::latest()->take(5)->get();
+        $recentCourts = Courts::with('admin', 'sports')->latest()->take(5)->get();
 
         return view('super-admins.dashboard', compact(
             'totalPlayers',
@@ -26,7 +31,10 @@ class DashboardController extends Controller
             'pendingOwners',
             'activeCourts',
             'publicGames',
-            'totalBookings'
+            'totalBookings',
+            'recentOwners',
+            'recentCourts',
+            'totalSports',
         ));
     }
 }

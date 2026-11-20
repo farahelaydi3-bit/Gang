@@ -1,176 +1,144 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.super-admin')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@section('title', 'Manage Players')
+@section('page-title', 'Players Management')
 
-    <title>Manage Players | CourtBook</title>
+@section('content')
 
-    <!-- Bootstrap CSS -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet">
-</head>
+<div class="page-header">
+    <div>
+        <h2>Manage Players</h2>
+        <p>View and manage all registered CourtBook players.</p>
+    </div>
 
-<body class="bg-light">
+    <a href="{{ route('super_admin.dashboard') }}"
+        class="admin-button admin-button-outline">
+        Back to Dashboard
+    </a>
+</div>
 
-    <div class="container py-5">
+{{-- Validation Errors --}}
+@if ($errors->any())
+<div class="admin-card"
+    role="alert"
+    style="margin-bottom:20px;border-color:var(--admin-danger);color:var(--admin-danger)">
 
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    @foreach ($errors->all() as $error)
+    <p style="margin:0 0 6px">
+        {{ $error }}
+    </p>
+    @endforeach
 
-            <div>
-                <h2 class="fw-bold">Players Management</h2>
-                <p class="text-muted mb-0">
-                    View and manage all registered CourtBook players.
-                </p>
-            </div>
+</div>
+@endif
 
-            <a href="{{ route('super_admin.dashboard') }}"
-                class="btn btn-outline-secondary">
-                Back to Dashboard
-            </a>
+{{-- Players Table --}}
+<div class="admin-card">
 
-        </div>
+    <div class="admin-card-header">
+        <h3>All Players ({{ $users->count() }})</h3>
+    </div>
 
-        <!-- Success Message -->
-        @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-        @endif
+    <div class="admin-table-wrap">
 
-        <!-- Validation Errors -->
-        @if($errors->any())
-        <div class="alert alert-danger">
-            {{ $errors->first() }}
-        </div>
-        @endif
+        <table class="admin-table">
 
-        <!-- Players Table -->
-        <div class="card border-0 shadow-sm">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Player Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Registered</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
 
-            <div class="card-header bg-white py-3">
-                <h5 class="mb-0">
-                    All Players ({{ $users->count() }})
-                </h5>
-            </div>
+            <tbody>
+                @forelse ($users as $user)
 
-            <div class="card-body">
+                <tr>
+                    <td>{{ $user->id }}</td>
 
-                <div class="table-responsive">
+                    <td>
+                        <strong>{{ $user->name }}</strong>
+                    </td>
 
-                    <table class="table table-hover align-middle">
+                    <td>{{ $user->email }}</td>
 
-                        <thead class="table-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>Player Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Status</th>
-                                <th>Registered</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
+                    <td>{{ $user->phone ?? '—' }}</td>
 
-                        <tbody>
+                    <td>
+                        @if ($user->status === 'active')
+                        <span class="badge badge-success">
+                            Active
+                        </span>
 
-                            @forelse($users as $user)
+                        @elseif ($user->status === 'suspended')
+                        <span class="badge badge-danger">
+                            Suspended
+                        </span>
 
-                            <tr>
-                                <td>{{ $user->id }}</td>
+                        @else
+                        <span class="badge">
+                            {{ ucfirst($user->status ?? 'Unknown') }}
+                        </span>
+                        @endif
+                    </td>
 
-                                <td class="fw-semibold">
-                                    {{ $user->name }}
-                                </td>
+                    <td>
+                        {{ $user->created_at?->format('Y-m-d') ?? '—' }}
+                    </td>
 
-                                <td>{{ $user->email }}</td>
+                    <td>
+                        <form
+                            method="POST"
+                            action="{{ route('super_admin.users.status', $user->id) }}"
+                            style="display:flex;gap:8px;align-items:center;min-width:220px">
 
-                                <td>{{ $user->phone ?? '-' }}</td>
+                            @csrf
+                            @method('PATCH')
 
-                                <!-- Status -->
-                                <td>
-                                    @if($user->status === 'active')
-                                    <span class="badge bg-success">
-                                        Active
-                                    </span>
-                                    @elseif($user->status === 'suspended')
-                                    <span class="badge bg-danger">
-                                        Suspended
-                                    </span>
-                                    @else
-                                    <span class="badge bg-secondary">
-                                        {{ ucfirst($user->status ?? 'Unknown') }}
-                                    </span>
-                                    @endif
-                                </td>
+                            <select name="status"
+                                class="form-control"
+                                aria-label="Player status">
 
-                                <!-- Registration Date -->
-                                <td>
-                                    {{ $user->created_at?->format('Y-m-d') ?? '-' }}
-                                </td>
+                                <option value="active"
+                                    @selected($user->status === 'active')>
+                                    Active
+                                </option>
 
-                                <!-- Update Status -->
-                                <td>
-                                    <form method="POST"
-                                        action="{{ route('super_admin.users.status', $user->id) }}">
+                                <option value="suspended"
+                                    @selected($user->status === 'suspended')>
+                                    Suspended
+                                </option>
+                            </select>
 
-                                        @csrf
-                                        @method('PATCH')
+                            <button type="submit"
+                                class="admin-button admin-button-outline">
+                                Save
+                            </button>
 
-                                        <div class="d-flex gap-2">
+                        </form>
+                    </td>
+                </tr>
 
-                                            <select name="status"
-                                                class="form-select form-select-sm">
+                @empty
 
-                                                <option value="active"
-                                                    @selected($user->status === 'active')>
-                                                    Active
-                                                </option>
+                <tr>
+                    <td colspan="7" style="text-align:center;padding:32px">
+                        No players registered yet.
+                    </td>
+                </tr>
 
-                                                <option value="suspended"
-                                                    @selected($user->status === 'suspended')>
-                                                    Suspended
-                                                </option>
+                @endforelse
+            </tbody>
 
-                                            </select>
-
-                                            <button type="submit"
-                                                class="btn btn-success btn-sm">
-                                                Save
-                                            </button>
-
-                                        </div>
-
-                                    </form>
-                                </td>
-                            </tr>
-
-                            @empty
-
-                            <tr>
-                                <td colspan="7"
-                                    class="text-center text-muted py-5">
-                                    No players registered yet.
-                                </td>
-                            </tr>
-
-                            @endforelse
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </div>
-
-        </div>
+        </table>
 
     </div>
 
-</body>
+</div>
 
-</html>
+@endsection
