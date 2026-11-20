@@ -7,8 +7,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\BookingController;
-use App\Http\Controllers\SportsController;
-use App\Http\Controllers\CourtsController;
 use App\Http\Controllers\GroupGameController;
 use App\Http\Controllers\WaitingListController;
 use App\Http\Controllers\HomeController;
@@ -54,8 +52,13 @@ Route::middleware('auth')->group(function () {
 Route::get('/subscriptions', [SubscriptionController::class, 'create'])
     ->name('courtbook.subscriptions');
 
-Route::resource('subscriptions', SubscriptionController::class)
-    ->except(['index', 'create']);
+Route::middleware('auth')->group(function () {
+    Route::get('/my-subscriptions', [SubscriptionController::class, 'index'])
+        ->name('courtbook.my-subscriptions');
+
+    Route::resource('subscriptions', SubscriptionController::class)
+        ->except(['index', 'create']);
+});
 
 // Group Games
 
@@ -67,18 +70,28 @@ Route::get('/games/{game}/edit', [GroupGameController::class, 'edit'])->name('ga
 Route::put('/games/{game}', [GroupGameController::class, 'update'])->name('games.update');
 Route::delete('/games/{game}', [GroupGameController::class, 'destroy'])->name('games.destroy');
 
-Route::post('/games/{game}/join', [GroupGameController::class, 'join'])->name('games.join');
-Route::post('/games/{game}/leave', [GroupGameController::class, 'leave'])->name('games.leave');
+Route::post('/games/{game}/join', [GroupGameController::class, 'join'])
+    ->middleware('auth')->name('games.join');
+
+Route::post('/games/{game}/leave', [GroupGameController::class, 'leave'])
+    ->middleware('auth')->name('games.leave');
 
 // Waiting List
 
 Route::get('/waitlist', [WaitingListController::class, 'index'])->name('waitlist.index');
 Route::get('/waitlist/create', [WaitingListController::class, 'create'])->name('waitlist.create');
-Route::post('/waitlist', [WaitingListController::class, 'store'])->name('waitlist.store');
-Route::delete('/waitlist/{id}', [WaitingListController::class, 'destroy'])->name('waitlist.destroy');
+
+Route::post('/waitlist', [WaitingListController::class, 'store'])
+    ->middleware('auth')->name('waitlist.store');
+
+Route::delete('/waitlist/{id}', [WaitingListController::class, 'destroy'])
+    ->middleware('auth')->name('waitlist.destroy');
 
 Route::get('/courtbook/waitlist', [WaitingListController::class, 'index'])
     ->name('courtbook.waitlist');
+
+Route::post('/waiting-list/{waitingList}/accept', [WaitingListController::class, 'accept'])
+    ->middleware('auth')->name('waiting-list.accept');
 
 // Reviews Management
 
@@ -93,11 +106,5 @@ Route::middleware('auth')->group(function () {
 Route::get('/reviews/{review}', [ReviewController::class, 'show'])
     ->whereNumber('review')
     ->name('reviews.show');
-
-// Accept Waiting List Offer
-
-Route::post('/waiting-list/{waitingList}/accept',
-    [WaitingListController::class, 'accept']
-)->middleware('auth')->name('waiting-list.accept');
 
 require __DIR__ . '/auth.php';
