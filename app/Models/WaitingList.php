@@ -34,10 +34,10 @@ class WaitingList extends Model
 		return $this->belongsTo(User::class);
 	}
 
-	public function court()
-	{
-		return $this->belongsTo(Courts::class);
-	}
+	// public function court()
+	// {
+	// 	return $this->belongsTo(Courts::class);
+	// }
 
 	public function smsLogs()
 	{

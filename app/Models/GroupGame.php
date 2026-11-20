@@ -19,15 +19,15 @@ class GroupGame extends Model
 		'status',
 	];
 
-	public function admin()
-	{
-		return $this->belongsTo(Admin::class);
-	}
+	// public function admin()
+	// {
+	// 	return $this->belongsTo(Admin::class);
+	// }
 
-	public function booking()
-	{
-		return $this->belongsTo(Booking::class);
-	}
+	// public function booking()
+	// {
+	// 	return $this->belongsTo(Booking::class);
+	// }
 
 	public function players()
 	{
