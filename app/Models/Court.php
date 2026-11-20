@@ -4,12 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use App\Models\Sports;
-// use App\Models\Reviews;
 
 class Court extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'admin_id',
         'sport_id',
@@ -26,14 +25,28 @@ class Court extends Model
         'status',
     ];
 
-    public function sports(){
-        return $this->belongsTo(Sports::class);
-    }
-   
-    public function reviews(){
-        return $this->hasMany(Reviews::class);
+    public function sports()
+    {
+        return $this->belongsTo(Sports::class, 'sport_id');
     }
 
-   
-    
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'court_id');
+    }
+
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class, 'admin_id');
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'court_id');
+    }
+
+    public function waitingList()
+    {
+        return $this->hasMany(WaitingList::class, 'court_id');
+    }
 }

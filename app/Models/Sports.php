@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\Courts;
+use App\Models\Court;
 
 class Sports extends Model
 {
@@ -14,8 +14,8 @@ class Sports extends Model
         'name',
     ];
     
-
-    public function courts(){
-        return $this->hasMany(Courts::class);
-    }
+public function courts()
+{
+    return $this->hasMany(Court::class);
+}
 }
