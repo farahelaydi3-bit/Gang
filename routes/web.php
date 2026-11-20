@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -40,7 +41,7 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Player Profile - Breeze Authentication
+// Player Profile
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -75,6 +76,9 @@ Route::get('/waitlist', [WaitingListController::class, 'index'])->name('waitlist
 Route::get('/waitlist/create', [WaitingListController::class, 'create'])->name('waitlist.create');
 Route::post('/waitlist', [WaitingListController::class, 'store'])->name('waitlist.store');
 Route::delete('/waitlist/{id}', [WaitingListController::class, 'destroy'])->name('waitlist.destroy');
+
+Route::get('/courtbook/waitlist', [WaitingListController::class, 'index'])
+    ->name('courtbook.waitlist');
 
 // Reviews Management
 

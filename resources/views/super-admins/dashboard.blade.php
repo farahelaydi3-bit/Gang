@@ -1,98 +1,79 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Admin Dashboard | CourtBook</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet">
-</head>
-
-<body class="bg-light">
-
-    <div class="container py-5">
-
-        <div class="d-flex justify-content-between align-items-center mb-4">
-
-            <div>
-                <h1>Super Admin Dashboard</h1>
-                <p class="text-muted">
-                    Welcome,
-                    {{ Auth::guard('super_admin')->user()->name }}
-                </p>
-            </div>
-
-            <form method="POST" action="{{ route('super_admin.logout') }}">
-                @csrf
-                <button type="submit" class="btn btn-danger">
-                    Logout
-                </button>
-            </form>
-
-        </div>
-
-        <div class="row g-4">
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h6>Total Players</h6>
-                        <h2>{{ $totalPlayers }}</h2>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h6>Total Owners</h6>
-                        <h2>{{ $totalOwners }}</h2>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h6>Pending Owners</h6>
-                        <h2>{{ $pendingOwners }}</h2>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h6>Active Courts</h6>
-                        <h2>{{ $activeCourts }}</h2>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h6>Public Games</h6>
-                        <h2>{{ $publicGames }}</h2>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h6>Total Bookings</h6>
-                        <h2>{{ $totalBookings }}</h2>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
+@extends('layouts.super-admin')
+@section('title', 'Dashboard')
+@section('page-title', 'Platform Overview')
+@section('content')
+<div class="page-header">
+    <div>
+        <h2>Dashboard</h2>
+        <p>Welcome back, {{ auth('super_admin')->user()?->name ?? 'Super Admin' }}. Here is your platform overview.</p>
     </div>
+</div>
 
-</body>
+@php
+    $stats = [
+        ['label' => 'Total Players', 'value' => $totalPlayers, 'symbol' => 'P'],
+        ['label' => 'Total Owners', 'value' => $totalOwners, 'symbol' => 'O'],
+        ['label' => 'Pending Owners', 'value' => $pendingOwners, 'symbol' => '!'],
+        ['label' => 'Approved Courts', 'value' => $activeCourts, 'symbol' => 'C'],
+        ['label' => 'Public Games', 'value' => $publicGames, 'symbol' => 'G'],
+        ['label' => 'Total Bookings', 'value' => $totalBookings, 'symbol' => 'B'],
+        ['label' => 'Total Sports', 'value' => $totalSports ?? 0, 'symbol' => 'S'],
+    ];
+@endphp
+<div class="stats-grid">
+    @foreach ($stats as $stat)
+        <div class="stat-card">
+            <div class="stat-icon" aria-hidden="true" style="font-weight:800;font-size:22px">{{ $stat['symbol'] }}</div>
+            <div class="stat-info">
+                <span>{{ $stat['label'] }}</span>
+                <strong>{{ number_format($stat['value']) }}</strong>
+            </div>
+        </div>
+    @endforeach
+</div>
 
-</html>
+<div class="admin-card" style="margin-bottom:24px">
+    <div class="admin-card-header">
+        <h3>Recent Owners</h3>
+        <a class="admin-button admin-button-outline" href="{{ route('super_admin.admins.index') }}">View All</a>
+    </div>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead><tr><th>Owner</th><th>Business</th><th>Email</th><th>Status</th></tr></thead>
+            <tbody>
+                @forelse (($recentOwners ?? collect()) as $owner)
+                    <tr>
+                        <td>{{ $owner->name }}</td>
+                        <td>{{ $owner->business_name ?? '—' }}</td>
+                        <td>{{ $owner->email }}</td>
+                        <td><span class="badge {{ $owner->status === 'active' ? 'badge-success' : ($owner->status === 'pending' ? 'badge-warning' : 'badge-danger') }}">{{ ucfirst($owner->status) }}</span></td>
+                    </tr>
+                @empty
+                    <tr><td colspan="4">No owners registered yet.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="admin-card">
+    <div class="admin-card-header"><h3>Recent Courts</h3></div>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead><tr><th>Court</th><th>Owner</th><th>Sport</th><th>Status</th></tr></thead>
+            <tbody>
+                @forelse (($recentCourts ?? collect()) as $court)
+                    <tr>
+                        <td>{{ $court->name }}</td>
+                        <td>{{ $court->admin?->name ?? '—' }}</td>
+                        <td>{{ $court->sports?->name ?? '—' }}</td>
+                        <td><span class="badge {{ $court->status === 'approved' ? 'badge-success' : ($court->status === 'pending' ? 'badge-warning' : 'badge-danger') }}">{{ ucfirst($court->status) }}</span></td>
+                    </tr>
+                @empty
+                    <tr><td colspan="4">No courts found.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+@endsection
