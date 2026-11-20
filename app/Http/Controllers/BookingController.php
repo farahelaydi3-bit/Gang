@@ -14,6 +14,17 @@ use App\Services\WaitingListOfferService;
 use App\Services\BookingPricingService;
 class BookingController extends Controller
 {
+    public function create(Request $request)
+    {
+        $courts = Court::query()
+            ->with('sports')
+            ->where('status', 'approved')
+            ->orderBy('name')
+            ->get();
+
+        return view('pages.booking-create', compact('courts'));
+    }
+
     public function index(Request $request)
     {
         $bookings = collect();
@@ -53,7 +64,7 @@ public function store(Request $request)
             'required', 'date_format:Y-m-d', 'after_or_equal:today',
         ],
         'start_time' => ['required', 'date_format:H:i'],
-        'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
+        'end_time' => ['required', 'date_format:H:i'],
         'duration_minutes' => [
             'required', 'integer', 'min:60', 'multiple_of:30',
         ],
@@ -181,13 +192,34 @@ public function store(Request $request)
         array $bookingData,
         ?int $ignoreBookingId = null
     ): void {
-        $openingTime = Carbon::parse($court->opening_time)->format('H:i');
-        $closingTime = Carbon::parse($court->closing_time)->format('H:i');
+        $bookingDate = Carbon::parse($bookingData['booking_date'])->startOfDay();
+        $openingClock = Carbon::parse($court->opening_time)->format('H:i');
+        $closingClock = Carbon::parse($court->closing_time)->format('H:i');
+        $overnight = $closingClock <= $openingClock;
+        $startsAfterMidnight = $overnight && $bookingData['start_time'] < $closingClock;
 
-        if (
-            $bookingData['start_time'] < $openingTime ||
-            $bookingData['end_time'] > $closingTime
-        ) {
+        $operatingDate = $startsAfterMidnight
+            ? $bookingDate->copy()->subDay()
+            : $bookingDate->copy();
+        $openingTime = Carbon::parse($operatingDate->toDateString() . ' ' . $court->opening_time);
+        $closingTime = Carbon::parse($operatingDate->toDateString() . ' ' . $court->closing_time);
+        if ($closingTime->lte($openingTime)) {
+            $closingTime->addDay();
+        }
+
+        $startTime = Carbon::parse($bookingDate->toDateString() . ' ' . $bookingData['start_time']);
+        $endTime = Carbon::parse($bookingDate->toDateString() . ' ' . $bookingData['end_time']);
+        if ($endTime->lte($startTime)) {
+            $endTime->addDay();
+        }
+
+        if ($startTime->lt(Carbon::now())) {
+            throw ValidationException::withMessages([
+                'start_time' => __('The booking start time must be in the future.'),
+            ]);
+        }
+
+        if ($startTime->lt($openingTime) || $endTime->gt($closingTime) || $endTime->lte($startTime)) {
             throw ValidationException::withMessages([
                 'start_time' => __('The booking must be within the court opening hours.'),
             ]);
@@ -199,8 +231,6 @@ public function store(Request $request)
             ]);
         }
 
-        $startTime = Carbon::createFromFormat('H:i', $bookingData['start_time']);
-        $endTime = Carbon::createFromFormat('H:i', $bookingData['end_time']);
         $actualDuration = (int) $startTime->diffInMinutes($endTime);
 
         if ($actualDuration !== (int) $bookingData['duration_minutes']) {
@@ -209,24 +239,42 @@ public function store(Request $request)
             ]);
         }
 
-        $conflictingBooking = Booking::query()
-            ->where('court_id', $court->id)
-            ->whereDate('booking_date', $bookingData['booking_date'])
-            ->whereIn('booking_status', ['pending', 'confirmed'])
-            ->when(
-                $ignoreBookingId !== null,
-                fn($query) => $query->where('id', '!=', $ignoreBookingId)
-            )
-            ->where('start_time', '<', $bookingData['end_time'])
-            ->where('end_time', '>', $bookingData['start_time'])
-            ->lockForUpdate()
-            ->first();
+        $conflictingBookings = Booking::query()
+    ->where('court_id', $court->id)
+    ->whereIn('booking_status', ['pending', 'confirmed'])
+    ->when(
+        $ignoreBookingId !== null,
+        fn ($query) => $query->where('id', '!=', $ignoreBookingId)
+    )
+    ->lockForUpdate()
+    ->get(['id', 'booking_date', 'start_time', 'end_time']);
 
-        if ($conflictingBooking) {
-            throw ValidationException::withMessages([
-                'start_time' => __('This time slot is no longer available.'),
-            ]);
-        }
+foreach ($conflictingBookings as $existingBooking) {
+    $existingDate = Carbon::parse($existingBooking->booking_date)
+        ->format('Y-m-d');
+
+    $existingStart = Carbon::parse(
+        $existingDate . ' ' . $existingBooking->start_time
+    );
+
+    $existingEnd = Carbon::parse(
+        $existingDate . ' ' . $existingBooking->end_time
+    );
+
+    // Support bookings that end after midnight
+    if ($existingEnd->lte($existingStart)) {
+        $existingEnd->addDay();
+    }
+
+    if (
+        $existingStart->lt($endTime) &&
+        $existingEnd->gt($startTime)
+    ) {
+        throw ValidationException::withMessages([
+            'start_time' => 'This time slot is already booked.',
+        ]);
+    }
+}
     }
     public function availability(Request $request, Court $court)
     {
@@ -236,19 +284,29 @@ public function store(Request $request)
 
         $date = $validated['date'];
         $slotMinutes = max(60, (int) (ceil($court->min_booking_minutes / 30) * 30));
+        $now = Carbon::now();
 
         $openingTime = Carbon::parse($date . ' ' . $court->opening_time);
         $closingTime = Carbon::parse($date . ' ' . $court->closing_time);
+        $overnight = $closingTime->lte($openingTime);
+        if ($overnight) {
+            $closingTime->addDay();
+        }
 
         $bookings = Booking::query()
             ->where('court_id', $court->id)
-            ->whereDate('booking_date', $date)
+            ->whereBetween('booking_date', [$date, $closingTime->toDateString()])
             ->whereIn('booking_status', ['pending', 'confirmed'])
-            ->get(['start_time', 'end_time'])
-            ->map(fn($booking) => [
-                'start' => Carbon::parse($date . ' ' . $booking->start_time),
-                'end' => Carbon::parse($date . ' ' . $booking->end_time),
-            ]);
+            ->get(['booking_date', 'start_time', 'end_time'])
+            ->map(function ($booking) {
+                $start = Carbon::parse($booking->booking_date->toDateString() . ' ' . $booking->start_time);
+                $end = Carbon::parse($booking->booking_date->toDateString() . ' ' . $booking->end_time);
+                if ($end->lte($start)) {
+                    $end->addDay();
+                }
+
+                return compact('start', 'end');
+            });
 
         $availableSlots = [];
 
@@ -257,17 +315,34 @@ public function store(Request $request)
             $slotStart->copy()->addMinutes($slotMinutes)->lte($closingTime);
             $slotStart->addMinutes($slotMinutes)
         ) {
-            $slotEnd = $slotStart->copy()->addMinutes($slotMinutes);
+            if ($slotStart->lt($now)) {
+                continue;
+            }
 
-            $hasConflict = $bookings->contains(
-                fn($booking) => $booking['start']->lt($slotEnd)
-                    && $booking['end']->gt($slotStart)
-            );
+            $endTimes = [];
+            for (
+                $slotEnd = $slotStart->copy()->addMinutes($slotMinutes);
+                $slotEnd->lte($closingTime);
+                $slotEnd->addMinutes($slotMinutes)
+            ) {
+                $hasConflict = $bookings->contains(
+                    fn($booking) => $booking['start']->lt($slotEnd)
+                        && $booking['end']->gt($slotStart)
+                );
 
-            if (! $hasConflict) {
+                // A later end time would cross the same booking too.
+                if ($hasConflict) {
+                    break;
+                }
+
+                $endTimes[] = $slotEnd->format('H:i');
+            }
+
+            if ($endTimes !== []) {
                 $availableSlots[] = [
                     'start_time' => $slotStart->format('H:i'),
-                    'end_time' => $slotEnd->format('H:i'),
+                    'booking_date' => $slotStart->toDateString(),
+                    'end_times' => $endTimes,
                     'duration_minutes' => $slotMinutes,
                 ];
             }
@@ -277,6 +352,8 @@ public function store(Request $request)
             'court_id' => $court->id,
             'date' => $date,
             'minimum_duration_minutes' => $slotMinutes,
+            'closing_time' => Carbon::parse($court->closing_time)->format('H:i'),
+            'overnight' => $overnight,
             'available_slots' => $availableSlots,
         ]);
     }

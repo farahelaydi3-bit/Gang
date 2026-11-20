@@ -25,9 +25,20 @@ Route::view('/courts', 'pages.courts')->name('courtbook.courts');
 Route::view('/courts/{court}', 'pages.court')->name('courtbook.court');
 Route::view('/nearby', 'pages.nearby')->name('courtbook.nearby');
 
-Route::get('/bookings', [BookingController::class, 'index'])
-    ->name('courtbook.bookings');
+// Route::view('/games/create', 'pages.create-game')->name('courtbook.create-game');
+// Route::view('/games/{game}', 'pages.game')->name('courtbook.game');
 
+// Route::view('/waitlist', 'pages.waitlist')->name('courtbook.waitlist');
+
+
+
+Route::get('/bookings', [BookingController::class, 'index'])->name('courtbook.bookings');
+Route::get('/courts/{court}/availability', [BookingController::class, 'availability'])
+    ->name('courtbook.courts.availability');
+Route::middleware('auth')->group(function () {
+    Route::get('/bookings/create', [BookingController::class, 'create'])->name('courtbook.booking.create');
+    Route::post('/bookings', [BookingController::class, 'store'])->name('courtbook.bookings.store');
+});
 Route::view('/my-games', 'pages.my-games')->name('courtbook.my-games');
 Route::view('/notifications', 'pages.notifications')->name('courtbook.notifications');
 Route::view('/assistant', 'pages.assistant')->name('courtbook.assistant');
@@ -62,21 +73,52 @@ Route::middleware('auth')->group(function () {
 
 // Group Games
 
-Route::get('/games', [GroupGameController::class, 'index'])->name('games.index');
-Route::get('/games/create', [GroupGameController::class, 'create'])->name('games.create');
-Route::post('/games', [GroupGameController::class, 'store'])->name('games.store');
-Route::get('/games/{game}', [GroupGameController::class, 'show'])->name('games.show');
-Route::get('/games/{game}/edit', [GroupGameController::class, 'edit'])->name('games.edit');
-Route::put('/games/{game}', [GroupGameController::class, 'update'])->name('games.update');
-Route::delete('/games/{game}', [GroupGameController::class, 'destroy'])->name('games.destroy');
 
+// ==========================================
+// Group Games
+// ==========================================
+
+// List all games
+Route::get('/games', [GroupGameController::class, 'index'])
+	->name('games.index');
+
+// Keep old links working
+Route::get('/courtbook/games', [GroupGameController::class, 'index'])
+	->name('courtbook.games');
+
+// Create game
+Route::get('/games/create', [GroupGameController::class, 'create'])
+	->name('games.create');
+
+Route::post('/games', [GroupGameController::class, 'store'])
+    ->middleware('auth')->name('games.store');
+
+// Show game
+Route::get('/games/{game}', [GroupGameController::class, 'show'])
+	->name('games.show');
+
+// Compatibility with old Blade links
+Route::get('/courtbook/games/{game}', [GroupGameController::class, 'show'])
+	->name('courtbook.game');
+
+// Edit game
+Route::get('/games/{game}/edit', [GroupGameController::class, 'edit'])
+	->name('games.edit');
+
+Route::put('/games/{game}', [GroupGameController::class, 'update'])
+    ->middleware('auth')->name('games.update');
+
+// Delete game
+Route::delete('/games/{game}', [GroupGameController::class, 'destroy'])
+    ->middleware('auth')->name('games.destroy');
+
+// Join / Leave
 Route::post('/games/{game}/join', [GroupGameController::class, 'join'])
     ->middleware('auth')->name('games.join');
 
 Route::post('/games/{game}/leave', [GroupGameController::class, 'leave'])
     ->middleware('auth')->name('games.leave');
 
-// Waiting List
 
 Route::get('/waitlist', [WaitingListController::class, 'index'])->name('waitlist.index');
 Route::get('/waitlist/create', [WaitingListController::class, 'create'])->name('waitlist.create');
@@ -106,17 +148,8 @@ Route::middleware('auth')->group(function () {
 Route::get('/reviews/{review}', [ReviewController::class, 'show'])
     ->whereNumber('review')
     ->name('reviews.show');
-Route::get('/courts/{court}/availability', [
-    BookingController::class,
-    'availability',
-])->name('bookings.availability');
 
 Route::middleware('auth')->group(function () {
-    Route::post('/bookings', [
-        BookingController::class,
-        'store',
-    ])->name('bookings.store');
-
     Route::get('/bookings/{booking}', [
         BookingController::class,
         'show',

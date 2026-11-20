@@ -93,22 +93,24 @@ class BookingTest extends TestCase
         ]);
     }
 
-    public function test_cannot_book_overlapping_time(): void
-    {
-        $user = User::factory()->create();
-        $courtId = $this->createCourt();
-        $data = $this->bookingData($courtId);
+   public function test_cannot_book_overlapping_time(): void
+{
+    $user = User::factory()->create();
+    $courtId = $this->createCourt();
+    $data = $this->bookingData($courtId);
 
-        $this->actingAs($user)
-            ->post('/bookings', $data)
-            ->assertCreated();
+    // الحجز الأول ينجح
+    $this->actingAs($user)
+        ->post('/bookings', $data)
+        ->assertCreated();
 
-        $this->actingAs($user)
-            ->post('/bookings', $data)
-            ->assertSessionHasErrors('start_time');
+    // الحجز الثاني بنفس الوقت لازم ينرفض
+    $this->actingAs($user)
+        ->post('/bookings', $data)
+        ->assertSessionHasErrors('start_time');
 
-        $this->assertDatabaseCount('bookings', 1);
-    }
+    $this->assertDatabaseCount('bookings', 1);
+}
 
     public function test_can_book_adjacent_time_slot(): void
     {
@@ -342,4 +344,42 @@ public function test_cancelled_booking_slot_becomes_available(): void
     $this->assertDatabaseCount('bookings', 2);
 }
 
+
+    public function test_authenticated_user_can_check_availability_and_book_a_court(): void
+    {
+        $user = User::factory()->create();
+        $courtId = $this->createCourt();
+        $date = now()->addDays(2);
+        while (in_array($date->dayOfWeekIso, [5, 6], true)) {
+            $date->addDay();
+        }
+        $dateString = $date->format('Y-m-d');
+
+        $this->actingAs($user)
+            ->getJson(route('courtbook.courts.availability', [
+                'court' => $courtId,
+                'date' => $dateString,
+            ]))
+            ->assertOk()
+            ->assertJsonPath('available_slots.0.start_time', '08:00');
+
+        $response = $this->actingAs($user)
+            ->post(route('courtbook.bookings.store'), [
+                'court_id' => $courtId,
+                'booking_type' => 'individual',
+                'booking_date' => $dateString,
+                'start_time' => '10:00',
+                'end_time' => '11:00',
+                'duration_minutes' => 60,
+            ]);
+
+        $response->assertCreated();
+        $this->assertDatabaseHas('bookings', [
+            'court_id' => $courtId,
+            'user_id' => $user->id,
+            'booking_status' => 'pending',
+            'total_price' => 20,
+            'deposit_amount' => 5,
+        ]);
+    }
 }
