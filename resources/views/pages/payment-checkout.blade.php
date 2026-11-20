@@ -22,35 +22,42 @@
             <p><strong>{{ __('Date') }}:</strong> {{ $booking->booking_date->format('M j, Y') }}</p>
             <p><strong>{{ __('Time') }}:</strong> {{ $booking->start_time }} – {{ $booking->end_time }}</p>
             <p><strong>{{ __('Booking total') }}:</strong> {{ number_format((float) $booking->total_price, 2) }} JOD</p>
-            <p><strong>{{ $stage === 'deposit' ? __('Deposit due now') : __('Remaining balance due') }}:</strong> {{ number_format((float) $payment->amount, 2) }} JOD</p>
+            <p><strong>{{ $stage === 'deposit' ? __('Deposit due now') : __('Remaining balance due') }}:</strong>
+                {{ number_format((float) $payment->amount, 2) }} JOD</p>
             <p><strong>{{ __('Booking status') }}:</strong> {{ __(ucfirst($booking->booking_status)) }}</p>
 
             <div class="panel" role="note">
                 <strong>{{ __('Visa test-card simulator') }}</strong>
-                <p>{{ __('This local simulation accepts Stripe test card numbers. No Stripe request is made and no real money is charged.') }}</p>
+                <p>{{ __('This local simulation accepts Stripe test card numbers. No Stripe request is made and no real money is charged.') }}
+                </p>
                 <p>{{ __('Card details stay in your browser; only the simulated result is sent to this app.') }}</p>
             </div>
 
             @if ($stage === 'deposit')
-                <p class="muted">{{ __('The deposit is refundable only when you cancel within 24 hours after confirming the booking.') }}</p>
+                <p class="muted">
+                    {{ __('The deposit is refundable only when you cancel within 24 hours after confirming the booking.') }}</p>
             @endif
 
-            <form method="POST" action="{{ route('courtbook.payments.demo', [$booking, $stage]) }}" id="demo-card-form" class="stack">
+            <form method="POST" action="{{ route('courtbook.payments.demo', [$booking, $stage]) }}" id="demo-card-form"
+                class="stack">
                 @csrf
                 <label for="cardholder_name">{{ __('Cardholder name') }}</label>
                 <input id="cardholder_name" type="text" autocomplete="off" required>
 
                 <label for="card_number">{{ __('Visa card number') }}</label>
-                <input id="card_number" type="text" inputmode="numeric" autocomplete="off" maxlength="23" placeholder="4242 4242 4242 4242" required>
+                <input id="card_number" type="text" inputmode="numeric" autocomplete="off" maxlength="23"
+                    placeholder="4242 4242 4242 4242" required>
 
                 <div class="row">
                     <div class="stack">
                         <label for="card_expiry">{{ __('Expiry date') }}</label>
-                        <input id="card_expiry" type="text" inputmode="numeric" autocomplete="off" maxlength="7" placeholder="MM/YY" required>
+                        <input id="card_expiry" type="text" inputmode="numeric" autocomplete="off" maxlength="7"
+                            placeholder="MM/YY" required>
                     </div>
                     <div class="stack">
                         <label for="card_cvc">CVC</label>
-                        <input id="card_cvc" type="password" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="123" required>
+                        <input id="card_cvc" type="password" inputmode="numeric" autocomplete="off" maxlength="4"
+                            placeholder="123" required>
                     </div>
                 </div>
 
