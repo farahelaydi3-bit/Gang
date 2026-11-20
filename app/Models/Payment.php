@@ -10,6 +10,7 @@ class Payment extends Model
 {
     protected $fillable = [
         'booking_id',
+        'payment_stage',
         'subscription_id',
         'payment_type',
         'payment_method',

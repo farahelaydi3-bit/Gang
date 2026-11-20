@@ -227,8 +227,14 @@
                         message.textContent = `${@json(__('Minimum booking'))}: ${data.minimum_duration_minutes} ${@json(__('minutes'))}`;
                         start.dispatchEvent(new Event('change'));
                     } else {
-                        start.innerHTML = `<option value="">${@json(__('No times available'))}</option>`;
-                        message.textContent = @json(__('No available times for this date.'));
+                        const noTimesRemainToday = data.date === data.today && data.past_slots_skipped > 0;
+                        const emptyStateLabel = noTimesRemainToday
+                            ? @json(__('No later times today'))
+                            : @json(__('No times available'));
+                        start.innerHTML = `<option value="">${emptyStateLabel}</option>`;
+                        message.textContent = noTimesRemainToday
+                            ? @json(__('No bookable times remain today. Please choose another date.'))
+                            : @json(__('No available times for this date.'));
                     }
                 } catch (error) {
                     if (requestNumber !== availabilityRequest) return;

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SportsController;
 use App\Http\Controllers\CourtsController;
 use App\Http\Controllers\GroupGameController;
@@ -47,6 +48,16 @@ Route::get('/courts/{court}/availability', [BookingController::class, 'availabil
 Route::middleware('auth')->group(function () {
     Route::get('/bookings/create', [BookingController::class, 'create'])->name('courtbook.booking.create');
     Route::post('/bookings', [BookingController::class, 'store'])->name('courtbook.bookings.store');
+    Route::get('/bookings/{booking}/payments/{stage}', [PaymentController::class, 'checkout'])
+        ->name('courtbook.payments.checkout');
+    Route::get('/bookings/{booking}/payments/{stage}/success', [PaymentController::class, 'success'])
+        ->name('courtbook.payments.success');
+    Route::get('/bookings/{booking}/payments/{stage}/cancel', [PaymentController::class, 'cancel'])
+        ->name('courtbook.payments.cancel');
+    Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])
+        ->name('courtbook.bookings.cancel');
+    Route::post('/bookings/{booking}/payments/{stage}/demo', [PaymentController::class, 'completeDemo'])
+        ->name('courtbook.payments.demo');
 });
 Route::view('/my-games', 'pages.my-games')->name('courtbook.my-games');
 Route::view('/courtbook/profile', 'pages.profile')->name('courtbook.profile');

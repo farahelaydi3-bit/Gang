@@ -64,6 +64,19 @@ class BookingController extends Controller
 
             $this->checkAvailability($court, $validated);
 
+            $bookingDate = Carbon::parse($validated['booking_date']);
+            $startHour = (int) substr($validated['start_time'], 0, 2);
+            $isWeekend = in_array($bookingDate->dayOfWeek, [Carbon::FRIDAY, Carbon::SATURDAY], true);
+            $hourlyPrice = $isWeekend
+                ? (float) $court->weekend_price
+                : ($startHour >= 18
+                    ? (float) $court->evening_price
+                    : (float) $court->weekday_price);
+            $totalPrice = round($hourlyPrice * (int) $validated['duration_minutes'] / 60, 2);
+            $depositAmount = (float) $court->deposit_amount > 0
+                ? min((float) $court->deposit_amount, $totalPrice)
+                : $totalPrice;
+
             return Booking::create([
                 'court_id' => $court->id,
                 'user_id' => $request->user()->id,
@@ -72,13 +85,15 @@ class BookingController extends Controller
                 'start_time' => $validated['start_time'],
                 'end_time' => $validated['end_time'],
                 'duration_minutes' => $validated['duration_minutes'],
-                'total_price' => 0,
-                'deposit_amount' => 0,
+                'total_price' => $totalPrice,
+                'deposit_amount' => $depositAmount,
                 'booking_status' => 'pending',
             ]);
         });
 
-        return response()->json($booking, 201);
+        return redirect()
+            ->route('courtbook.payments.checkout', [$booking, 'deposit'])
+            ->with('success', __('Booking details saved. Complete the deposit payment to confirm your booking.'));
     }
 
 
@@ -173,6 +188,7 @@ class BookingController extends Controller
         $date = $validated['date'];
         $slotMinutes = max(1, (int) $court->min_booking_minutes);
         $now = Carbon::now();
+        $today = $now->toDateString();
 
         $openingTime = Carbon::parse($date . ' ' . $court->opening_time);
         $closingTime = Carbon::parse($date . ' ' . $court->closing_time);
@@ -197,6 +213,7 @@ class BookingController extends Controller
             });
 
         $availableSlots = [];
+        $pastSlotsSkipped = 0;
 
         for (
             $slotStart = $openingTime->copy();
@@ -204,6 +221,7 @@ class BookingController extends Controller
             $slotStart->addMinutes($slotMinutes)
         ) {
             if ($slotStart->lt($now)) {
+                $pastSlotsSkipped++;
                 continue;
             }
 
@@ -239,9 +257,11 @@ class BookingController extends Controller
         return response()->json([
             'court_id' => $court->id,
             'date' => $date,
+            'today' => $today,
             'minimum_duration_minutes' => $slotMinutes,
             'closing_time' => Carbon::parse($court->closing_time)->format('H:i'),
             'overnight' => $overnight,
+            'past_slots_skipped' => $pastSlotsSkipped,
             'available_slots' => $availableSlots,
         ]);
     }
@@ -283,6 +303,11 @@ class BookingController extends Controller
         });
 
         BookingCancelled::dispatch($cancelledBooking);
+
+        if (! $request->expectsJson()) {
+            return redirect()->route('courtbook.bookings')
+                ->with('success', __('The booking was cancelled and the time was released.'));
+        }
 
         return response()->json($cancelledBooking);
     }
