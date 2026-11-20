@@ -32,7 +32,7 @@
         @yield('content')
     </main>
 
-    {{-- @include('pages.footer') --}}
+    @include('pages.footer')
     {{-- @include('pages.overlays') --}}
 </body>
 

@@ -2,7 +2,7 @@
 @if (Route::has('courtbook.' . $name))
 <a
     href="{{ route('courtbook.' . $name) }}"
-    class="{{ request()->routeIs('courtbook.' . $name) ? 'active' : '' }}">
+    @if ($activePage===$name) aria-current="page" @endif>
     {{ __($label) }}
 </a>
 @endif
