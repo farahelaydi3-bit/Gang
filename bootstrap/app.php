@@ -31,11 +31,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(function ($request) {
 
             if ($request->is('super-admin/*')) {
-                return route('super_admin.login');
+                return route('super_admin.dashboard');
             }
 
             if ($request->is('admin/*')) {
-                return route('admin.login');
+                return route('admin.dashboard');
             }
 
             return route('login');

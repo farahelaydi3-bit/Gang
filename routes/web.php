@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\SportsController;
 use App\Http\Controllers\CourtsController;
 use App\Http\Controllers\GroupGameController;
@@ -40,7 +41,7 @@ Route::view('/games', 'pages.games')->name('courtbook.games');
 
 
 
-Route::view('/bookings', 'pages.bookings')->name('courtbook.bookings');
+Route::get('/bookings', [BookingController::class, 'index'])->name('courtbook.bookings');
 Route::view('/my-games', 'pages.my-games')->name('courtbook.my-games');
 Route::view('/courtbook/profile', 'pages.profile')->name('courtbook.profile');
 
@@ -72,14 +73,14 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('/subscriptions', [SubscriptionController::class, 'create'])
-    ->name('courtbook.subscriptions');
+// Route::get('/subscriptions', [SubscriptionController::class, 'create'])
+//     ->name('courtbook.subscriptions');
 
-// Authenticated subscription management
-Route::middleware('auth')->group(function () {
+// // Authenticated subscription management
+// Route::middleware('auth')->group(function () {
 
-    Route::get('/my-subscriptions', [SubscriptionController::class, 'index'])
-        ->name('courtbook.my-subscriptions');
+//     Route::get('/my-subscriptions', [SubscriptionController::class, 'index'])
+//         ->name('courtbook.my-subscriptions');
 
     Route::resource('subscriptions', SubscriptionController::class)
         ->except(['index', 'create']);
@@ -102,5 +103,10 @@ Route::middleware('auth')->group(function () {
 	Route::post('/waitlist', [WaitingListController::class, 'store'])->name('waitlist.store');
 	Route::delete('/waitlist/{id}', [WaitingListController::class, 'destroy'])->name('waitlist.destroy');
 });
+//     Route::resource('subscriptions', SubscriptionController::class)
+//         ->except(['index', 'create']);
+// });
 
 require __DIR__ . '/auth.php';
+
+
