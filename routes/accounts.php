@@ -10,6 +10,9 @@ use App\Http\Controllers\SuperAdmin\DashboardController;
 use App\Http\Controllers\SuperAdmin\AdminController;
 use App\Http\Controllers\SuperAdmin\UserController;
 
+use App\Http\Controllers\SuperAdmin\CourtsController;
+use App\Http\Controllers\SuperAdmin\SportsController;
+
 // =========================
 // Super Admin Routes
 // =========================
@@ -43,6 +46,30 @@ Route::prefix('super-admin')->name('super_admin.')->group(function () {
         Route::patch('/users/{user}/status', [UserController::class, 'updateStatus'])
             ->name('users.status');
 
+
+
+        Route::get('/sports', [SportsController::class, 'index'])
+            ->name('sports.index');
+
+        Route::post('/sports', [SportsController::class, 'store'])
+            ->name('sports.store');
+
+        Route::put('/sports/{sport}', [SportsController::class, 'update'])
+            ->name('sports.update');
+
+        Route::delete('/sports/{sport}', [SportsController::class, 'destroy'])
+            ->name('sports.destroy');
+
+
+            
+        Route::get('/courts', [CourtsController::class, 'index'])
+            ->name('courts.index');
+
+        Route::get('/courts/{court}', [CourtsController::class, 'show'])
+            ->name('courts.show');
+
+        Route::patch('/courts/{court}/status', [CourtsController::class, 'updateStatus'])
+            ->name('courts.status');
 
         Route::post('/logout', [SuperAdminAuthController::class, 'logout'])
             ->name('logout');
