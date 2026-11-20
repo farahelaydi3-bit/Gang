@@ -34,7 +34,7 @@ class Booking extends Model
 
     public function court(): BelongsTo
     {
-        return $this->belongsTo(Court::class);
+        return $this->belongsTo(Courts::class);
     }
 
     public function user(): BelongsTo
