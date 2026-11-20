@@ -8,6 +8,7 @@ use App\Http\Controllers\CourtsController;
 use App\Http\Controllers\GroupGameController;
 use App\Http\Controllers\WaitingListController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\SubscriptionController;
 
 
 Route::view('/courtbook/profile', 'pages.profile')->name('courtbook.profile');
@@ -102,7 +103,7 @@ Route::middleware('auth')->group(function () {
 	Route::get('/waitlist/create', [WaitingListController::class, 'create'])->name('waitlist.create');
 	Route::post('/waitlist', [WaitingListController::class, 'store'])->name('waitlist.store');
 	Route::delete('/waitlist/{id}', [WaitingListController::class, 'destroy'])->name('waitlist.destroy');
-});
+
 //     Route::resource('subscriptions', SubscriptionController::class)
 //         ->except(['index', 'create']);
 // });
