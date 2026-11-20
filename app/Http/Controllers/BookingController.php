@@ -120,6 +120,7 @@ public function store(Request $request)
             return Booking::create([
                 'court_id' => $court->id,
                 'user_id' => $request->user()->id,
+                'subscription_id' => $subscription?->id,
                 'booking_type' => $validated['booking_type'],
                 'booking_date' => $validated['booking_date'],
                 'start_time' => $validated['start_time'],
@@ -129,7 +130,34 @@ public function store(Request $request)
                 'deposit_amount' => $depositAmount,
                 'booking_status' => 'pending',
             ]);
-        });
+        }
+
+        $bookingDate = Carbon::parse($validated['booking_date']);
+        $startHour = (int) substr($validated['start_time'], 0, 2);
+        $isWeekend = in_array($bookingDate->dayOfWeek, [Carbon::FRIDAY, Carbon::SATURDAY], true);
+        $hourlyPrice = $isWeekend
+            ? (float) $court->weekend_price
+            : ($startHour >= 18
+                ? (float) $court->evening_price
+                : (float) $court->weekday_price);
+        $totalPrice = round($hourlyPrice * (int) $validated['duration_minutes'] / 60, 2);
+        $depositAmount = (float) $court->deposit_amount > 0
+            ? min((float) $court->deposit_amount, $totalPrice)
+            : $totalPrice;
+
+        return Booking::create([
+            'court_id' => $court->id,
+            'user_id' => $request->user()->id,
+            'booking_type' => $validated['booking_type'],
+            'booking_date' => $validated['booking_date'],
+            'start_time' => $validated['start_time'],
+            'end_time' => $validated['end_time'],
+            'duration_minutes' => $validated['duration_minutes'],
+            'total_price' => $totalPrice,
+            'deposit_amount' => $depositAmount,
+            'booking_status' => 'pending',
+        ]);
+    });
 
         return redirect()
             ->route('courtbook.payments.checkout', [$booking, 'deposit'])
@@ -442,14 +470,9 @@ public function update(Request $request, Booking $booking)
             . ' ' . $currentBooking->start_time
         );
 
-        if (! $request->expectsJson()) {
-            return redirect()->route('courtbook.bookings')
-                ->with('success', __('The booking was cancelled and the time was released.'));
-        }
-
-        return response()->json($cancelledBooking);
-    }
-
+        $newStart = Carbon::parse(
+            $bookingData['booking_date'] . ' ' . $bookingData['start_time']
+        );
         $newEnd = Carbon::parse(
             $bookingData['booking_date'] . ' ' . $bookingData['end_time']
         );
