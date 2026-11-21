@@ -206,16 +206,18 @@ class GroupGameController extends Controller
             }
 
             // Check position is valid and has room
-            $slots = $locked->position_slots ?? [];
+            $slots = $locked->position_slots ?: ['player' => (int) $locked->max_players];
             if (!isset($slots[$chosenPosition]) || $slots[$chosenPosition] <= 0) {
                 throw ValidationException::withMessages(['position' => 'That position is not available.']);
             }
 
-            $taken = DB::table('game_players')
-                ->where('group_game_id', $locked->id)
-                ->where('position', $chosenPosition)
-                ->where('status', 'joined')
-                ->count();
+            $taken = $locked->position_slots
+                ? DB::table('game_players')
+                    ->where('group_game_id', $locked->id)
+                    ->where('position', $chosenPosition)
+                    ->where('status', 'joined')
+                    ->count()
+                : $locked->joinedPlayers()->count();
 
             if ($taken >= $slots[$chosenPosition]) {
                 throw ValidationException::withMessages(['position' => 'That position is already full.']);
