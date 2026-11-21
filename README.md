@@ -1,30 +1,148 @@
-# GANG Project
+# Gang
 
-## Local demo data
+**Gang** منصة لحجز الملاعب وتنظيم مباريات الأصدقاء في عمّان. بتجمع اللاعبين وأصحاب الملاعب بمكان واحد، وبتسهّل استكشاف الملاعب، معرفة المواعيد والأسعار، تثبيت الحجوزات، والانضمام للمباريات المفتوحة.
 
-Run `php scripts/demo.php` from the project root, then open [the demo](http://127.0.0.1:8001).
-This starts a separate local server with SQLite and its own uploads and sessions in `storage/app/demo`.
-Restarting keeps your demo changes. Use `php scripts/demo.php --seed-only` to prepare the database without starting a server.
+## عن المشروع
 
-All demo accounts use the password `GangDemo!2026`.
+المشروع مبني باستخدام Laravel، وواجهاته مكتوبة بـ Blade وCSS وJavaScript. المنصة فيها ثلاثة أنواع من الحسابات:
 
-| Login | Example accounts |
+- **اللاعب:** يستكشف الملاعب والمباريات، يحجز، يدير اشتراكاته، ويستخدم المساعد الذكي.
+- **صاحب الملعب:** يدير منشأته وملاعبه والحجوزات والمباريات.
+- **السوبر أدمن:** يدير أصحاب الملاعب والمنشآت والرياضات ومحتوى المنصة.
+
+## الميزات
+
+- استعراض الملاعب والبحث حسب الرياضة والمنطقة.
+- عرض الملاعب القريبة على خريطة تفاعلية.
+- حجز الملاعب مع اختيار وقت متاح حسب ساعات عمل الملعب.
+- دفع عربون الحجز ومتابعة الحجوزات.
+- اشتراكات بمواعيد أسبوعية ثابتة مع فحص التوفر والفاتورة.
+- إنشاء مباريات مفتوحة والانضمام إليها وقوائم الانتظار.
+- ملفات اللاعبين وأصحاب الملاعب والتحقق من رقم الهاتف.
+- تقييمات للملاعب ومراجعة المحتوى.
+- مساعد Gang الذكي للبحث عن الملاعب والمواعيد.
+- صفحات عامة مخصصة لأصحاب الملاعب.
+
+## المتطلبات
+
+- PHP 8.2 أو أحدث، مع إضافات PHP اللازمة لـ Laravel وPDO لقاعدة البيانات.
+- Composer.
+- MySQL أو MariaDB للتشغيل الاعتيادي.
+- Node.js وnpm لبناء ملفات الواجهة وتشغيل Vite.
+
+لتشغيل وضع الديمو المعزول، تحتاج كمان إضافة `pdo_sqlite`.
+
+## تشغيل المشروع محليًا
+
+1. نزّل المشروع وثبّت اعتماديات PHP وJavaScript:
+
+   ```bash
+   composer install
+   npm install
+   ```
+
+2. أنشئ ملف البيئة ومفتاح التطبيق:
+
+   على Windows PowerShell:
+
+   ```powershell
+   Copy-Item .env.example .env
+   php artisan key:generate
+   ```
+
+   على macOS أو Linux:
+
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+3. أنشئ قاعدة بيانات MySQL باسم `gang`، وبعدها حدّث بيانات الاتصال في `.env`:
+
+   ```dotenv
+   APP_NAME=Gang
+   APP_URL=http://127.0.0.1:8000
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=gang
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+
+4. شغّل migrations والبيانات الأساسية:
+
+   ```bash
+   php artisan migrate --seed
+   ```
+
+5. شغّل بيئة التطوير:
+
+   ```bash
+   composer run dev
+   ```
+
+   هذا الأمر يشغّل Laravel وVite وعامل الطوابير وسجلّات التطوير. افتح [http://127.0.0.1:8000](http://127.0.0.1:8000).
+
+   لبناء ملفات الواجهة بدون وضع التطوير:
+
+   ```bash
+   npm run build
+   ```
+
+## روابط المنصة الأساسية
+
+| الصفحة | المسار |
 | --- | --- |
-| [Super Admin](http://127.0.0.1:8001/super-admin/login) | `superadmin@demo.test` |
-| [Court Owner](http://127.0.0.1:8001/admin/login) | `owner@demo.test` (active), `new@demo.test` (no application), `pending@demo.test` (under review), `rejected@demo.test` (can resubmit), `suspended@demo.test` |
-| [Player](http://127.0.0.1:8001/login) | `player@demo.test`, `unverified@demo.test` (preloaded verification code `246810`), `suspended-player@demo.test`, `teammate@demo.test` |
+| الرئيسية | `/` |
+| الملاعب | `/courts` |
+| ملعب قريب | `/nearby` |
+| المباريات المفتوحة | `/games` |
+| إنشاء حجز | `/bookings/create` |
+| حجوزاتي | `/bookings` |
+| اشتراكاتي | `/my-subscriptions` |
+| المساعد الذكي | `/assistant` |
+| دخول صاحب الملعب | `/admin/login` |
+| دخول السوبر أدمن | `/super-admin/login` |
 
-The demo includes court listing statuses, owner applications with a downloadable file,
-booking and payment states, group games and waiting lists, flexible and fixed subscriptions,
-published and unavailable websites, moderation reports, and an assistant conversation.
-Booking and group-game checkouts use demo payments. Live Stripe, SMS, and Gemini credentials
-are excluded from the demo, and mail is written to the demo log.
+## الدفع والخدمات الخارجية
 
-## Project Management
+الإعدادات الافتراضية في `.env.example` تستخدم بوابة الدفع التجريبية:
 
-[Trello Board](https://trello.com/b/VnELJ4DJ/courtly)
+```dotenv
+PAYMENT_GATEWAY=demo
+PAYMENT_DEMO_ENABLED=true
+```
 
-## Design
+الدفع التجريبي مخصص للتطوير ولا يخصم مبلغًا حقيقيًا. يمكن إعداد مفاتيح خدمات خارجية اختيارية من ملف `.env` عند الحاجة:
 
-[Figma
-File](https://www.figma.com/design/Ga1DsZWUEpK9qxpq9icO96/Untitled?node-id=0-1&t=Ot7QhuLpYDX8w93T-1)
+- `GEMINI_API_KEY` للمساعد الذكي وأدوات Gemini.
+- `TEXTBEE_API_KEY` و`TEXTBEE_DEVICE_ID` لإرسال رسائل SMS عبر TextBee.
+- مفاتيح Stripe عند إعداد الدفع على بيئة مناسبة.
+
+لا تضف مفاتيح API أو كلمات مرور أو أي قيم سرية إلى Git أو إلى README.
+
+## أوامر مفيدة
+
+```bash
+php artisan route:list       # عرض المسارات
+php artisan migrate:status   # حالة migrations
+php artisan test             # تشغيل الاختبارات
+npm run dev                  # تشغيل Vite أثناء التطوير
+npm run build                # بناء ملفات الواجهة
+```
+
+## ملفات المشروع
+
+- `app/Http/Controllers` — منطق الصفحات والحجوزات والمدفوعات.
+- `app/Models` — نماذج قاعدة البيانات.
+- `app/Services` — منطق التوفر والاشتراكات والتكاملات.
+- `resources/views` — قوالب Blade.
+- `public/courtbook-assets` — CSS والصور وأصول واجهة Gang.
+- `routes` — مسارات اللاعبين وأصحاب الملاعب والسوبر أدمن.
+- `database/migrations` — تغييرات بنية قاعدة البيانات.
+
+## روابط المشروع
+
+- [لوحة Trello](https://trello.com/b/VnELJ4DJ/courtly)
+- [ملف Figma](https://www.figma.com/design/Ga1DsZWUEpK9qxpq9icO96/Untitled?node-id=0-1&t=Ot7QhuLpYDX8w93T-1)
