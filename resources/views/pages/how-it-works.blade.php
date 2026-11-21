@@ -5,12 +5,19 @@
         ['Play with your community', 'Invite friends or join a public pickup game.', 'team'],
     ];
 @endphp
-<section class="section" aria-labelledby="how-it-works-title">
-    <h2 id="how-it-works-title">{{ __('How CourtBook works') }}</h2>
-    <div class="player-grid">
+<section class="section home-how-section" aria-labelledby="how-it-works-title">
+    <div class="home-section-heading">
+        <div>
+            <span class="home-section-kicker">{{ __('THREE SIMPLE STEPS') }}</span>
+            <h2 id="how-it-works-title">{{ __('From looking to playing') }}</h2>
+            <p>{{ __('We make it easy to get your game on the calendar.') }}</p>
+        </div>
+    </div>
+    <div class="home-how-grid">
         @forelse ($steps as [$heading, $description, $icon])
-            <article class="panel">
-                <span class="step-icon" aria-hidden="true">
+            <article class="home-how-card">
+                <span class="home-how-number" aria-hidden="true">0{{ $loop->iteration }}</span>
+                <span class="step-icon home-how-icon" aria-hidden="true">
                     <svg
                         viewBox="0 0 24 24"
                         fill="none"

@@ -29,16 +29,46 @@ class BookingController extends Controller
     public function index(Request $request)
     {
         $bookings = collect();
+        $upcomingCount = 0;
+        $completedCount = 0;
+        $cancelledCount = 0;
+        $hasAnyBookings = false;
 
         if ($request->user()) {
-            $bookings = Booking::query()
+            $userBookings = Booking::query()
+                ->where('user_id', $request->user()->id);
+
+            $statusCounts = (clone $userBookings)
+                ->selectRaw('booking_status, COUNT(*) as total')
+                ->groupBy('booking_status')
+                ->pluck('total', 'booking_status');
+
+            $upcomingCount = (clone $userBookings)
+                ->whereIn('booking_status', ['pending', 'confirmed'])
+                ->whereDate('booking_date', '>=', today())
+                ->count();
+            $completedCount = (int) ($statusCounts['completed'] ?? 0);
+            $cancelledCount = (int) ($statusCounts['cancelled'] ?? 0);
+            $hasAnyBookings = $statusCounts->isNotEmpty();
+
+            $bookings = (clone $userBookings)
                 ->with(['court.sports', 'review'])
-                ->where('user_id', $request->user()->id)
-                ->latest('booking_date')
-                ->get();
+                ->whereIn('booking_status', ['pending', 'confirmed'])
+                ->orderByRaw('CASE WHEN booking_date >= ? THEN 0 ELSE 1 END', [today()->toDateString()])
+                ->orderBy('booking_date')
+                ->orderBy('start_time')
+                ->paginate(5)
+                ->withQueryString();
         }
 
-        return view('pages.bookings', compact('bookings'));    }
+        return view('pages.bookings', compact(
+            'bookings',
+            'upcomingCount',
+            'completedCount',
+            'cancelledCount',
+            'hasAnyBookings',
+        ));
+    }
     public function show(Request $request, Booking $booking)
     {
         abort_unless(
@@ -190,6 +220,12 @@ public function store(Request $request)
  if ($booking->subscription_id !== null) {
     $booking->subscription->notifyIfLowBalance();
 }
+    if ($booking->booking_type !== 'subscription') {
+        return redirect()
+            ->route('courtbook.payments.checkout', [$booking, 'deposit'])
+            ->with('success', __('Booking details saved. Complete the deposit payment to confirm your booking.'));
+    }
+
     return response()->json($booking, 201);
 }
 
@@ -237,6 +273,7 @@ public function store(Request $request)
             });
 
         $availableSlots = [];
+        $pastSlotsSkipped = 0;
 
         for (
             $slotStart = $openingTime->copy();
@@ -244,6 +281,7 @@ public function store(Request $request)
             $slotStart->addMinutes($slotMinutes)
         ) {
             if ($slotStart->lt($now)) {
+                $pastSlotsSkipped++;
                 continue;
             }
 
@@ -279,6 +317,8 @@ public function store(Request $request)
         return response()->json([
             'court_id' => $court->id,
             'date' => $date,
+            'today' => $now->toDateString(),
+            'past_slots_skipped' => $pastSlotsSkipped,
             'minimum_duration_minutes' => $slotMinutes,
             'closing_time' => Carbon::parse($court->closing_time)->format('H:i'),
             'overnight' => $overnight,

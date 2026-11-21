@@ -108,7 +108,7 @@ public function getRemainingHoursAttribute(): float
 
 public function notifyIfLowBalance(): void
 {
-    if ($this->status !== 'active') {
+    if ($this->status !== 'active' || $this->user === null) {
         return;
     }
 

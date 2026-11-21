@@ -234,7 +234,9 @@
                 </form>
 
                 <!-- Profile -->
-                <div class="owner-profile">
+                <a href="{{ route('super_admin.profile.edit') }}"
+                    class="owner-profile {{ request()->routeIs('super_admin.profile.*') ? 'active' : '' }}"
+                    aria-label="Edit Super Admin profile">
 
                     <div class="profile-avatar">
                         {{ mb_strtoupper(mb_substr(auth('super_admin')->user()?->name ?? 'S', 0, 1)) }}
@@ -249,7 +251,7 @@
                         <span>Super Admin</span>
 
                     </div>
-                </div>
+                </a>
 
             </div>
         </aside>
