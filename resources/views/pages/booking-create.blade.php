@@ -4,17 +4,31 @@
 @section('page', 'booking-create')
 
 @section('content')
-    <div class="wrap page">
-        <a class="muted" href="{{ route('courtbook.bookings') }}">← {{ __('My bookings') }}</a>
+    @php
+        $selectedCourtId = old('court_id', request('court_id'));
+        $selectedCourt = $courts->firstWhere('id', $selectedCourtId);
+    @endphp
 
-        @include('pages.heading', [
-            'eyebrow' => 'CourtBook',
-            'heading' => 'Book a court',
-            'description' => 'Choose a court and available time, then confirm your booking.',
-        ])
+    <div class="wrap page booking-create-page">
+        <a class="booking-back-link" href="{{ route('courtbook.bookings') }}"><span aria-hidden="true">←</span> {{ __('My bookings') }}</a>
+
+        <header class="booking-create-heading">
+            <div>
+                <span class="booking-create-kicker"><i></i>{{ __('YOUR NEXT GAME STARTS HERE') }}</span>
+                <h1>{{ __('Book a court') }}</h1>
+                <p>{{ __('Choose a court and available time, then confirm your booking.') }}</p>
+            </div>
+            <div class="booking-steps" aria-label="{{ __('Booking steps') }}">
+                <span class="booking-step-active"><b>01</b>{{ __('Choose') }}</span>
+                <i aria-hidden="true"></i>
+                <span><b>02</b>{{ __('Review') }}</span>
+                <i aria-hidden="true"></i>
+                <span><b>03</b>{{ __('Pay') }}</span>
+            </div>
+        </header>
 
         @if ($errors->any())
-            <div class="panel" role="alert">
+            <div class="booking-errors" role="alert">
                 <strong>{{ __('Please fix the following:') }}</strong>
                 <ul>
                     @foreach ($errors->all() as $error)
@@ -24,79 +38,138 @@
             </div>
         @endif
 
-        <section class="panel stack" style="max-width: 42rem">
-            <form method="POST" action="{{ route('courtbook.bookings.store') }}" class="stack" id="booking-form">
-                @csrf
-                <label for="court_id">{{ __('Court') }}</label>
-                <select id="court_id" name="court_id" required>
-                    <option value="">{{ __('Choose a court') }}</option>
-                    @foreach ($courts as $court)
-                        <option value="{{ $court->id }}"
-                            data-weekday-price="{{ $court->weekday_price }}"
-                            data-weekend-price="{{ $court->weekend_price }}"
-                            data-evening-price="{{ $court->evening_price }}"
-                            data-deposit-amount="{{ $court->deposit_amount }}"
-                            @selected((string) old('court_id', request('court_id')) === (string) $court->id)>
-                            {{ $court->name }} — {{ $court->sports->name }}
-                        </option>
-                    @endforeach
-                </select>
-
-                <label for="booking_type">{{ __('Booking type') }}</label>
-                <select id="booking_type" name="booking_type" required>
-                    @foreach (['individual', 'group', 'subscription'] as $type)
-                        <option value="{{ $type }}" @selected(old('booking_type', 'individual') === $type)>
-                            {{ __(ucfirst($type)) }}
-                        </option>
-                    @endforeach
-                </select>
-
-                <label for="availability_date">{{ __('Date') }}</label>
-                <input id="availability_date" name="availability_date" type="date"
-                    min="{{ now()->format('Y-m-d') }}" value="{{ old('availability_date', old('booking_date', now()->format('Y-m-d'))) }}" required>
-                <input id="booking_date" name="booking_date" type="hidden" value="{{ old('booking_date', now()->format('Y-m-d')) }}">
-
-                <label for="start_time">{{ __('Available start time') }}</label>
-                <select id="start_time" name="start_time" required disabled>
-                    <option value="">{{ __('Choose a court and date first') }}</option>
-                </select>
-
-                <label for="end_time">{{ __('End time') }}</label>
-                <select id="end_time" name="end_time" required disabled>
-                    <option value="">{{ __('Choose a start time first') }}</option>
-                </select>
-                <input id="duration_minutes" name="duration_minutes" type="hidden">
-                <p class="muted" id="availability-message" aria-live="polite">
-                    {{ __('Choose a court and date to load available times.') }}
-                </p>
-                <p class="muted" id="duration-message" aria-live="polite"></p>
-
-                <button class="button" type="button" id="review-booking">{{ __('Continue to payment') }}</button>
-            </form>
-
-            <dialog class="booking-summary-modal" id="booking-summary-modal" aria-labelledby="booking-summary-title">
-                <div class="row spread dialog-head">
-                    <h2 id="booking-summary-title">{{ __('Price summary') }}</h2>
-                    <button class="button outline" type="button" id="close-summary" aria-label="{{ __('Close') }}">×</button>
+        <div class="booking-create-layout">
+            <main class="booking-form-card">
+                <div class="booking-form-intro">
+                    <span class="booking-form-step">01</span>
+                    <div>
+                        <span>{{ __('PICK YOUR PLAYGROUND') }}</span>
+                        <h2>{{ __('Set up your booking') }}</h2>
+                    </div>
                 </div>
 
-                <div class="booking-summary-items">
-                    <div class="booking-summary-item"><span>{{ __('Court') }}</span><strong id="summary-court">—</strong></div>
-                    <div class="booking-summary-item"><span>{{ __('Date') }}</span><strong id="summary-date">—</strong></div>
-                    <div class="booking-summary-item"><span>{{ __('Time') }}</span><strong id="summary-time">—</strong></div>
-                    <div class="booking-summary-item"><span>{{ __('Duration') }}</span><strong id="summary-duration">—</strong></div>
-                    <div class="booking-summary-item"><span>{{ __('Total booking price') }}</span><strong id="estimated-total">—</strong></div>
-                    <div class="booking-summary-item"><span>{{ __('Deposit due now') }}</span><strong id="estimated-deposit">—</strong></div>
-                    <div class="booking-summary-item"><span>{{ __('Remaining after the booking') }}</span><strong id="estimated-balance">—</strong></div>
+                <form method="POST" action="{{ route('courtbook.bookings.store') }}" id="booking-form">
+                    @csrf
+                    <div class="booking-form-fields">
+                        <div class="booking-field booking-field-wide">
+                            <label for="court_id">{{ __('Court') }}</label>
+                            <select id="court_id" name="court_id" required>
+                                <option value="">{{ __('Choose a court') }}</option>
+                                @foreach ($courts as $court)
+                                    <option value="{{ $court->id }}"
+                                        data-court-name="{{ $court->name }}"
+                                        data-sport-name="{{ $court->sports?->name }}"
+                                        data-court-image="{{ $court->image ? asset('courtbook-assets/images/' . $court->image) : asset('courtbook-assets/images/hero-football.png') }}"
+                                        data-weekday-price="{{ $court->weekday_price }}"
+                                        data-weekend-price="{{ $court->weekend_price }}"
+                                        data-evening-price="{{ $court->evening_price }}"
+                                        data-deposit-amount="{{ $court->deposit_amount }}"
+                                        @selected((string) old('court_id', request('court_id')) === (string) $court->id)>
+                                        {{ $court->name }} — {{ $court->sports?->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="booking-field">
+                            <label for="booking_type">{{ __('Booking type') }}</label>
+                            <select id="booking_type" name="booking_type" required>
+                                @foreach (['individual', 'group', 'subscription'] as $type)
+                                    <option value="{{ $type }}" @selected(old('booking_type', 'individual') === $type)>
+                                        {{ __(ucfirst($type)) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="booking-field">
+                            <label for="availability_date">{{ __('Date') }}</label>
+                            <input id="availability_date" name="availability_date" type="date"
+                                min="{{ now()->format('Y-m-d') }}" value="{{ old('availability_date', old('booking_date', now()->format('Y-m-d'))) }}" required>
+                            <input id="booking_date" name="booking_date" type="hidden" value="{{ old('booking_date', now()->format('Y-m-d')) }}">
+                        </div>
+
+                        <div class="booking-field">
+                            <label for="start_time">{{ __('Available start time') }}</label>
+                            <select id="start_time" name="start_time" required disabled>
+                                <option value="">{{ __('Choose a court and date first') }}</option>
+                            </select>
+                        </div>
+
+                        <div class="booking-field">
+                            <label for="end_time">{{ __('End time') }}</label>
+                            <select id="end_time" name="end_time" required disabled>
+                                <option value="">{{ __('Choose a start time first') }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <input id="duration_minutes" name="duration_minutes" type="hidden">
+                    <div class="booking-availability-note">
+                        <span class="booking-availability-icon" aria-hidden="true">✦</span>
+                        <div>
+                            <p id="availability-message" aria-live="polite">{{ __('Choose a court and date to load available times.') }}</p>
+                            <p id="duration-message" aria-live="polite"></p>
+                        </div>
+                    </div>
+
+                    <button class="button booking-review-button" type="button" id="review-booking">
+                        {{ __('Review booking') }} <span aria-hidden="true">{{ app()->isLocale('ar') ? '←' : '→' }}</span>
+                    </button>
+                </form>
+            </main>
+
+            <aside class="booking-create-aside" aria-label="{{ __('Booking preview') }}">
+                <div class="booking-court-preview">
+                    <img id="booking-court-image"
+                        src="{{ $selectedCourt?->image ? asset('courtbook-assets/images/' . $selectedCourt->image) : asset('courtbook-assets/images/players.png') }}"
+                        alt="" loading="eager">
+                    <span class="booking-preview-shade"></span>
+                    <span class="booking-preview-label"><i></i>{{ __('COURTBOOK PICK') }}</span>
+                    <div class="booking-preview-copy">
+                        <span id="booking-preview-sport">{{ $selectedCourt?->sports?->name ?? __('Choose your sport') }}</span>
+                        <strong id="booking-preview-court">{{ $selectedCourt?->name ?? __('Your court goes here') }}</strong>
+                    </div>
+                    <span class="booking-preview-court-lines" aria-hidden="true"></span>
                 </div>
 
-                <p class="muted">{{ __('The deposit is paid now to confirm your booking. The remaining balance is due after the booking.') }}</p>
-                <div class="row spread">
-                    <button class="button outline" type="button" id="edit-booking">{{ __('Back to edit') }}</button>
-                    <button class="button" type="button" id="confirm-booking">{{ __('Continue to payment') }}</button>
+                <div class="booking-live-summary">
+                    <div class="booking-live-summary-heading">
+                        <span class="booking-summary-icon" aria-hidden="true">✦</span>
+                        <div><span>{{ __('YOUR GAME PLAN') }}</span><h2>{{ __('Booking preview') }}</h2></div>
+                    </div>
+                    <div class="booking-live-row"><span>{{ __('Date') }}</span><strong id="booking-preview-date">—</strong></div>
+                    <div class="booking-live-row"><span>{{ __('Time') }}</span><strong id="booking-preview-time">—</strong></div>
+                    <div class="booking-live-row"><span>{{ __('Duration') }}</span><strong id="booking-preview-duration">—</strong></div>
+                    <div class="booking-live-total"><span>{{ __('Estimated total') }}</span><strong id="booking-preview-total">—</strong></div>
+                    <p class="booking-summary-footnote">{{ __('You’ll review the price breakdown before payment.') }}</p>
                 </div>
-            </dialog>
-        </section>
+                <div class="booking-secure-note"><span aria-hidden="true">✓</span>{{ __('Your time is reserved after payment.') }}</div>
+            </aside>
+        </div>
+
+        <dialog class="booking-summary-modal" id="booking-summary-modal" aria-labelledby="booking-summary-title">
+            <div class="row spread dialog-head">
+                <div><span class="booking-create-kicker"><i></i>{{ __('FINAL CHECK') }}</span><h2 id="booking-summary-title">{{ __('Price summary') }}</h2></div>
+                <button class="button outline" type="button" id="close-summary" aria-label="{{ __('Close') }}">×</button>
+            </div>
+
+            <div class="booking-summary-items">
+                <div class="booking-summary-item"><span>{{ __('Court') }}</span><strong id="summary-court">—</strong></div>
+                <div class="booking-summary-item"><span>{{ __('Date') }}</span><strong id="summary-date">—</strong></div>
+                <div class="booking-summary-item"><span>{{ __('Time') }}</span><strong id="summary-time">—</strong></div>
+                <div class="booking-summary-item"><span>{{ __('Duration') }}</span><strong id="summary-duration">—</strong></div>
+                <div class="booking-summary-item"><span>{{ __('Total booking price') }}</span><strong id="estimated-total">—</strong></div>
+                <div class="booking-summary-item"><span>{{ __('Deposit due now') }}</span><strong id="estimated-deposit">—</strong></div>
+                <div class="booking-summary-item"><span>{{ __('Remaining after the booking') }}</span><strong id="estimated-balance">—</strong></div>
+            </div>
+
+            <p class="muted booking-modal-note">{{ __('The deposit is paid now to confirm your booking. The remaining balance is due after the booking.') }}</p>
+            <div class="row spread booking-modal-actions">
+                <button class="button outline" type="button" id="edit-booking">{{ __('Back to edit') }}</button>
+                <button class="button" type="button" id="confirm-booking">{{ __('Continue to payment') }}</button>
+            </div>
+        </dialog>
     </div>
 
     <script>
@@ -117,6 +190,13 @@
             const summaryDate = document.getElementById('summary-date');
             const summaryTime = document.getElementById('summary-time');
             const summaryDuration = document.getElementById('summary-duration');
+            const previewCourt = document.getElementById('booking-preview-court');
+            const previewSport = document.getElementById('booking-preview-sport');
+            const previewImage = document.getElementById('booking-court-image');
+            const previewDate = document.getElementById('booking-preview-date');
+            const previewTime = document.getElementById('booking-preview-time');
+            const previewDuration = document.getElementById('booking-preview-duration');
+            const previewTotal = document.getElementById('booking-preview-total');
             const confirmBooking = document.getElementById('confirm-booking');
             const reviewBooking = document.getElementById('review-booking');
             const bookingForm = document.getElementById('booking-form');
@@ -146,10 +226,52 @@
                 return `${Number(amount).toFixed(2)} JOD`;
             }
 
+            function formatDate(value) {
+                if (!value) return '—';
+                const locale = document.documentElement.lang || 'en';
+                return new Intl.DateTimeFormat(locale, {
+                    weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+                }).format(new Date(`${value}T12:00:00`));
+            }
+
+            function formatTime(value) {
+                if (!value) return '';
+                const [hours, minutes] = value.split(':').map(Number);
+                const locale = document.documentElement.lang || 'en';
+                return new Intl.DateTimeFormat(locale, { hour: 'numeric', minute: '2-digit' })
+                    .format(new Date(2000, 0, 1, hours, minutes));
+            }
+
+            function updateLivePreview() {
+                const courtOption = court.selectedOptions[0];
+                previewCourt.textContent = court.value
+                    ? (courtOption.dataset.courtName || courtOption.textContent.trim())
+                    : @json(__('Your court goes here'));
+                previewSport.textContent = court.value
+                    ? (courtOption.dataset.sportName || @json(__('Court booking')))
+                    : @json(__('Choose your sport'));
+
+                if (court.value && courtOption.dataset.courtImage) {
+                    previewImage.src = courtOption.dataset.courtImage;
+                } else if (!court.value) {
+                    previewImage.src = @json(asset('courtbook-assets/images/players.png'));
+                }
+
+                previewDate.textContent = formatDate(operatingDate.value);
+                previewTime.textContent = start.value && end.value
+                    ? `${formatTime(start.value)} – ${formatTime(end.value)}`
+                    : '—';
+                previewDuration.textContent = duration.value
+                    ? formatDuration(Number(duration.value))
+                    : '—';
+            }
+
             function updatePriceSummary(selectedDuration) {
                 const courtOption = court.selectedOptions[0];
                 if (!court.value || !date.value || !start.value || !end.value || selectedDuration <= 0 || !courtOption) {
                     durationMessage.textContent = '';
+                    previewTotal.textContent = '—';
+                    updateLivePreview();
                     return;
                 }
 
@@ -167,6 +289,8 @@
                 const balance = Math.max(0, total - deposit);
 
                 durationMessage.textContent = `مدة الحجز: ${formatDuration(selectedDuration)}`;
+                previewTotal.textContent = formatJod(total);
+                updateLivePreview();
                 totalPrice.textContent = formatJod(total);
                 depositPrice.textContent = formatJod(deposit);
                 balancePrice.textContent = formatJod(balance);
@@ -195,9 +319,11 @@
                 end.innerHTML = `<option value="">${@json(__('Choose a start time first'))}</option>`;
                 end.disabled = true;
                 duration.value = '';
+                previewTotal.textContent = '—';
                 durationMessage.textContent = '';
 
                 date.value = operatingDate.value;
+                updateLivePreview();
                 if (!court.value || !operatingDate.value) {
                     message.textContent = @json(__('Choose a court and date to load available times.'));
                     return;
@@ -308,8 +434,15 @@
             summaryModal.addEventListener('click', (event) => {
                 if (event.target === summaryModal) summaryModal.close();
             });
-            court.addEventListener('change', loadAvailability);
-            operatingDate.addEventListener('change', loadAvailability);
+            court.addEventListener('change', () => {
+                updateLivePreview();
+                loadAvailability();
+            });
+            operatingDate.addEventListener('change', () => {
+                updateLivePreview();
+                loadAvailability();
+            });
+            updateLivePreview();
             loadAvailability();
         })();
     </script>

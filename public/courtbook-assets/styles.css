@@ -185,6 +185,174 @@ main{min-height:65vh}.page{padding-block:48px 64px}
 .home-final-ball{position:absolute;z-index:-1;font-size:3.4rem;opacity:.12;animation:homeSportBob 4s ease-in-out infinite alternate}
 .home-final-ball-one{top:-.3rem;inset-inline-end:18%}
 .home-final-ball-two{bottom:-.6rem;inset-inline-end:34%;font-size:2.7rem;animation-delay:-2s}
+.booking-create-page{max-width:1080px;padding-top:2rem}
+.booking-back-link{display:inline-flex;align-items:center;gap:.4rem;margin-bottom:.9rem;color:#5e7565;font-size:.82rem;font-weight:750}
+.booking-back-link:hover{color:#166534}
+.booking-back-link span{font-size:1rem}
+.booking-create-heading{display:flex;align-items:end;justify-content:space-between;gap:1.2rem;margin-bottom:1.2rem}
+.booking-create-kicker{display:inline-flex;align-items:center;gap:.42rem;color:#27814a;font-size:.66rem;font-weight:900;letter-spacing:.12em}
+.booking-create-kicker i{width:7px;height:7px;border-radius:50%;background:#25a354;box-shadow:0 0 0 3px #25a35420}
+.booking-create-heading h1{margin:.25rem 0 .3rem;color:#15271b;font-size:clamp(2rem,4vw,2.75rem);letter-spacing:-.04em}
+.booking-create-heading p{margin:0;color:#718076;font-size:.88rem}
+.booking-steps{display:flex;align-items:center;gap:.45rem;flex:none;padding:.45rem .6rem;border:1px solid #e6eee7;border-radius:999px;background:#fff}
+.booking-steps>span{display:inline-flex;align-items:center;gap:.34rem;color:#8a978e;font-size:.69rem;font-weight:750;white-space:nowrap}
+.booking-steps>span b{display:grid;place-items:center;width:23px;height:23px;border-radius:50%;background:#f0f4f1;color:#829087;font-size:.59rem}
+.booking-steps>.booking-step-active{color:#1a6b37}
+.booking-steps>.booking-step-active b{background:#e5f5e9;color:#176534}
+.booking-steps>i{width:15px;height:1px;background:#e1e9e3}
+.booking-errors{margin-bottom:1rem;padding:.8rem 1rem;border:1px solid #f0cbcb;border-radius:14px;background:#fff6f6;color:#8f2d2d;font-size:.84rem}
+.booking-errors ul{margin:.4rem 0 0;padding-inline-start:1.2rem}
+.booking-create-layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);align-items:start;gap:1rem}
+.booking-form-card,.booking-live-summary{min-width:0;padding:clamp(1.05rem,3vw,1.55rem);border:1px solid #e2ebe4;border-radius:21px;background:#fff;box-shadow:0 14px 34px -28px #173d245c}
+.booking-form-intro{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid #edf1ed}
+.booking-form-step{display:grid;place-items:center;flex:none;width:43px;height:43px;border:1px solid #cde7d2;border-radius:15px;background:#ecf8ee;color:#176534;font-size:.75rem;font-weight:900}
+.booking-form-intro>div{display:grid;gap:.12rem}
+.booking-form-intro>div>span{color:#438153;font-size:.62rem;font-weight:900;letter-spacing:.11em}
+.booking-form-intro h2{margin:0;color:#17251b;font-size:1.25rem}
+.booking-form-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.9rem .8rem}
+.booking-field{display:grid;align-content:start;gap:.38rem;min-width:0}
+.booking-field-wide{grid-column:1/-1}
+.booking-field label{color:#354a3b;font-size:.78rem;font-weight:800}
+.booking-field select,.booking-field input[type=date]{width:100%;min-height:49px;padding:.68rem .8rem;border:1px solid #dce7de;border-radius:13px;background:#fbfdfb;color:#23362a;font-size:.86rem;transition:border-color .16s ease,box-shadow .16s ease}
+.booking-field select:focus,.booking-field input:focus{border-color:#55a96d;box-shadow:0 0 0 4px #16a34a19}
+.booking-field select:disabled{background:#f4f6f4;color:#9aa49c;cursor:not-allowed}
+.booking-availability-note{display:flex;align-items:flex-start;gap:.65rem;min-height:54px;margin-top:.95rem;padding:.7rem .75rem;border:1px solid #dfeee2;border-radius:13px;background:#f5fbf6}
+.booking-availability-icon{display:grid;place-items:center;flex:none;width:25px;height:25px;border-radius:9px;background:#e2f4e6;color:#268147;font-size:.78rem}
+.booking-availability-note>div{display:grid;gap:.15rem;min-width:0}
+.booking-availability-note p{margin:0;color:#65766a;font-size:.76rem;line-height:1.45}
+.booking-availability-note #duration-message{color:#18713b;font-weight:800}
+.booking-review-button{display:flex;width:100%;align-items:center;justify-content:space-between;min-height:50px;margin-top:.9rem;padding:.7rem 1rem;border-radius:13px;background:#166534;color:#fff;font-size:.87rem}
+.booking-review-button span{font-size:1.05rem}
+.booking-review-button:hover{background:#11532a}
+.booking-create-aside{position:sticky;top:94px;display:grid;gap:.8rem;min-width:0}
+.booking-court-preview{position:relative;isolation:isolate;min-height:240px;overflow:hidden;border:1px solid #d9e7dc;border-radius:21px;background:linear-gradient(145deg,#123d28,#166534);box-shadow:0 15px 30px -24px #123d2877}
+.booking-court-preview>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .45s ease}
+.booking-court-preview:hover>img{transform:scale(1.04)}
+.booking-preview-shade{position:absolute;z-index:1;inset:0;background:linear-gradient(0deg,#06190fdf 0%,#0a271a50 55%,#0a271a05 100%)}
+.booking-preview-label{position:absolute;z-index:2;top:1rem;inset-inline-start:1rem;display:inline-flex;align-items:center;gap:.4rem;padding:.36rem .58rem;border:1px solid #ffffff60;border-radius:999px;background:#08251675;color:#effbf1;font-size:.61rem;font-weight:900;letter-spacing:.09em;backdrop-filter:blur(8px)}
+.booking-preview-label i{width:6px;height:6px;border-radius:50%;background:#73e794;box-shadow:0 0 0 3px #73e79420}
+.booking-preview-copy{position:absolute;z-index:2;inset-inline:1.1rem;bottom:1.1rem;display:grid;gap:.23rem;color:#fff}
+.booking-preview-copy>span{color:#c0ebcb;font-size:.72rem;font-weight:750}
+.booking-preview-copy>strong{font-size:1.3rem;line-height:1.2;overflow-wrap:anywhere}
+.booking-preview-court-lines{position:absolute;z-index:2;top:1rem;inset-inline-end:1rem;width:37px;height:37px;border:1px solid #ffffff76;border-radius:50%;box-shadow:0 0 0 9px #ffffff18}
+.booking-live-summary{padding:1rem 1.1rem}
+.booking-live-summary-heading{display:flex;align-items:center;gap:.65rem;margin-bottom:.65rem;padding-bottom:.75rem;border-bottom:1px solid #edf1ed}
+.booking-summary-icon{display:grid;place-items:center;flex:none;width:35px;height:35px;border-radius:12px;background:#e7f6ea;color:#1c713a;font-size:.95rem}
+.booking-live-summary-heading>div{display:grid;gap:.08rem}
+.booking-live-summary-heading>div>span{color:#558362;font-size:.59rem;font-weight:900;letter-spacing:.1em}
+.booking-live-summary-heading h2{margin:0;color:#182a1e;font-size:1rem}
+.booking-live-row,.booking-live-total{display:flex;align-items:center;justify-content:space-between;gap:.7rem;padding:.48rem 0;border-bottom:1px dashed #e9efea}
+.booking-live-row>span,.booking-live-total>span{color:#77847a;font-size:.75rem}
+.booking-live-row>strong{max-width:65%;color:#304638;font-size:.75rem;text-align:end;overflow-wrap:anywhere}
+.booking-live-total{margin-top:.2rem;border-bottom:0}
+.booking-live-total>span{color:#415848;font-weight:750}
+.booking-live-total>strong{color:#176534;font-size:1.08rem}
+.booking-summary-footnote{margin:.45rem 0 0;color:#87938a;font-size:.68rem;line-height:1.5}
+.booking-secure-note{display:flex;align-items:center;gap:.45rem;padding:.1rem .25rem;color:#728176;font-size:.71rem}
+.booking-secure-note>span{display:grid;place-items:center;width:19px;height:19px;border-radius:50%;background:#edf8ef;color:#277541;font-size:.65rem;font-weight:900}
+.booking-summary-modal{width:min(94vw,560px);padding:clamp(1.1rem,4vw,1.6rem);border-color:#dce8df;border-radius:22px;box-shadow:0 30px 80px #06190f45}
+.booking-summary-modal .dialog-head{align-items:center}
+.booking-summary-modal .dialog-head h2{margin:.25rem 0 0;color:#17251b;font-size:1.55rem}
+.booking-summary-modal .dialog-head>button{width:38px;min-height:38px;padding:0;border-color:#e2ebe4}
+.booking-summary-items{display:grid;gap:0;margin:1rem 0;padding:.55rem .8rem;border:1px solid #e5eee7;border-radius:15px;background:#fbfdfb}
+.booking-summary-item{display:flex;justify-content:space-between;gap:1rem;padding:.6rem 0;border-bottom:1px dashed #e1e9e3;font-size:.8rem}
+.booking-summary-item:last-child{border-bottom:0}
+.booking-summary-item>span{color:#718076}
+.booking-summary-item>strong{color:#233b2b;text-align:end}
+.booking-summary-item:nth-last-child(-n+3)>strong{color:#176534}
+.booking-modal-note{font-size:.78rem;line-height:1.55}
+.booking-modal-actions{gap:.7rem}
+.booking-modal-actions button{min-height:44px;border-radius:12px;font-size:.8rem}
+@media(max-width:800px){.booking-create-layout{grid-template-columns:minmax(0,1fr)}.booking-create-aside{position:static;grid-row:1}.booking-court-preview{min-height:230px}.booking-create-heading{align-items:flex-start;flex-direction:column}.booking-steps{max-width:100%}}
+@media(max-width:580px){.booking-create-page{padding-top:1.2rem}.booking-create-heading{gap:.8rem}.booking-steps{width:100%;justify-content:space-around}.booking-steps>i{flex:1}.booking-form-card{padding:1rem;border-radius:18px}.booking-form-fields{grid-template-columns:1fr;gap:.8rem}.booking-field-wide{grid-column:auto}.booking-court-preview{min-height:190px;border-radius:18px}.booking-live-summary{border-radius:18px}.booking-modal-actions{flex-direction:column-reverse}.booking-modal-actions button{width:100%}}
+.visa-checkout-page{max-width:1050px;padding-top:2rem}
+.visa-back-link{display:inline-flex;align-items:center;gap:.4rem;margin-bottom:1rem;color:#5f6f80;font-size:.8rem;font-weight:750}
+.visa-back-link:hover,.visa-back-bookings:hover{color:#13458b}
+.visa-checkout-heading{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1.2rem}
+.visa-checkout-kicker{display:inline-flex;align-items:center;gap:.42rem;color:#315c92;font-size:.65rem;font-weight:900;letter-spacing:.13em}
+.visa-checkout-kicker i{width:7px;height:7px;border-radius:50%;background:#30a46c;box-shadow:0 0 0 3px #30a46c1f}
+.visa-checkout-heading h1{margin:.3rem 0;color:#142743;font-size:clamp(1.8rem,3.7vw,2.5rem);letter-spacing:-.04em}
+.visa-checkout-heading p{max-width:55ch;margin:0;color:#728095;font-size:.86rem;line-height:1.55}
+.visa-demo-badge{display:inline-flex;align-items:center;gap:.45rem;flex:none;padding:.42rem .65rem;border:1px solid #dbe6f2;border-radius:999px;background:#f7faff;color:#5c6d82;font-size:.63rem;font-weight:900;letter-spacing:.08em}
+.visa-demo-badge span{display:grid;place-items:center;width:17px;height:17px;border-radius:50%;background:#e4f5e9;color:#208250;font-size:.65rem}
+.visa-payment-error{margin-bottom:1rem;padding:.75rem .9rem;border:1px solid #f0cccc;border-radius:13px;background:#fff6f6;color:#a12f2f;font-size:.83rem}
+.visa-checkout-layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(285px,.8fr);align-items:start;gap:1rem}
+.visa-payment-panel,.visa-order-panel{min-width:0;padding:clamp(1rem,3vw,1.5rem);border:1px solid #e0e7ef;border-radius:20px;background:#fff;box-shadow:0 16px 35px -29px #152c4e70}
+.visa-panel-heading{display:flex;align-items:center;gap:.7rem;margin-bottom:1rem}
+.visa-lock-icon{display:grid;place-items:center;flex:none;width:42px;height:42px;border:1px solid #dce8f5;border-radius:14px;background:#f2f7fd;color:#24558f}
+.visa-lock-icon svg{width:22px;height:22px}
+.visa-panel-heading>div{flex:1;min-width:0}
+.visa-panel-heading h2{margin:0 0 .15rem;color:#162b49;font-size:1.13rem}
+.visa-panel-heading p{margin:0;color:#7a8798;font-size:.75rem}
+.visa-brand-mark,.visa-input-brand{color:#143d80;font-size:1.15rem;font-weight:1000;font-style:italic;letter-spacing:-.09em}
+.visa-card-preview{position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:space-between;min-height:205px;margin-bottom:1.25rem;padding:1.1rem 1.2rem;overflow:hidden;border:1px solid #31558d;border-radius:18px;background:radial-gradient(ellipse at 88% 12%,#376bb2 0%,transparent 42%),linear-gradient(125deg,#102e5b,#154a91 60%,#0e3670);color:#fff;box-shadow:0 17px 30px -20px #082751a8}
+.visa-card-preview::before,.visa-card-preview::after{position:absolute;z-index:-1;border:1px solid #ffffff17;border-radius:50%;content:""}
+.visa-card-preview::before{top:-95px;inset-inline-end:-55px;width:260px;height:260px;box-shadow:0 0 0 24px #ffffff06,0 0 0 50px #ffffff05}
+.visa-card-preview::after{bottom:-150px;inset-inline-start:26%;width:310px;height:310px;box-shadow:0 0 0 35px #ffffff05}
+.visa-card-top{display:flex;align-items:center;justify-content:space-between;color:#d8e7ff;font-size:.65rem;font-weight:900;letter-spacing:.13em}
+.visa-card-type{padding:.22rem .42rem;border:1px solid #ffffff45;border-radius:999px;font-size:.54rem;letter-spacing:.1em}
+.visa-card-chip{position:relative;display:grid;grid-template-columns:repeat(2,1fr);width:39px;height:30px;overflow:hidden;border:1px solid #f8df9c;border-radius:7px;background:linear-gradient(140deg,#fff0bd,#cfae62);opacity:.94}
+.visa-card-chip i{border:1px solid #9d814c66}
+.visa-card-number{font-size:clamp(1.05rem,2.8vw,1.35rem);font-weight:650;letter-spacing:.11em;text-shadow:0 2px 4px #091d3c80;white-space:nowrap}
+.visa-card-bottom{display:flex;align-items:end;gap:1.3rem;min-width:0}
+.visa-card-bottom>div{display:grid;gap:.16rem;min-width:0}
+.visa-card-bottom small{color:#bbd1f2;font-size:.53rem;font-weight:800;letter-spacing:.12em}
+.visa-card-bottom strong{max-width:24ch;overflow:hidden;color:#fff;font-size:.68rem;font-weight:800;letter-spacing:.06em;text-overflow:ellipsis;text-transform:uppercase;white-space:nowrap}
+.visa-card-brand{margin-inline-start:auto;color:#fff;font-size:1.25rem;font-weight:1000;font-style:italic;letter-spacing:-.09em;text-shadow:0 2px 8px #081d3c88}
+.visa-card-glow{position:absolute;z-index:-1;top:35%;inset-inline-end:25%;width:90px;height:90px;border-radius:50%;background:#6097e538;filter:blur(28px)}
+.visa-card-form{display:grid;gap:.85rem}
+.visa-field{display:grid;gap:.36rem;min-width:0}
+.visa-field label{color:#34455d;font-size:.76rem;font-weight:800}
+.visa-field input{width:100%;min-height:47px;padding:.65rem .8rem;border:1px solid #d9e1eb;border-radius:11px;background:#fbfcfe;color:#1c2e47;font-size:.85rem;transition:border-color .16s ease,box-shadow .16s ease}
+.visa-field input:focus{border-color:#477bb7;box-shadow:0 0 0 4px #2d69a51c;outline:0}
+.visa-field input::placeholder{color:#a4adba;letter-spacing:.06em}
+.visa-input-wrap{position:relative}
+.visa-input-wrap input{padding-inline-end:4.1rem}
+.visa-input-brand{position:absolute;top:50%;inset-inline-end:.8rem;transform:translateY(-50%);font-size:.95rem}
+.visa-field>small{color:#8793a2;font-size:.67rem}
+.visa-fields-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.visa-cvc-hint{position:absolute;top:50%;inset-inline-end:.8rem;display:grid;place-items:center;width:18px;height:18px;transform:translateY(-50%);border:1px solid #b7c2d0;border-radius:50%;color:#6b7889;font-size:.68rem;font-weight:800}
+.visa-card-error{min-height:0;margin:0;color:#aa2e2e;font-size:.77rem}
+.visa-card-error:empty{display:none}
+.visa-pay-button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:1rem;min-height:52px;padding:.75rem 1rem;border:0;border-radius:12px;background:linear-gradient(110deg,#143f7b,#1c5ba2);color:#fff;font-size:.85rem;box-shadow:0 10px 18px -12px #173a6c}
+.visa-pay-button:hover{filter:brightness(1.07)}
+.visa-pay-button>span{display:inline-flex;align-items:center;gap:.5rem}
+.visa-pay-button svg{width:17px;height:17px}
+.visa-pay-button strong{font-size:.9rem;white-space:nowrap}
+.visa-test-details{margin-top:1rem;padding-top:.8rem;border-top:1px solid #edf0f4}
+.visa-test-details summary{width:fit-content;cursor:pointer;color:#315d91;font-size:.75rem;font-weight:800}
+.visa-test-details>div{display:grid;gap:.3rem;margin-top:.65rem;padding:.7rem;border:1px dashed #d8e2ef;border-radius:11px;background:#f8faff}
+.visa-test-details p{display:flex;justify-content:space-between;gap:.7rem;margin:0;color:#5b6d83;font-size:.69rem}
+.visa-test-details code{color:#173d72;font-weight:850;white-space:nowrap}
+.visa-test-details small{color:#8290a0;font-size:.65rem}
+.visa-simulation-note{display:flex;align-items:flex-start;gap:.42rem;margin:.75rem 0 0;color:#778599;font-size:.67rem;line-height:1.5}
+.visa-simulation-note>span{flex:none;color:#315f93}
+.visa-order-aside{position:sticky;top:94px;display:grid;gap:.8rem;min-width:0}
+.visa-order-panel{padding:1.15rem}
+.visa-order-heading{padding-bottom:.75rem;border-bottom:1px solid #e9edf2}
+.visa-order-heading>span{color:#57769a;font-size:.6rem;font-weight:900;letter-spacing:.13em}
+.visa-order-heading h2{margin:.2rem 0 0;color:#172b49;font-size:1.13rem}
+.visa-order-court{display:grid;gap:.25rem;padding:1rem 0;border-bottom:1px solid #edf0f4}
+.visa-order-sport{width:fit-content;padding:.23rem .45rem;border:1px solid #dce8f5;border-radius:999px;background:#f3f8fd;color:#426b99;font-size:.62rem;font-weight:800}
+.visa-order-court>strong{color:#203653;font-size:.96rem;overflow-wrap:anywhere}
+.visa-order-detail{display:flex;align-items:flex-start;justify-content:space-between;gap:.8rem;padding:.58rem 0;border-bottom:1px solid #f0f2f5}
+.visa-order-detail>span{color:#7a8797;font-size:.72rem}
+.visa-order-detail>strong{color:#354960;font-size:.72rem;text-align:end}
+.visa-order-amount{display:grid;gap:.3rem;margin-top:.25rem;padding:1rem;border:1px solid #dce8f5;border-radius:13px;background:linear-gradient(135deg,#f6faff,#eff5fc)}
+.visa-order-amount>span{color:#5f7490;font-size:.72rem;font-weight:750}
+.visa-order-amount>strong{color:#143e78;font-size:1.55rem;letter-spacing:-.03em}
+.visa-order-amount small{font-size:.72rem;letter-spacing:0}
+.visa-order-status{display:flex;align-items:center;gap:.38rem;margin-top:.7rem;color:#788698;font-size:.68rem}
+.visa-order-status>span{width:6px;height:6px;border-radius:50%;background:#dfa737}
+.visa-trust-panel{display:flex;align-items:flex-start;gap:.6rem;padding:.75rem .85rem;border:1px solid #e0e9f3;border-radius:13px;background:#f8fbff}
+.visa-trust-panel>span{display:grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:#e5f4e9;color:#23834b;font-size:.7rem;font-weight:900}
+.visa-trust-panel strong{color:#344d6b;font-size:.72rem}
+.visa-trust-panel p{margin:.18rem 0 0;color:#7e8b9b;font-size:.66rem;line-height:1.5}
+.visa-refund-note{margin:0;padding:.1rem .2rem;color:#788698;font-size:.67rem;line-height:1.5}
+.visa-cancel-form button{min-height:auto;padding:.2rem;color:#a24a4a;font-size:.7rem;font-weight:750;white-space:normal;text-align:start}
+.visa-back-bookings{display:inline-flex;align-items:center;gap:.3rem;color:#61758d;font-size:.72rem;font-weight:750}
+@media(max-width:800px){.visa-checkout-layout{grid-template-columns:minmax(0,1fr)}.visa-order-aside{position:static;grid-row:1}.visa-order-panel{padding:1rem}.visa-checkout-heading{align-items:flex-start;flex-direction:column}}
+@media(max-width:580px){.visa-checkout-page{padding-top:1.2rem}.visa-checkout-layout{gap:.75rem}.visa-payment-panel{padding:1rem;border-radius:17px}.visa-card-preview{min-height:185px;padding:.95rem;border-radius:15px}.visa-card-number{font-size:1.02rem;letter-spacing:.07em}.visa-card-bottom{gap:.8rem}.visa-card-bottom strong{font-size:.6rem}.visa-fields-row{gap:.55rem}.visa-test-details p{flex-direction:column;gap:.12rem}}
 @keyframes homeSportBob{from{translate:0 0}to{translate:0 -9px}}
 @keyframes homePhotoFloat{from{translate:0 0;rotate:-1deg}to{translate:0 -7px;rotate:1deg}}
 @media(prefers-reduced-motion:reduce){.home-sport-float,.home-stage-photo,.home-final-ball{animation:none}.home-sport-card,.home-sport-card img,.home-court-card,.home-court-photo img,.home-game-card,.home-how-card{transition:none}}
