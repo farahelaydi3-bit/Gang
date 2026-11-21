@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>@yield('title', 'Super Admin') | CourtBook</title>
+    <title>@yield('title', 'Super Admin') | Gang</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,10 +35,10 @@
             <a href="{{ route('super_admin.dashboard') }}"
                 class="sidebar-brand">
 
-                <div class="brand-icon">C</div>
+                <img class="brand-logo" src="{{ asset('courtbook-assets/images/gang-logo.png') }}" alt="Gang logo">
 
                 <div class="brand-text">
-                    <h2>CourtBook</h2>
+                    <h2>Gang</h2>
                     <span>Super Admin Panel</span>
                 </div>
             </a>
@@ -253,6 +253,7 @@
         <main class="owner-main">
 
             <!-- Topbar -->
+            @unless (request()->routeIs('super_admin.dashboard'))
             <header class="owner-topbar">
 
                 <div class="topbar-left">
@@ -284,7 +285,7 @@
                             @yield('page-title', 'Overview')
                         </h1>
 
-                        <p>Manage your CourtBook platform</p>
+                        <p>Manage your Gang platform</p>
 
                     </div>
 
@@ -299,6 +300,7 @@
                 </div>
 
             </header>
+            @endunless
 
             <!-- Page Content -->
             <section class="owner-content">
