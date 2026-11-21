@@ -10,15 +10,21 @@ class Review extends Model
     use HasFactory;
 
     protected $fillable = [
-        'booking_id',
-        'rating',
-        'comment',
+		'booking_id',
+		'user_id',
+		'court_id',
+		'rating',
+		'comment',
+		'ai_decision',
+		'ai_reason',
+		'ai_checked_at',
     ];
 
     protected function casts(): array
     {
         return [
             'rating' => 'integer',
+			'ai_checked_at' => 'datetime',
         ];
     }
 

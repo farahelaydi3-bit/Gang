@@ -2,9 +2,19 @@
 
 @php
     $court = \App\Models\Court::query()
-        ->with(['sports', 'reviews.user'])
+        ->with(['sports', 'reviewSummary'])
         ->withAvg('reviews', 'rating')
         ->findOrFail(request()->route('court'));
+
+    // Public reviews = only safe ones
+    $publicReviews = $court->reviews()
+        ->with('user')
+        ->where(function ($q) {
+            $q->whereNotIn('ai_decision', ['spam', 'abusive'])
+              ->orWhereNull('ai_decision');
+        })
+        ->latest()
+        ->get();
 @endphp
 
 @section('title', $court->name)
@@ -50,8 +60,27 @@
                     </div>
                 </dl>
 
+                @if($court->reviewSummary)
+                    <div class="panel" style="margin-top:1rem;">
+                        <h3>🤖 AI Review Summary</h3>
+                        <p>{{ $court->reviewSummary->summary }}</p>
+                        <p class="muted">
+                            Based on {{ $court->reviewSummary->total_reviews }} reviews ·
+                            Avg {{ $court->reviewSummary->average_rating }}/5
+                        </p>
+                        @if($court->reviewSummary->top_praises)
+                            <p><strong>What players love:</strong>
+                                {{ $court->reviewSummary->top_praises }}</p>
+                        @endif
+                        @if($court->reviewSummary->top_complaints)
+                            <p><strong>What players complain about:</strong>
+                                {{ $court->reviewSummary->top_complaints }}</p>
+                        @endif
+                    </div>
+                @endif
+
                 <h2>{{ __('Reviews') }}</h2>
-                @forelse ($court->reviews as $review)
+                @forelse ($publicReviews as $review)
                     <article class="panel">
                         <div class="row spread">
                             <strong>{{ $review->user->name }}</strong>
@@ -68,10 +97,7 @@
 
             <aside class="panel stack">
                 <h2>{{ __('Book this court') }}</h2>
-                <p>
-                    {{ number_format($court->weekday_price, 2) }} JOD /
-                    {{ __('hour') }}
-                </p>
+                <p>{{ number_format($court->weekday_price, 2) }} JOD / {{ __('hour') }}</p>
                 <p>{{ __('Minimum booking') }}: {{ $court->min_booking_minutes }} {{ __('minutes') }}</p>
                 <p>{{ __('Deposit') }}: {{ number_format($court->deposit_amount, 2) }} JOD</p>
                 @auth

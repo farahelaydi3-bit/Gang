@@ -17,6 +17,7 @@ class GamePlayer extends Model
 		'user_id',
 		'status',
 		'joined_at',
+		'position'
 	];
 
 	public function groupGame()

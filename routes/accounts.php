@@ -23,6 +23,8 @@ use App\Http\Controllers\admin\ReservationsController;
 use App\Http\Controllers\admin\MyProfileController;
 use App\Http\Controllers\admin\SubscriptionController;
 use App\Http\Controllers\admin\GroupGameController;
+use App\Http\Controllers\SuperAdmin\SuperAdminReviewController;
+
 // =========================
 // Super Admin Routes
 // =========================
@@ -88,8 +90,6 @@ Route::prefix('super-admin')->name('super_admin.')->group(function () {
         Route::patch('/courts/{court}/status', [CourtsController::class, 'updateStatus'])
             ->name('courts.status');
 
-
-
         // Owner Applications
         Route::get('/applications', [SuperOwnerApplicationController::class, 'index'])
             ->name('applications.index');
@@ -105,6 +105,16 @@ Route::prefix('super-admin')->name('super_admin.')->group(function () {
 
         Route::get('/applications/{application}/attachments/{attachment}', [SuperOwnerApplicationController::class, 'download'])
             ->name('applications.attachments.download');
+
+		// AI Moderation — report & summaries page
+		Route::get('/flagged-reviews', [SuperAdminReviewController::class, 'flagged'])
+			->name('reviews.flagged');
+
+		// Unban an owner (undo AI action)
+		Route::post('/admins/{admin}/unban', [SuperAdminReviewController::class, 'unbanOwner'])
+			->name('admins.unban');
+		// Route::post('/courts/{court}/ban-owner', [SuperAdminReviewController::class, 'banOwner'])
+		//     ->name('courts.ban-owner');
 
         Route::post('/logout', [SuperAdminAuthController::class, 'logout'])
             ->name('logout');
