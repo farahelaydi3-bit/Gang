@@ -1,28 +1,30 @@
+
 <?php
 
-// use App\Http\Controllers\CourtsController;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\Auth\SuperAdminAuthController;
 use App\Http\Controllers\Auth\AdminRegisteredController;
 use App\Http\Controllers\Auth\AdminAuthController;
 
-
 use App\Http\Controllers\SuperAdmin\DashboardController;
 use App\Http\Controllers\SuperAdmin\AdminController;
 use App\Http\Controllers\SuperAdmin\UserController;
-
 use App\Http\Controllers\SuperAdmin\CourtsController;
 use App\Http\Controllers\SuperAdmin\SportsController;
 use App\Http\Controllers\SuperAdmin\OwnerApplicationController as SuperOwnerApplicationController;
 use App\Http\Controllers\SuperAdmin\ProfileController as SuperAdminProfileController;
+use App\Http\Controllers\SuperAdmin\GangSiteManagementController;
 
 use App\Http\Controllers\Admin\OwnerApplicationController;
-use App\Http\Controllers\admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\admin\MyCourtsController;
-use App\Http\Controllers\admin\ReservationsController;
-use App\Http\Controllers\admin\MyProfileController;
-use App\Http\Controllers\admin\SubscriptionController;
-use App\Http\Controllers\admin\GroupGameController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\MyCourtsController;
+use App\Http\Controllers\Admin\ReservationsController;
+use App\Http\Controllers\Admin\GangSiteStudioController;
+use App\Http\Controllers\Admin\MyProfileController;
+use App\Http\Controllers\Admin\SubscriptionController;
+use App\Http\Controllers\Admin\GroupGameController;
+
 // =========================
 // Super Admin Routes
 // =========================
@@ -39,32 +41,35 @@ Route::prefix('super-admin')->name('super_admin.')->group(function () {
     });
 
     Route::middleware('auth:super_admin')->group(function () {
+
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
 
+        // Super Admin Profile
         Route::get('/profile', [SuperAdminProfileController::class, 'edit'])
             ->name('profile.edit');
+
         Route::patch('/profile', [SuperAdminProfileController::class, 'update'])
             ->name('profile.update');
+
         Route::put('/profile/password', [SuperAdminProfileController::class, 'updatePassword'])
             ->name('profile.password');
 
+        // Admins
         Route::get('/admins', [AdminController::class, 'index'])
             ->name('admins.index');
 
         Route::patch('/admins/{admin}/status', [AdminController::class, 'updateStatus'])
             ->name('admins.status');
 
-
-
+        // Users
         Route::get('/users', [UserController::class, 'index'])
             ->name('users.index');
 
         Route::patch('/users/{user}/status', [UserController::class, 'updateStatus'])
             ->name('users.status');
 
-
-
+        // Sports
         Route::get('/sports', [SportsController::class, 'index'])
             ->name('sports.index');
 
@@ -77,8 +82,7 @@ Route::prefix('super-admin')->name('super_admin.')->group(function () {
         Route::delete('/sports/{sport}', [SportsController::class, 'destroy'])
             ->name('sports.destroy');
 
-
-
+        // Courts
         Route::get('/courts', [CourtsController::class, 'index'])
             ->name('courts.index');
 
@@ -87,8 +91,6 @@ Route::prefix('super-admin')->name('super_admin.')->group(function () {
 
         Route::patch('/courts/{court}/status', [CourtsController::class, 'updateStatus'])
             ->name('courts.status');
-
-
 
         // Owner Applications
         Route::get('/applications', [SuperOwnerApplicationController::class, 'index'])
@@ -106,13 +108,24 @@ Route::prefix('super-admin')->name('super_admin.')->group(function () {
         Route::get('/applications/{application}/attachments/{attachment}', [SuperOwnerApplicationController::class, 'download'])
             ->name('applications.attachments.download');
 
+        // Gang Site Studio
+        Route::get('/site-studio', [GangSiteManagementController::class, 'index'])
+            ->name('site-studio.index');
+
+        Route::patch('/site-studio/{website}/toggle', [GangSiteManagementController::class, 'toggle'])
+            ->name('site-studio.toggle');
+
+        Route::patch('/site-studio/{website}/renew', [GangSiteManagementController::class, 'renew'])
+            ->name('site-studio.renew');
+
+        // Logout
         Route::post('/logout', [SuperAdminAuthController::class, 'logout'])
             ->name('logout');
     });
 });
 
 // =========================
-// Court Owner Routes
+// Court Owner (Admin) Routes
 // =========================
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -134,6 +147,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::middleware('auth:admin')->group(function () {
 
+        // Available to all logged-in owners
         Route::get('/pending', [OwnerApplicationController::class, 'index'])
             ->name('pending');
 
@@ -145,62 +159,94 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/logout', [AdminAuthController::class, 'logout'])
             ->name('logout');
 
-
-        // Dashboard
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])
-            ->name('dashboard');
-        // My Courts
-        Route::get('/courts', [MyCourtsController::class, 'index'])
-            ->name('courts.index');
-
-        Route::get('/courts/create', [MyCourtsController::class, 'create'])
-            ->name('courts.create');
-
-        Route::post('/courts/store', [MyCourtsController::class, 'store'])
-            ->name('courts.store');
-
-        Route::get('/courts/{id}/edit', [MyCourtsController::class, 'edit'])
-            ->name('courts.edit');
-
-        Route::put('/courts/{id}', [MyCourtsController::class, 'update'])
-            ->name('courts.update');
-
-        Route::delete('/courts/{id}', [MyCourtsController::class, 'destroy'])
-            ->name('courts.destroy');
-
-        // Reservations
-        Route::get('/reservations', [ReservationsController::class, 'index'])
-            ->name('reservations.index');
-
-        Route::patch('/reservations/{id}/confirm', [ReservationsController::class, 'confirm'])
-            ->name('reservations.confirm');
-
-        Route::patch('/reservations/{id}/cancel', [ReservationsController::class, 'cancel'])
-            ->name('reservations.cancel');
-
-        Route::patch('/reservations/{id}/complete', [ReservationsController::class, 'complete'])
-            ->name('reservations.complete');
-
-        // Admin Profile
-        Route::get('/profile', [MyProfileController::class, 'index'])
-            ->name('profile.index');
-
-        Route::put('/profile', [MyProfileController::class, 'update'])
-            ->name('profile.update');
-
-        // Subscriptions Management
-        Route::resource('subscriptions', SubscriptionController::class);
-
-        // Group Games Management
-        Route::resource('group-games', GroupGameController::class)
-            ->except(['show']);
-
-        Route::patch('group-games/{id}/cancel', [GroupGameController::class, 'cancel'])
-            ->name('group-games.cancel');
-
+        // Active owners only
         Route::middleware('admin.active')->group(function () {
+
+            // Dashboard
             Route::get('/dashboard', [AdminDashboardController::class, 'index'])
                 ->name('dashboard');
+
+            // My Courts
+            Route::get('/courts', [MyCourtsController::class, 'index'])
+                ->name('courts.index');
+
+            Route::get('/courts/create', [MyCourtsController::class, 'create'])
+                ->name('courts.create');
+
+            Route::post('/courts/store', [MyCourtsController::class, 'store'])
+                ->name('courts.store');
+
+            Route::get('/courts/{id}/edit', [MyCourtsController::class, 'edit'])
+                ->name('courts.edit');
+
+            Route::put('/courts/{id}', [MyCourtsController::class, 'update'])
+                ->name('courts.update');
+
+            Route::delete('/courts/{id}', [MyCourtsController::class, 'destroy'])
+                ->name('courts.destroy');
+
+            // Reservations
+            Route::get('/reservations', [ReservationsController::class, 'index'])
+                ->name('reservations.index');
+
+            Route::patch('/reservations/{id}/confirm', [ReservationsController::class, 'confirm'])
+                ->name('reservations.confirm');
+
+            Route::patch('/reservations/{id}/cancel', [ReservationsController::class, 'cancel'])
+                ->name('reservations.cancel');
+
+            Route::patch('/reservations/{id}/complete', [ReservationsController::class, 'complete'])
+                ->name('reservations.complete');
+
+            // Admin Profile
+            Route::get('/profile', [MyProfileController::class, 'index'])
+                ->name('profile.index');
+
+            Route::put('/profile', [MyProfileController::class, 'update'])
+                ->name('profile.update');
+
+            // Subscriptions Management
+            Route::resource('subscriptions', SubscriptionController::class);
+
+            // Preserve Tarifi subscription URL
+            Route::get('/subscription', [SubscriptionController::class, 'index'])
+                ->name('subscription.index');
+
+            // Group Games Management
+            Route::resource('group-games', GroupGameController::class)
+                ->except(['show']);
+
+            Route::patch('/group-games/{id}/cancel', [GroupGameController::class, 'cancel'])
+                ->name('group-games.cancel');
+
+            // Gang Site Studio
+            Route::get('/site-studio', [GangSiteStudioController::class, 'index'])
+                ->name('site-studio.index');
+
+            Route::post('/site-studio', [GangSiteStudioController::class, 'store'])
+                ->name('site-studio.store');
+
+            Route::put('/site-studio', [GangSiteStudioController::class, 'update'])
+                ->name('site-studio.update');
+
+            Route::patch('/site-studio/sections/{section}', [GangSiteStudioController::class, 'updateSection'])
+                ->name('site-studio.section');
+
+            Route::delete('/site-studio/sections/{section}/image', [GangSiteStudioController::class, 'deleteImage'])
+                ->name('site-studio.image.delete');
+
+            Route::post('/site-studio/generate', [GangSiteStudioController::class, 'generate'])
+                ->middleware('throttle:3,1')
+                ->name('site-studio.generate');
+
+            Route::get('/site-studio/preview', [GangSiteStudioController::class, 'preview'])
+                ->name('site-studio.preview');
+
+            Route::post('/site-studio/publish', [GangSiteStudioController::class, 'publish'])
+                ->name('site-studio.publish');
+
+            Route::post('/site-studio/unpublish', [GangSiteStudioController::class, 'unpublish'])
+                ->name('site-studio.unpublish');
         });
     });
 });

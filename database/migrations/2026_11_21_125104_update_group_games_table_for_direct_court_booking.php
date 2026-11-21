@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -8,30 +9,32 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Remove the unique index before dropping booking_id
         Schema::table('group_games', function (Blueprint $table) {
+            $table->dropUnique('group_games_booking_id_unique');
+        });
 
-            // Remove the old booking relationship
+        // Remove the old booking relationship
+        Schema::table('group_games', function (Blueprint $table) {
             $table->dropConstrainedForeignId('booking_id');
+        });
 
-            // Link the group game directly to a court
+        // Add the new court relationship and schedule
+        Schema::table('group_games', function (Blueprint $table) {
             $table->foreignId('court_id')
                 ->after('admin_id')
                 ->constrained('courts')
                 ->restrictOnDelete();
 
-            // Game schedule
             $table->date('game_date');
             $table->time('start_time');
             $table->time('end_time');
-
         });
     }
 
     public function down(): void
     {
         Schema::table('group_games', function (Blueprint $table) {
-
-            // Remove the new court relationship and schedule
             $table->dropConstrainedForeignId('court_id');
 
             $table->dropColumn([
@@ -39,13 +42,14 @@ return new class extends Migration
                 'start_time',
                 'end_time',
             ]);
+        });
 
-            // Restore the old booking relationship
+        Schema::table('group_games', function (Blueprint $table) {
             $table->foreignId('booking_id')
                 ->nullable()
+                ->unique()
                 ->constrained('bookings')
                 ->nullOnDelete();
-
         });
     }
 };

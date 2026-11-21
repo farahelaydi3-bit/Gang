@@ -49,11 +49,12 @@ class ProfileController extends Controller
             'password' => ['required', 'current_password'],
         ]);
 
-        $user = $request->user();
+                $user = $request->user();
 
         $hasUnfinishedBookings = Booking::where('user_id', $user->id)
             ->whereIn('booking_status', ['pending', 'confirmed'])
             ->exists();
+
         $hasActiveSubscriptions = Subscription::where('user_id', $user->id)
             ->whereIn('status', ['pending', 'active'])
             ->exists();
@@ -68,11 +69,11 @@ class ProfileController extends Controller
             ], 'userDeletion');
         }
 
+        Auth::logout();
+
         DB::transaction(function () use ($user) {
             $user->delete();
         });
-
-        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

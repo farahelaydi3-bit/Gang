@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Auth;
 class SuperAdminAuthController extends Controller
 {
     public function showLogin()
-    {
-        return view('auth.super-admin-login');
-    }
+{
+    return view('auth.super-admin-login');
+}
 
     public function login(Request $request)
     {

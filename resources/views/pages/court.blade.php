@@ -10,6 +10,17 @@
 @section('title', $court->name)
 @section('page', 'court')
 
+@push('styles')
+<style>
+    .court-booking-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .court-booking-actions .button { text-align: center; display: flex; align-items: center;
+        justify-content: center; min-height: 48px; }
+    .court-booking-actions .court-subscribe-button { background: #205db7; color: #fff; border-color: #205db7; }
+    .court-booking-actions .court-subscribe-button:hover { background: #164a93; }
+    @media(max-width: 480px) { .court-booking-actions { grid-template-columns: 1fr; } }
+</style>
+@endpush
+
 @section('content')
     <div class="wrap page court-detail-page">
         <a class="court-back-link" href="{{ route('courtbook.courts') }}">
@@ -98,15 +109,21 @@
                     <p><span>{{ __('Minimum booking') }}</span><strong>{{ $court->min_booking_minutes }} {{ __('minutes') }}</strong></p>
                     <p><span>{{ __('Deposit') }}</span><strong>{{ number_format($court->deposit_amount, 2) }} JOD</strong></p>
                 </div>
-                @auth
-                    <a class="button court-booking-button" href="{{ route('courtbook.booking.create', ['court_id' => $court->id]) }}">
-                        {{ __('Book Now') }}
+                <div class="court-booking-actions">
+                    @auth('web')
+                        <a class="button court-booking-button" href="{{ route('courtbook.booking.create', ['court_id' => $court->id]) }}">
+                            {{ __('Book Now') }}
+                        </a>
+                    @else
+                        <a class="button court-booking-button" href="{{ route('login') }}">
+                            {{ __('Log in to book') }}
+                        </a>
+                    @endauth
+                    <a class="button court-subscribe-button"
+                        href="{{ route('courtbook.subscriptions', ['court_id' => $court->id]) }}">
+                        {{ __('Subscribe') }}
                     </a>
-                @else
-                    <a class="button court-booking-button" href="{{ route('login') }}">
-                        {{ __('Log in to book') }}
-                    </a>
-                @endauth
+                </div>
             </aside>
         </div>
     </div>
