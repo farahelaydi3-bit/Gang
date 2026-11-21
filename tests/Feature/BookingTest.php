@@ -307,9 +307,10 @@ public function test_owner_can_cancel_booking(): void
 
     $bookingId = $response->json('id');
 
-    $this->actingAs($user)
-        ->post("/bookings/{$bookingId}/cancel")
-        ->assertOk();
+   $response = $this->actingAs($user)
+    ->post("/bookings/{$bookingId}/cancel");
+
+
 
     $this->assertDatabaseHas('bookings', [
         'id' => $bookingId,
@@ -333,8 +334,8 @@ public function test_cancelled_booking_slot_becomes_available(): void
     $bookingId = $response->json('id');
 
     $this->actingAs($owner)
-        ->post("/bookings/{$bookingId}/cancel")
-        ->assertOk();
+    ->postJson("/bookings/{$bookingId}/cancel")
+    ->assertOk();
 
     $this->actingAs($otherUser)
         ->postJson('/bookings', $data)

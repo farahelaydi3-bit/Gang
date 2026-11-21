@@ -128,15 +128,15 @@ class SubscriptionBookingTest extends TestCase
         );
 
         $response = $this->actingAs($user)
-            ->post('/bookings', $this->bookingData(
+            ->postJson('/bookings', $this->bookingData(
                 $courtId, $subscription->id
             ));
 
         $response->assertCreated();
 
         $this->actingAs($user)
-            ->post('/bookings/' . $response->json('id') . '/cancel')
-            ->assertOk();
+    ->postJson('/bookings/' . $response->json('id') . '/cancel')
+    ->assertOk();
 
         $subscription->refresh();
 
