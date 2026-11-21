@@ -25,8 +25,6 @@
     .court-booking-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .court-booking-actions .button { text-align: center; display: flex; align-items: center;
         justify-content: center; min-height: 48px; }
-    .court-booking-actions .court-subscribe-button { background: #205db7; color: #fff; border-color: #205db7; }
-    .court-booking-actions .court-subscribe-button:hover { background: #164a93; }
     @media(max-width: 480px) { .court-booking-actions { grid-template-columns: 1fr; } }
 </style>
 @endpush
@@ -135,9 +133,9 @@
                             {{ __('Log in to book') }}
                         </a>
                     @endauth
-                    <a class="button court-subscribe-button"
+                    <a class="button court-booking-button"
                         href="{{ route('courtbook.subscriptions', ['court_id' => $court->id]) }}">
-                        {{ __('Subscribe') }}
+                        {{ __('Subscribe monthly') }}
                     </a>
                 </div>
             </aside>

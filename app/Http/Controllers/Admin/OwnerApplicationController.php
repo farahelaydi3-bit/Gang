@@ -27,7 +27,7 @@ class OwnerApplicationController extends Controller
         }
 
         if ($admin->status === 'suspended') {
-            abort(403, 'حساب مالك المنشأة موقوف.');
+            abort(403, 'حساب المنشأة موقوف حاليًا. تواصل مع إدارة Gang للمساعدة.');
         }
 
         $application = $admin->applications()
@@ -56,8 +56,16 @@ class OwnerApplicationController extends Controller
         /** @var \App\Models\Admin $admin */
         $admin = Auth::guard('admin')->user();
 
-        if ($applicationId !== null) {
-            $admin->applications()->findOrFail($applicationId);
+        // Allow pending owners and older rejected accounts to resubmit
+        if (!in_array($admin->status, ['pending', 'rejected'])) {
+            return redirect()->route('admin.pending')
+                ->with('error', 'ما بتقدر تبعت طلب بهالحالة.');
+        }
+
+        // Only one application can be under review
+        if ($admin->applications()->where('status', 'submitted')->exists()) {
+            return redirect()->route('admin.pending')
+                ->with('error', 'عندك طلب قيد المراجعة بالفعل، استنى لحد ما يوصلك الرد.');
         }
 
         $validated = $request->validate([
@@ -75,32 +83,39 @@ class OwnerApplicationController extends Controller
             'attachments' => 'nullable|array|max:5',
             'attachments.*' => 'file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
         ], [
-            'required' => 'يرجى تعبئة حقل :attribute.',
-            'string' => 'يجب أن تكون قيمة حقل :attribute نصًا.',
-            'array' => 'يرجى اختيار :attribute من الخيارات المتاحة.',
-            'integer' => 'يجب أن يكون حقل :attribute عددًا صحيحًا.',
-            'max' => 'يجب ألّا يزيد طول حقل :attribute عن :max حرفًا.',
-            'courts_count.min' => 'يجب أن يكون عدد الملاعب واحدًا على الأقل.',
-            'courts_count.max' => 'يجب ألّا يزيد عدد الملاعب عن :max.',
-            'terms_accepted.accepted' => 'يجب الموافقة على شروط وأحكام ملاك الملاعب قبل إرسال الطلب.',
-            'terms_version.*' => 'يرجى تحديث الصفحة ومراجعة النسخة الحالية من الشروط.',
-            'sports.required' => 'اختر رياضة واحدة على الأقل.',
-            'sports.min' => 'اختر رياضة واحدة على الأقل.',
-            'sports.*.distinct' => 'لا يمكن اختيار الرياضة نفسها أكثر من مرة.',
-            'sports.*.exists' => 'إحدى الرياضات المختارة غير متاحة.',
-            'attachments.max' => 'يمكنك إرفاق :max ملفات كحد أقصى.',
-            'attachments.*.file' => 'يجب أن يكون كل مرفق ملفًا صالحًا.',
-            'attachments.*.uploaded' => 'تعذّر رفع المرفق. تحقّق من حجمه وحاول مرة أخرى.',
-            'attachments.*.mimes' => 'اختر صورة بصيغة JPG أو PNG أو WEBP، أو مستند PDF.',
-            'attachments.*.max' => 'يجب ألّا يزيد حجم المرفق عن ٥ ميغابايت.',
+            'facility_name.required' => 'اكتب اسم المنشأة.',
+            'facility_name.max' => 'اسم المنشأة طويل، اختصره شوي.',
+            'address.required' => 'اكتب عنوان المنشأة.',
+            'address.max' => 'العنوان طويل، اختصره شوي.',
+            'courts_count.required' => 'اكتب عدد الملاعب.',
+            'courts_count.integer' => 'عدد الملاعب لازم يكون رقم صحيح.',
+            'courts_count.min' => 'لازم يكون عندك ملعب واحد عالأقل.',
+            'courts_count.max' => 'عدد الملاعب أكبر من الحد المسموح.',
+            'facility_description.required' => 'اكتب وصف بسيط عن منشأتك.',
+            'facility_description.max' => 'وصف المنشأة طويل، اختصره شوي.',
+            'application_message.required' => 'اكتب رسالة لفريق Gang.',
+            'application_message.max' => 'الرسالة طويلة، اختصرها شوي.',
+            'terms_accepted.accepted' => 'لازم توافق على الشروط والأحكام عشان تبعت طلبك.',
+            'terms_version.required' => 'حدّث الصفحة واقرأ الشروط من جديد.',
+            'terms_version.in' => 'نسخة الشروط تغيّرت، حدّث الصفحة ووافق عليها من جديد.',
+            'sports.required' => 'اختار الرياضات اللي بتوفّرها منشأتك.',
+            'sports.array' => 'اختيارات الرياضات مش صحيحة.',
+            'sports.min' => 'اختار رياضة وحدة عالأقل.',
+            'sports.*.required' => 'اختيار الرياضة مش صحيح.',
+            'sports.*.integer' => 'اختيار الرياضة مش صحيح.',
+            'sports.*.distinct' => 'ما تختار نفس الرياضة أكثر من مرة.',
+            'sports.*.exists' => 'واحدة من الرياضات المختارة مش متاحة، حدّث الصفحة وجرب كمان مرة.',
+            'attachments.max' => 'بتقدر ترفق لحد ٥ ملفات بس.',
+            'attachments.*.file' => 'واحد من المرفقات مش ملف صالح.',
+            'attachments.*.mimes' => 'ارفع الملفات بصيغة JPG أو PNG أو WEBP أو PDF.',
+            'attachments.*.max' => 'حجم كل ملف لازم يكون ٥ ميغابايت أو أقل.',
         ], [
             'facility_name' => 'اسم المنشأة',
-            'address' => 'عنوان المنشأة',
+            'address' => 'العنوان',
             'courts_count' => 'عدد الملاعب',
             'facility_description' => 'وصف المنشأة',
-            'application_message' => 'رسالة إلى فريق جانغ',
+            'application_message' => 'الرسالة',
             'sports' => 'الرياضات',
-            'sports.*' => 'الرياضة',
             'attachments' => 'المرفقات',
         ]);
 
@@ -170,5 +185,8 @@ class OwnerApplicationController extends Controller
             }
             throw $error;
         }
+
+        return redirect()->route('admin.pending')
+            ->with('success', 'وصلنا طلبك! فريق Gang رح يراجعه وبنرجعلك بالرد.');
     }
 }

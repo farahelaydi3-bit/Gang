@@ -1,7 +1,7 @@
 <footer class="site-footer">
     <div class="wrap site-footer-main">
         <section class="site-footer-brand">
-            @include('pages.brand')
+            @include('pages.animated-brand')
             <p>{{ __('Your next game starts closer with Gang. Find a court, bring your friends, and get moving.') }}</p>
             <span class="site-footer-location"><i aria-hidden="true">●</i>{{ __('Amman, Jordan') }}</span>
         </section>

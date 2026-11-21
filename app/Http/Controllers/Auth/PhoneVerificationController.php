@@ -37,24 +37,27 @@ class PhoneVerificationController extends Controller
             ]);
 
             return back()->withErrors([
-                'otp' => 'Could not send SMS. Please try again.',
+                'otp' => __('Could not send SMS. Please try again.'),
             ]);
         }
 
-        return back()->with('success', 'Verification code sent.');
+        return back()->with('success', __('Verification code sent.'));
     }
 
     public function verify(Request $request, PhoneOtpService $otp)
     {
         $request->validate([
             'otp' => ['required', 'digits:6'],
+        ], [
+            'otp.required' => __('Enter the verification code.'),
+            'otp.digits' => __('The code must be 6 digits.'),
         ]);
 
         $key = 'otp-verify:' . $request->user()->id;
 
         if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($key, 10)) {
             return back()->withErrors([
-                'otp' => 'Too many attempts. Please try later.',
+                'otp' => __('Too many attempts. Please try later.'),
             ]);
         }
 
@@ -62,12 +65,12 @@ class PhoneVerificationController extends Controller
 
         if (!$otp->verify($request->user(), $request->otp)) {
             return back()->withErrors([
-                'otp' => 'Invalid or expired verification code.',
+                'otp' => __('Invalid or expired verification code.'),
             ]);
         }
 
         \Illuminate\Support\Facades\RateLimiter::clear($key);
 
-        return redirect('/')->with('success', 'Phone verified successfully.');
+        return redirect('/')->with('success', __('Phone verified successfully.'));
     }
 }
