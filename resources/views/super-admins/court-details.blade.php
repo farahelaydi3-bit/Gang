@@ -13,32 +13,8 @@
     <x-super-admin.form-errors />
 
     <div class="super-admin-records">
-        <section class="admin-card" aria-labelledby="court-information">
-            @if ($court->image)
-                <img class="super-admin-court-photo" src="{{ \Illuminate\Support\Facades\Storage::url($court->image) }}" alt="{{ $court->name }}">
-            @endif
-            <div class="admin-card-header"><h2 id="court-information">Court information</h2></div>
-
-            <dl class="super-admin-record-facts">
-                @foreach ([
-                    'Owner' => $court->admin?->name,
-                    'Business' => $court->admin?->business_name,
-                    'Sport' => $court->sports?->name,
-                    'Address' => $court->address,
-                    'Status' => ucfirst($court->status),
-                    'Opening time' => $court->opening_time,
-                    'Closing time' => $court->closing_time,
-                    'Minimum booking' => $court->min_booking_minutes . ' minutes',
-                    'Weekday price' => $court->weekday_price . ' JOD',
-                    'Weekend price' => $court->weekend_price . ' JOD',
-                    'Evening price' => $court->evening_price . ' JOD',
-                    'Deposit' => $court->deposit_amount . ' JOD',
-                ] as $label => $value)
-                    <div><dt>{{ $label }}</dt><dd dir="auto">{{ $value ?? '—' }}</dd></div>
-                @endforeach
-            </dl>
-        </section>
-
+        <x-dashboard-court-details :court="$court" :photo="$courtPhoto"
+            :owner-url="$court->admin ? route('super_admin.admins.show', $court->admin) : null" />
         <section class="admin-card" aria-labelledby="court-review-decision">
             <div class="admin-card-header"><h2 id="court-review-decision">Review decision</h2></div>
             <form class="super-admin-filter-form" method="POST" action="{{ route('super_admin.courts.status', $court) }}">

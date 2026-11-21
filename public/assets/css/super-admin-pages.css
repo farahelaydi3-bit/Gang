@@ -1,4 +1,8 @@
-.super-admin-layout .owner-content {
+.dashboard-layout {
+    font-family: "Dashboard Manrope", "Dashboard Cairo", Manrope, Cairo, system-ui, sans-serif;
+}
+
+.dashboard-layout .owner-content {
     width: 100%;
     max-width: 1514px;
     min-width: 0;
@@ -49,14 +53,36 @@
     gap: 8px;
 }
 
-.super-admin-layout .super-admin-page-actions .admin-button {
+.dashboard-layout .super-admin-page-actions .admin-button {
     min-height: 42px;
     white-space: nowrap;
 }
 
-.super-admin-layout .overview-action-link {
+.dashboard-layout .overview-action-link {
     min-height: 42px;
     font-size: 13px;
+}
+
+.dashboard-layout .admin-button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.owner-subscriptions-table {
+    min-width: 820px;
+}
+
+.dashboard-layout :is(.reservations-page, .subscriptions-page, .group-games-page) {
+    min-width: 0;
+    gap: 20px;
+}
+
+.dashboard-layout :is(.reservations-page, .subscriptions-page, .group-games-page) > :is(.super-admin-page-header, .super-admin-filter, .stats-grid) {
+    margin-block-end: 0;
+}
+
+.owner-court-photo-preview {
+    max-width: min(300px, 100%);
 }
 
 .super-admin-page-meta {
@@ -72,18 +98,18 @@
     min-width: 0;
 }
 
-.super-admin-layout :is(.admin-card, .overview-panel, .super-profile-card, .super-profile-tip, .super-profile-account-chip) {
+.dashboard-layout :is(.admin-card, .overview-panel, .super-profile-card, .super-profile-tip, .super-profile-account-chip) {
     border-radius: 16px;
 }
 
-.super-admin-layout :is(.admin-card-header h2, .admin-card-header h3, .overview-panel-head h3) {
+.dashboard-layout :is(.admin-card-header h2, .admin-card-header h3, .overview-panel-head h3) {
     margin: 0;
     color: var(--admin-text);
     font-size: 16px;
     font-weight: 800;
 }
 
-.super-admin-layout :is(.admin-table-wrap, .overview-table-wrap) {
+.dashboard-layout :is(.admin-table-wrap, .overview-table-wrap) {
     max-width: 100%;
     overflow-x: auto;
     border: 1px solid var(--admin-border);
@@ -91,20 +117,20 @@
     background: var(--admin-surface);
 }
 
-.super-admin-layout :is(.admin-table, .overview-table) {
+.dashboard-layout :is(.admin-table, .overview-table) {
     width: 100%;
     border-collapse: collapse;
     text-align: start;
 }
 
-.super-admin-layout :is(.admin-table, .overview-table) :is(th, td) {
+.dashboard-layout :is(.admin-table, .overview-table) :is(th, td) {
     padding: 12px 14px;
     border-bottom: 1px solid var(--admin-border);
     vertical-align: middle;
     text-align: start;
 }
 
-.super-admin-layout :is(.admin-table, .overview-table) th {
+.dashboard-layout :is(.admin-table, .overview-table) th {
     background: var(--admin-primary-light);
     color: #52657E;
     font-size: 12px;
@@ -112,26 +138,26 @@
     white-space: nowrap;
 }
 
-.super-admin-layout :is(.admin-table, .overview-table) td {
+.dashboard-layout :is(.admin-table, .overview-table) td {
     color: var(--admin-text);
     font-size: 13px;
 }
 
-.super-admin-layout :is(.admin-table, .overview-table) tr:last-child td {
+.dashboard-layout :is(.admin-table, .overview-table) tr:last-child td {
     border-bottom: 0;
 }
 
-.super-admin-layout :is(.admin-table, .overview-table) tbody tr:hover {
+.dashboard-layout :is(.admin-table, .overview-table) tbody tr:hover {
     background: #FAF2E8;
 }
 
-.super-admin-layout :is(.admin-table, .overview-table) :is(.super-admin-empty, .overview-table-empty) {
+.dashboard-layout :is(.admin-table, .overview-table) :is(.super-admin-empty, .overview-table-empty) {
     padding: 22px 14px !important;
     color: #52657E !important;
     text-align: center;
 }
 
-.super-admin-layout :is(.admin-table, .overview-table) .admin-button,
+.dashboard-layout :is(.admin-table, .overview-table) .admin-button,
 .super-admin-pagination .admin-button {
     min-height: 36px;
     padding: 5px 11px;
@@ -139,24 +165,24 @@
     white-space: nowrap;
 }
 
-.super-admin-layout :is(.admin-table, .overview-table) .form-control {
+.dashboard-layout :is(.admin-table, .overview-table) .form-control {
     min-height: 36px;
     padding-inline: 10px 28px;
     font-size: 13px;
 }
 
-.super-admin-layout .form-control {
+.dashboard-layout .form-control {
     border-color: var(--admin-border);
     background-color: var(--admin-surface);
     color: var(--admin-text);
 }
 
-.super-admin-layout .form-control:focus {
+.dashboard-layout .form-control:focus {
     border-color: var(--admin-primary);
     box-shadow: 0 0 0 3px #B5651D22;
 }
 
-.super-admin-layout :is(.badge, .overview-status) {
+.dashboard-layout :is(.badge, .overview-status) {
     border: 1px solid var(--admin-border);
     background: #F8F0E8;
     color: #52657E;
@@ -165,19 +191,19 @@
     white-space: nowrap;
 }
 
-.super-admin-layout :is(.badge-success, .overview-status-active, .overview-status-approved) {
+.dashboard-layout :is(.badge-success, .overview-status-active, .overview-status-approved) {
     border-color: #D1E5D9;
     background: #EAF5EF;
     color: #236447;
 }
 
-.super-admin-layout :is(.badge-warning, .overview-status-pending) {
+.dashboard-layout :is(.badge-warning, .overview-status-pending) {
     border-color: #EFDBBF;
     background: #FCF0DA;
     color: #79440E;
 }
 
-.super-admin-layout :is(.badge-danger, .overview-status-suspended, .overview-status-rejected) {
+.dashboard-layout :is(.badge-danger, .overview-status-suspended, .overview-status-rejected) {
     border-color: #F5D0D3;
     background: #FDEBED;
     color: #A52A35;
@@ -197,7 +223,7 @@
     padding-inline-start: 20px;
 }
 
-.super-admin-layout .super-admin-filter {
+.dashboard-layout .super-admin-filter {
     margin-block-end: 16px;
 }
 
@@ -286,11 +312,11 @@
     gap: 12px;
 }
 
-.super-admin-layout .super-profile-page {
+.dashboard-layout .super-profile-page {
     max-width: none;
 }
 
-.super-admin-layout .super-profile-form-footer .admin-button {
+.dashboard-layout .super-profile-form-footer .admin-button {
     min-height: 42px;
     padding-inline: 18px;
     border-radius: var(--admin-radius-sm);
@@ -360,11 +386,30 @@
 
 .super-admin-court-photo {
     display: block;
-    width: 100%;
-    max-height: 325px;
-    margin-block-end: 18px;
+    overflow: hidden;
+    border: 1px solid var(--admin-border);
     border-radius: 12px;
-    object-fit: cover;
+    background: #FAF2E8;
+}
+
+.super-admin-court-photo img {
+    display: block;
+    width: 100%;
+    max-height: 430px;
+    object-fit: contain;
+}
+
+.dashboard-layout a.super-admin-record-link {
+    color: var(--admin-text);
+    font-weight: 800;
+    text-decoration: underline;
+    text-decoration-color: #B5651D;
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+}
+
+.dashboard-layout a.super-admin-record-link:hover {
+    color: #89501D;
 }
 
 .super-admin-dialog {
@@ -418,15 +463,21 @@
         text-align: start;
     }
 
-    .super-admin-layout .admin-card {
+    .dashboard-layout .admin-card {
         padding: 14px;
     }
 
-    .super-admin-layout :is(.admin-table, .overview-table) :is(th, td) {
+    .dashboard-layout :is(.admin-table, .overview-table) :is(th, td) {
         padding: 10px 11px;
     }
 
     .super-admin-pagination-links .super-admin-page-number:not([aria-current="page"]) {
         display: none;
+    }
+}
+
+@media (min-width: 1160px) {
+    .owner-overview-stats {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }

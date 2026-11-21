@@ -1,23 +1,17 @@
 
 @extends('admins.layout.app')
 
-@section('page-title', 'Edit Subscription')
+@section('title', 'Edit Subscription')
 
 @section('content')
 
 <div class="subscriptions-page">
 
-    <div class="section-header">
-        <div>
-            <h1>Edit Subscription</h1>
-            <p>Update subscription details and pricing.</p>
-        </div>
-
-        <a href="{{ route('admin.subscriptions.index') }}"
-           class="admin-button admin-button-outline">
-            Back
-        </a>
-    </div>
+    <x-super-admin.page-header title="Edit Subscription" description="Update subscription details and pricing.">
+        <x-slot:actions>
+            <a class="admin-button admin-button-outline" href="{{ route('admin.subscriptions.index') }}">Back to subscriptions</a>
+        </x-slot:actions>
+    </x-super-admin.page-header>
 
     <div class="admin-card subscription-form-card">
 

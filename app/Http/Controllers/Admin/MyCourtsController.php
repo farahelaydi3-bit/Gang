@@ -20,7 +20,7 @@ class MyCourtsController extends Controller
         $courts = Court::with('sports')
             ->where('admin_id', auth('admin')->id())
             ->latest()
-            ->get();
+            ->paginate(15);
 
         return view('admins.courts.index', compact('courts'));
     }
@@ -31,6 +31,29 @@ class MyCourtsController extends Controller
         $sports = Sports::all();
 
         return view('admins.courts.create', compact('sports'));
+    }
+
+    public function show(string $id)
+    {
+        $court = Court::where('admin_id', auth('admin')->id())->with(['admin', 'sports'])->findOrFail($id);
+        $courtPhoto = $this->photoUrl($court);
+
+        return view('admins.courts.show', compact('court', 'courtPhoto'));
+    }
+
+    public function photo(string $id)
+    {
+        $court = Court::where('admin_id', auth('admin')->id())->findOrFail($id);
+        $path = $court->uploadedPhotoPath();
+        abort_if($path === null, 404);
+
+        return Storage::disk('public')->response($path, headers: ['X-Content-Type-Options' => 'nosniff']);
+    }
+
+    private function photoUrl(Court $court): ?string
+    {
+        return $court->bundledPhotoUrl()
+            ?? ($court->uploadedPhotoPath() !== null ? route('admin.courts.photo', $court) : null);
     }
 
     public function store(Request $request)
@@ -77,7 +100,9 @@ class MyCourtsController extends Controller
 
         $sports = Sports::all();
 
-        return view('admins.courts.edit', compact('court', 'sports'));
+        $courtPhoto = $this->photoUrl($court);
+
+        return view('admins.courts.edit', compact('court', 'sports', 'courtPhoto'));
     }
 
     public function update(Request $request, $id)
@@ -123,7 +148,7 @@ class MyCourtsController extends Controller
 
         return redirect()
             ->route('admin.courts.index')
-            ->with('success', 'Court updated successfully and sent for approval.');
+            ->with('success', 'Court updated successfully.');
     }
 
     public function destroy($id)

@@ -40,7 +40,9 @@
                     <td>{{ $admin->id }}</td>
 
                     <td>
-                        <strong>{{ $admin->name }}</strong>
+                        <a class="super-admin-record-link" href="{{ route('super_admin.admins.show', $admin) }}" dir="auto">
+                            {{ $admin->name }}
+                        </a>
                     </td>
 
                     <td>

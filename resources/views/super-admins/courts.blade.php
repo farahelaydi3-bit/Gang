@@ -116,14 +116,20 @@
                     <td>{{ $court->id }}</td>
 
                     <td>
-                        <strong>{{ $court->name }}</strong>
+                        <a class="super-admin-record-link" href="{{ route('super_admin.courts.show', $court) }}" dir="auto">
+                            {{ $court->name }}
+                        </a>
                     </td>
 
                     <td>
-                        {{ $court->admin?->name ?? '—' }}
-                        <div style="font-size:12px;opacity:.7">
-                            {{ $court->admin?->business_name ?? '' }}
-                        </div>
+                        @if ($court->admin)
+                            <a class="super-admin-record-link" href="{{ route('super_admin.admins.show', $court->admin) }}" dir="auto">
+                                {{ $court->admin->name }}
+                            </a>
+                            <div class="super-admin-muted" dir="auto">{{ $court->admin->business_name }}</div>
+                        @else
+                            —
+                        @endif
                     </td>
 
                     <td>{{ $court->sports?->name ?? '—' }}</td>

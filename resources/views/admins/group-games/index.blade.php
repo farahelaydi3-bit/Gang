@@ -1,23 +1,17 @@
-```blade
 @extends('admins.layout.app')
 
-@section('page-title', 'Group Games')
+@section('title', 'Group Games')
 
 @section('content')
 
     <div class="group-games-page">
 
         {{-- Page Header --}}
-        <div class="group-games-header">
-            <div>
-                <h1>Group Games</h1>
-                <p>Manage group games and player reservations.</p>
-            </div>
-
-            <a href="{{ route('admin.group-games.create') }}" class="admin-button">
-                + Create Group Game
-            </a>
-        </div>
+        <x-super-admin.page-header title="Group Games" description="Manage group games and player reservations.">
+            <x-slot:actions>
+                <a class="admin-button" href="{{ route('admin.group-games.create') }}">+ Create group game</a>
+            </x-slot:actions>
+        </x-super-admin.page-header>
 
         {{-- Statistics --}}
         <div class="group-games-stats">
@@ -106,15 +100,7 @@
 
                                 {{-- Status --}}
                                 <td>
-                                    <span class="status-badge
-                                            {{ $game->status === 'open' ? 'badge-success' : '' }}
-                                            {{ $game->status === 'full' ? 'badge-info' : '' }}
-                                            {{ $game->status === 'cancelled' ? 'badge-danger' : '' }}
-                                            {{ $game->status === 'completed' ? 'badge-warning' : '' }}">
-
-                                        {{ ucfirst($game->status) }}
-
-                                    </span>
+                                    <x-dashboard-status :state="$game->status" />
                                 </td>
 
                                 {{-- Actions --}}
@@ -122,7 +108,7 @@
                                     <div class="group-game-actions">
 
                                         <a href="{{ route('admin.group-games.edit', $game->id) }}"
-                                            class="game-action-btn game-edit-btn">
+                                            class="admin-button admin-button-outline">
                                             Edit
                                         </a>
 
@@ -130,7 +116,7 @@
                                             @csrf
                                             @method('PATCH')
 
-                                            <button type="submit" class="game-action-btn game-cancel-btn">
+                                            <button type="submit" class="admin-button admin-button-outline">
                                                 Cancel
                                             </button>
                                         </form>
@@ -139,7 +125,7 @@
                                             <form action="{{ route('admin.group-games.complete', $game->id) }}" method="POST">
                                                 @csrf
                                                 @method('PATCH')
-                                                <button type="submit" class="game-action-btn">Mark completed</button>
+                                                <button type="submit" class="admin-button admin-button-outline">Mark completed</button>
                                             </form>
                                         @endif
 
@@ -147,7 +133,7 @@
                                             @csrf
                                             @method('DELETE')
 
-                                            <button type="submit" class="game-action-btn game-delete-btn">
+                                            <button type="submit" class="admin-button admin-button-danger">
                                                 Delete
                                             </button>
                                         </form>
@@ -180,7 +166,7 @@
 
             {{-- Pagination --}}
             <div class="admin-pagination">
-                {{ $games->links() }}
+                {{ $games->links('components.super-admin.pagination') }}
             </div>
 
         </div>
@@ -188,4 +174,3 @@
     </div>
 
 @endsection
-```
