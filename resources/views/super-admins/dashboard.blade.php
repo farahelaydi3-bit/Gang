@@ -24,21 +24,13 @@
     @endphp
 
     <div class="overview-page">
-        <section class="overview-welcome">
-            <div class="overview-welcome-copy">
-                <span class="overview-eyebrow"><i></i>GANG CONTROL CENTER</span>
-                <h2>Good to see you, {{ auth('super_admin')->user()?->name ?? 'Super Admin' }}.</h2>
-                <p>Here’s what’s happening across your sports community.</p>
-            </div>
-            <div class="overview-welcome-side">
-                <span class="overview-live"><i></i>Platform snapshot</span>
-                <time id="overview-current-date">{{ now()->format('D, M j, Y') }}</time>
-            </div>
-            <span class="overview-orbit overview-orbit-one" aria-hidden="true"></span>
-            <span class="overview-orbit overview-orbit-two" aria-hidden="true"></span>
-            <span class="overview-ball overview-ball-one" aria-hidden="true">⚽</span>
-            <span class="overview-ball overview-ball-two" aria-hidden="true">🏀</span>
-        </section>
+        <x-super-admin.page-header title="Platform Overview" description="Review platform activity and pending owner applications.">
+            <x-slot:actions>
+                <div class="super-admin-page-meta">
+                    <time id="overview-current-date">{{ now()->format('D, M j, Y') }}</time>
+                </div>
+            </x-slot:actions>
+        </x-super-admin.page-header>
 
         <section class="overview-stats-grid" aria-label="Platform totals">
             @foreach ($stats as $stat)

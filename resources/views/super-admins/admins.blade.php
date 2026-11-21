@@ -5,35 +5,12 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <h2>Manage Court Owners</h2>
-        <p>Manage court owner accounts and approval status.</p>
-    </div>
+<x-super-admin.page-header title="Manage Owners" description="Manage court owner accounts and approval status." />
 
-    <a href="{{ route('super_admin.dashboard') }}"
-        class="admin-button admin-button-outline">
-        Back to Dashboard
-    </a>
-</div>
-
-{{-- Validation Errors --}}
-@if ($errors->any())
-<div class="admin-card"
-    role="alert"
-    style="margin-bottom:20px;border-color:var(--admin-danger);color:var(--admin-danger)">
-
-    @foreach ($errors->all() as $error)
-    <p style="margin:0 0 6px">
-        {{ $error }}
-    </p>
-    @endforeach
-
-</div>
-@endif
+<x-super-admin.form-errors />
 
 {{-- Owners Table --}}
-<div class="admin-card">
+<div class="admin-card super-admin-table-card">
 
     <div class="admin-card-header">
         <h3>All Court Owners ({{ $admins->count() }})</h3>
@@ -110,7 +87,7 @@
                         <form
                             method="POST"
                             action="{{ route('super_admin.admins.status', $admin->id) }}"
-                            style="display:flex;gap:8px;align-items:center;min-width:230px">
+                            class="super-admin-inline-actions">
 
                             @csrf
                             @method('PATCH')
@@ -153,7 +130,7 @@
                 @empty
 
                 <tr>
-                    <td colspan="8" style="text-align:center;padding:32px">
+                    <td colspan="8" class="super-admin-empty">
                         No court owners registered yet.
                     </td>
                 </tr>

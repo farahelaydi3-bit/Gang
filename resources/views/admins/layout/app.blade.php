@@ -118,6 +118,7 @@
             </button>
 
             <section class="owner-content @yield('page-class')">
+                <x-dashboard-notifications />
                 @yield('content')
             </section>
 
@@ -140,42 +141,6 @@
             }
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-@if (session('success'))
-    <script>
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'success',
-            iconColor: '#5a7a4c',
-            background: '#fffcf5',
-            color: '#2a2320',
-            title: @json(session('success')),
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true
-        });
-    </script>
-@endif
-
-@if (session('error'))
-    <script>
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'error',
-            iconColor: '#b4483b',
-            background: '#fffcf5',
-            color: '#2a2320',
-            title: @json(session('error')),
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true
-        });
-    </script>
-@endif
-
     @stack('scripts')
 
 </body>

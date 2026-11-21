@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -164,6 +163,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::post('/application', [OwnerApplicationController::class, 'store'])
             ->name('application.store');
+
+        Route::patch('/application/{application}', [OwnerApplicationController::class, 'update'])
+            ->whereNumber('application')
+            ->name('application.update');
 
         Route::post('/logout', [AdminAuthController::class, 'logout'])
             ->name('logout');
