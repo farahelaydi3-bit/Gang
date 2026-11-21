@@ -5,7 +5,6 @@ namespace App\Http\Controllers\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
@@ -16,7 +15,12 @@ class AdminController extends Controller
         return view('super-admins.admins', compact('admins'));
     }
 
+    public function show(Admin $admin)
+    {
+        $courts = $admin->courts()->with('sports')->orderBy('name')->orderBy('id')->paginate(15);
 
+        return view('super-admins.owner-details', compact('admin', 'courts'));
+    }
 
     public function updateStatus(Request $request, Admin $admin)
     {

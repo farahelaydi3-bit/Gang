@@ -20,11 +20,24 @@ class CourtReviewSummaryService
 
         // 2. Only safe reviews go to the AI (don't pollute the summary)
         $safeForAi = $all->filter(fn ($r) =>
-            $r->comment && in_array($r->ai_decision, ['safe', null], true)
+            $r->comment && $r->ai_decision === 'safe'
         )->sortByDesc('created_at')->take(50);
 
         if ($safeForAi->isEmpty()) {
-            return null; // nothing to summarize
+            return CourtReviewSummary::updateOrCreate(
+                ['court_id' => $court->id],
+                [
+                    'total_reviews' => $all->count(),
+                    'safe_reviews' => $all->where('ai_decision', 'safe')->count(),
+                    'spam_reviews' => $all->where('ai_decision', 'spam')->count(),
+                    'abusive_reviews' => $all->where('ai_decision', 'abusive')->count(),
+                    'average_rating' => round($all->where('ai_decision', 'safe')->avg('rating') ?? 0, 2),
+                    'summary' => 'No unflagged reviews are currently available to summarize.',
+                    'top_complaints' => 'none',
+                    'top_praises' => 'none',
+                    'generated_at' => now(),
+                ]
+            );
         }
 
         $reviewsText = $safeForAi->values()->map(function ($r, $i) {
@@ -68,7 +81,7 @@ PROMPT;
                     'safe_reviews'    => $all->where('ai_decision', 'safe')->count(),
                     'spam_reviews'    => $all->where('ai_decision', 'spam')->count(),
                     'abusive_reviews' => $all->where('ai_decision', 'abusive')->count(),
-                    'average_rating'  => round($all->avg('rating') ?? 0, 2),
+                    'average_rating'  => round($all->where('ai_decision', 'safe')->avg('rating') ?? 0, 2),
                     'summary'         => $decoded['summary'] ?? null,
                     'top_complaints'  => $decoded['top_complaints'] ?? null,
                     'top_praises'     => $decoded['top_praises'] ?? null,

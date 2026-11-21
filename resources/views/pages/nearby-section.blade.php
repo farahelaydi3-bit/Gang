@@ -44,6 +44,9 @@ return $court->latitude !== null
 
         <style>
             /* Keep nearby map styling scoped to this component. */
+            .nearby-page { padding-block: 1.5rem 1rem; }
+            main:has(.nearby-page) + .site-footer { margin-top: 1.5rem; }
+
             .cb-nearby {
                 --cb-ink: #1f3215;
                 --cb-muted: #718076;
@@ -66,13 +69,13 @@ return $court->latitude !== null
                 flex-wrap: wrap;
                 align-items: center;
                 justify-content: space-between;
-                gap: 12px;
-                margin: 16px 0 18px;
+                gap: .75rem;
+                margin: 1rem 0 .8rem;
             }
 
             .cb-nearby .cb-nearby-heading {
                 margin: 0;
-                font-size: 1.12rem;
+                font-size: 1.05rem;
                 font-weight: 800;
             }
 
@@ -86,24 +89,24 @@ return $court->latitude !== null
                 display: inline-flex;
                 align-items: center;
                 gap: 7px;
-                padding: 9px 13px;
+                padding: .45rem .7rem;
                 border: 1px solid var(--cb-line);
                 border-radius: 999px;
                 background: var(--cb-soft);
                 color: #557b31;
-                font-size: .86rem;
+                font-size: .76rem;
                 font-weight: 700;
             }
 
             .cb-nearby .cb-nearby-filters {
                 display: grid;
                 grid-template-columns: minmax(130px, .85fr) minmax(160px, 1.2fr) minmax(130px, .8fr) auto;
-                gap: 10px;
-                padding: 13px;
+                gap: .55rem;
+                padding: .65rem;
                 background: #fff;
                 border: 1px solid var(--cb-line);
                 border-radius: 18px;
-                margin-bottom: 16px;
+                margin-bottom: .8rem;
                 box-shadow: 0 8px 32px rgba(18, 59, 42, .05);
             }
 
@@ -111,10 +114,11 @@ return $court->latitude !== null
             .cb-nearby .cb-nearby-filters input {
                 width: 100%;
                 min-width: 0;
-                padding: 12px 13px;
+                min-height: 45px;
+                padding: .55rem .7rem;
                 border: 1px solid var(--cb-line);
                 background: #fbfcf9;
-                border-radius: 11px;
+                border-radius: 12px;
                 color: var(--cb-ink);
                 font: inherit;
             }
@@ -126,7 +130,8 @@ return $court->latitude !== null
                 background: var(--cb-green);
                 color: white;
                 border-radius: 11px;
-                padding: 12px 18px;
+                min-height: 45px;
+                padding: .55rem .9rem;
                 font: inherit;
                 font-weight: 750;
             }
@@ -169,7 +174,7 @@ return $court->latitude !== null
             .cb-nearby .cb-nearby-layout {
                 display: grid;
                 grid-template-columns: minmax(290px, 350px) minmax(0, 1fr);
-                gap: 16px;
+                gap: .8rem;
                 align-items: stretch;
             }
 
@@ -187,7 +192,7 @@ return $court->latitude !== null
                 justify-content: space-between;
                 align-items: center;
                 gap: 10px;
-                padding: 17px 17px 12px;
+                padding: .85rem .9rem .65rem;
             }
 
             .cb-nearby .cb-nearby-list-title {
@@ -202,22 +207,22 @@ return $court->latitude !== null
             }
 
             .cb-nearby .cb-nearby-cards {
-                height: 530px;
+                height: 445px;
                 overflow-y: auto;
                 overscroll-behavior: contain;
-                padding: 0 11px 12px;
+                padding: 0 .55rem .6rem;
                 scrollbar-width: thin;
             }
 
             .cb-nearby .cb-court-card {
                 display: flex;
                 align-items: flex-start;
-                gap: 12px;
-                padding: 12px;
+                gap: .65rem;
+                padding: .65rem;
                 border: 1px solid transparent;
                 border-bottom-color: #edf1eb;
                 border-radius: 13px;
-                margin-bottom: 5px;
+                margin-bottom: .25rem;
                 cursor: pointer;
                 transition: background .15s, border-color .15s, box-shadow .15s;
             }
@@ -233,8 +238,8 @@ return $court->latitude !== null
             }
 
             .cb-nearby .cb-court-thumb {
-                width: 92px;
-                height: 95px;
+                width: 76px;
+                height: 76px;
                 object-fit: cover;
                 border-radius: 11px;
                 background: #eaf1e7;
@@ -260,7 +265,7 @@ return $court->latitude !== null
                 font-weight: 800;
                 font-size: .95rem;
                 line-height: 1.3;
-                margin: 6px 0 4px;
+                margin: .35rem 0 .2rem;
                 overflow-wrap: anywhere;
             }
 
@@ -268,7 +273,7 @@ return $court->latitude !== null
                 font-size: .78rem;
                 color: var(--cb-muted);
                 line-height: 1.5;
-                margin: 0 0 8px;
+                margin: 0 0 .4rem;
                 overflow-wrap: anywhere;
             }
 
@@ -307,7 +312,7 @@ return $court->latitude !== null
             .cb-nearby .cb-map-wrap {
                 position: relative;
                 min-width: 0;
-                height: 590px;
+                height: 510px;
                 overflow: hidden;
                 border-radius: 19px;
                 border: 1px solid var(--cb-line);
@@ -324,9 +329,9 @@ return $court->latitude !== null
             .cb-nearby .cb-map-floating {
                 position: absolute;
                 z-index: 500;
-                top: 15px;
-                left: 15px;
-                right: 15px;
+                top: 12px;
+                left: 12px;
+                right: 12px;
                 display: flex;
                 justify-content: space-between;
                 align-items: flex-start;
@@ -344,16 +349,17 @@ return $court->latitude !== null
                 background: white;
                 border-radius: 10px;
                 box-shadow: 0 4px 14px rgba(12, 45, 39, .13);
-                padding: 10px 12px;
-                font-size: .82rem;
+                padding: .5rem .65rem;
+                font-size: .76rem;
                 font-weight: 800;
             }
 
             .cb-nearby .cb-nearby-status {
-                min-height: 20px;
+                min-height: 1.25rem;
                 color: var(--cb-muted);
                 font-size: .8rem;
-                padding: 9px 2px 0;
+                margin: .25rem 0 0;
+                padding: .25rem .1rem 0;
             }
 
             .cb-nearby .cb-nearby-empty {
@@ -382,12 +388,12 @@ return $court->latitude !== null
 
             @media (max-width: 920px) {
                 .cb-nearby .cb-nearby-layout {
-                    grid-template-columns: minmax(250px, 310px) minmax(0, 1fr);
+                    grid-template-columns: minmax(260px, 310px) minmax(0, 1fr);
                 }
 
                 .cb-nearby .cb-court-thumb {
-                    width: 74px;
-                    height: 85px;
+                    width: 68px;
+                    height: 68px;
                 }
             }
 
@@ -398,13 +404,13 @@ return $court->latitude !== null
                 }
 
                 .cb-nearby .cb-map-wrap {
-                    height: 390px;
+                    height: 330px;
                     flex-shrink: 0;
                 }
 
                 .cb-nearby .cb-nearby-cards {
                     height: auto;
-                    max-height: 550px;
+                    max-height: 445px;
                 }
 
                 .cb-nearby .cb-nearby-filters {
@@ -417,6 +423,8 @@ return $court->latitude !== null
             }
 
             @media (max-width: 440px) {
+                .nearby-page { padding-block: 1rem .75rem; }
+
                 .cb-nearby .cb-nearby-filters {
                     grid-template-columns: 1fr;
                 }
@@ -431,7 +439,7 @@ return $court->latitude !== null
                 }
 
                 .cb-nearby .cb-map-wrap {
-                    height: 350px;
+                    height: 290px;
                 }
             }
         </style>
@@ -457,7 +465,9 @@ return $court->latitude !== null
                 </label>
                 <label>
                     <span class="sr-only">{{ __('Area') }}</span>
-                    <input type="search" name="area" value="{{ $searchArea }}" placeholder="{{ __('Search by area') }}" aria-label="{{ __('Search by area') }}">
+                    <select name="area" aria-label="{{ __('Area') }}">
+                        @include('pages.amman-area-options', ['selectedArea' => $searchArea])
+                    </select>
                 </label>
 
 

@@ -17,7 +17,8 @@ class GamePlayer extends Model
 		'user_id',
 		'status',
 		'joined_at',
-		'position'
+		'payment_id',
+		'reservation_expires_at',
 	];
 
 	public function groupGame()
@@ -28,5 +29,10 @@ class GamePlayer extends Model
 	public function user()
 	{
 		return $this->belongsTo(User::class);
+	}
+
+	public function payments()
+	{
+		return $this->hasMany(Payment::class);
 	}
 }

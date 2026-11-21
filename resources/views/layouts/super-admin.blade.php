@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="ltr">
+<html lang="en" dir="ltr">
 
 <head>
     <meta charset="utf-8">
@@ -14,13 +14,14 @@
         rel="stylesheet">
 
     <link rel="stylesheet" href="{{ asset('assets/css/superadmin.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/super-admin-pages.css') }}">
 
     @stack('styles')
 </head>
 
 <body>
 
-    <div class="owner-layout">
+    <div class="owner-layout dashboard-layout super-admin-layout">
 
         <!-- Sidebar Overlay -->
         <div class="sidebar-overlay"
@@ -308,17 +309,11 @@
                 </svg>
             </button>
             <section class="owner-content">
+                <x-dashboard-notifications />
                 @yield('content')
             </section>
 
         </main>
-    </div>
-
-    <!-- Flash Messages -->
-    <div id="superAdminMessages"
-        data-success="{{ session('success', '') }}"
-        data-error="{{ session('error', '') }}"
-        hidden>
     </div>
 
     <!-- Sidebar Script -->
@@ -348,48 +343,6 @@
                 document.getElementById('superSidebar').classList.contains('open')
             ) {
                 toggleSuperSidebar();
-            }
-
-        });
-    </script>
-
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-
-            const messages = document.getElementById('superAdminMessages');
-
-            if (!messages || !window.Swal) {
-                return;
-            }
-
-            const success = messages.dataset.success;
-            const error = messages.dataset.error;
-
-            if (success) {
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: success,
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true
-                });
-            }
-
-            if (error) {
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'error',
-                    title: error,
-                    showConfirmButton: false,
-                    timer: 3500,
-                    timerProgressBar: true
-                });
             }
 
         });

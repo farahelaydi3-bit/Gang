@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Review;
+use App\Models\ModerationReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -147,7 +148,16 @@ class ReviewController extends Controller
             'comment' => ['nullable', 'string', 'max:2000'],
         ]);
 
-        $review->update($validated);
+        $review->update([
+            ...$validated,
+            'ai_decision' => 'pending',
+            'ai_reason' => null,
+            'ai_checked_at' => null,
+        ]);
+
+        if (! empty($validated['comment'])) {
+            ModerateReview::dispatch($review->id);
+        }
 
         return redirect()
             ->route('reviews.show', $review)
@@ -160,6 +170,12 @@ class ReviewController extends Controller
         abort_unless(
             $review->user_id === Auth::id(),
             403
+        );
+
+        abort_if(
+            ModerationReport::where('review_id', $review->id)->exists(),
+            409,
+            'This review is part of a moderation report and cannot be deleted.'
         );
 
         $review->delete();

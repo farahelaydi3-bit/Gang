@@ -5,30 +5,12 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <h2>Manage Courts</h2>
-        <p>Review, approve, and monitor courts across CourtBook.</p>
-    </div>
+<x-super-admin.page-header title="Manage Courts" description="Find courts and review their listing status." />
 
-    <a href="{{ route('super_admin.dashboard') }}"
-        class="admin-button admin-button-outline">
-        Back to Dashboard
-    </a>
-</div>
-
-@if ($errors->any())
-<div class="admin-card"
-    role="alert"
-    style="margin-bottom:20px;color:#dc2626">
-    @foreach ($errors->all() as $error)
-    <p>{{ $error }}</p>
-    @endforeach
-</div>
-@endif
+<x-super-admin.form-errors />
 
 {{-- Search and Filters --}}
-<div class="admin-card" style="margin-bottom:24px">
+<div class="admin-card super-admin-filter">
 
     <div class="admin-card-header">
         <h3>Search & Filter Courts</h3>
@@ -36,9 +18,9 @@
 
     <form method="GET"
         action="{{ route('super_admin.courts.index') }}"
-        style="display:flex;flex-wrap:wrap;gap:12px;align-items:end">
+        class="super-admin-filter-form">
 
-        <div style="flex:2;min-width:200px">
+        <div class="super-admin-filter-field super-admin-filter-field--search">
             <label class="form-label" for="search">
                 Search
             </label>
@@ -52,7 +34,7 @@
                 value="{{ request('search') }}">
         </div>
 
-        <div style="flex:1;min-width:150px">
+        <div class="super-admin-filter-field">
             <label class="form-label" for="status">
                 Status
             </label>
@@ -73,7 +55,7 @@
             </select>
         </div>
 
-        <div style="flex:1;min-width:150px">
+        <div class="super-admin-filter-field">
             <label class="form-label" for="sport_id">
                 Sport
             </label>
@@ -106,7 +88,7 @@
 </div>
 
 {{-- Courts Table --}}
-<div class="admin-card">
+<div class="admin-card super-admin-table-card">
 
     <div class="admin-card-header">
         <h3>Courts ({{ $courts->total() }})</h3>
@@ -134,14 +116,20 @@
                     <td>{{ $court->id }}</td>
 
                     <td>
-                        <strong>{{ $court->name }}</strong>
+                        <a class="super-admin-record-link" href="{{ route('super_admin.courts.show', $court) }}" dir="auto">
+                            {{ $court->name }}
+                        </a>
                     </td>
 
                     <td>
-                        {{ $court->admin?->name ?? '—' }}
-                        <div style="font-size:12px;opacity:.7">
-                            {{ $court->admin?->business_name ?? '' }}
-                        </div>
+                        @if ($court->admin)
+                            <a class="super-admin-record-link" href="{{ route('super_admin.admins.show', $court->admin) }}" dir="auto">
+                                {{ $court->admin->name }}
+                            </a>
+                            <div class="super-admin-muted" dir="auto">{{ $court->admin->business_name }}</div>
+                        @else
+                            —
+                        @endif
                     </td>
 
                     <td>{{ $court->sports?->name ?? '—' }}</td>
@@ -173,7 +161,7 @@
                     </td>
 
                     <td>
-                        <div style="display:flex;flex-direction:column;gap:8px;min-width:140px">
+                        <div class="super-admin-records">
 
                             <a class="admin-button admin-button-outline"
                                 href="{{ route('super_admin.courts.show', $court) }}">
@@ -181,14 +169,13 @@
                             </a>
 
                             <form method="POST"
-                                action="{{ route('super_admin.courts.status', $court) }}">
+                                action="{{ route('super_admin.courts.status', $court) }}" class="super-admin-inline-actions">
                                 @csrf
                                 @method('PATCH')
 
                                 <select name="status"
                                     class="form-control"
-                                    aria-label="Court status"
-                                    style="margin-bottom:6px">
+                                    aria-label="Court status">
 
                                     @foreach (['pending', 'approved', 'rejected', 'inactive'] as $status)
                                     <option value="{{ $status }}"
@@ -209,8 +196,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8"
-                        style="text-align:center;padding:32px">
+                    <td colspan="8" class="super-admin-empty">
                         No courts found.
                     </td>
                 </tr>
@@ -218,39 +204,7 @@
             </tbody>
         </table>
     </div>
+    {{ $courts->withQueryString()->links('components.super-admin.pagination') }}
 </div>
-
-{{-- Simple Pagination --}}
-@if ($courts->hasPages())
-<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px">
-
-    <span>
-        Showing {{ $courts->firstItem() }}–{{ $courts->lastItem() }}
-        of {{ $courts->total() }}
-    </span>
-
-    <div style="display:flex;gap:10px">
-        @if ($courts->onFirstPage())
-        <span class="admin-button admin-button-outline"
-            style="opacity:.5">Previous</span>
-        @else
-        <a class="admin-button admin-button-outline"
-            href="{{ $courts->previousPageUrl() }}">
-            Previous
-        </a>
-        @endif
-
-        @if ($courts->hasMorePages())
-        <a class="admin-button"
-            href="{{ $courts->nextPageUrl() }}">
-            Next
-        </a>
-        @else
-        <span class="admin-button admin-button-outline"
-            style="opacity:.5">Next</span>
-        @endif
-    </div>
-</div>
-@endif
 
 @endsection

@@ -18,6 +18,12 @@
                 </a>
             </header>
 
+            @if (session('success'))
+                <div class="booking-cancel-success" role="status">
+                    <span aria-hidden="true">✓</span>{{ session('success') }}
+                </div>
+            @endif
+
             <section class="bookings-stats" aria-label="{{ __('Booking summary') }}">
                 <div class="bookings-stat">
                     <span class="bookings-stat-icon" aria-hidden="true">01</span>

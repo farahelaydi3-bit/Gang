@@ -24,6 +24,10 @@ class GangSiteManagementController extends Controller
     {
         $data = $request->validate([
             'paid_until' => ['required', 'date', 'after:today'],
+        ], [
+            'paid_until.required' => 'Choose a subscription end date.',
+            'paid_until.date' => 'Enter a valid subscription end date.',
+            'paid_until.after' => 'The subscription end date must be after today.',
         ]);
         // A Super Admin manually marks the end of PAID coverage after confirming payment.
         $website->update(['paid_until' => $data['paid_until'] . ' 23:59:59']);

@@ -5,35 +5,12 @@
 
 @section('content')
 
-<div class="page-header">
-    <div>
-        <h2>Manage Players</h2>
-        <p>View and manage all registered CourtBook players.</p>
-    </div>
+<x-super-admin.page-header title="Manage Players" description="Manage registered players and their account status." />
 
-    <a href="{{ route('super_admin.dashboard') }}"
-        class="admin-button admin-button-outline">
-        Back to Dashboard
-    </a>
-</div>
-
-{{-- Validation Errors --}}
-@if ($errors->any())
-<div class="admin-card"
-    role="alert"
-    style="margin-bottom:20px;border-color:var(--admin-danger);color:var(--admin-danger)">
-
-    @foreach ($errors->all() as $error)
-    <p style="margin:0 0 6px">
-        {{ $error }}
-    </p>
-    @endforeach
-
-</div>
-@endif
+<x-super-admin.form-errors />
 
 {{-- Players Table --}}
-<div class="admin-card">
+<div class="admin-card super-admin-table-card">
 
     <div class="admin-card-header">
         <h3>All Players ({{ $users->count() }})</h3>
@@ -95,7 +72,7 @@
                         <form
                             method="POST"
                             action="{{ route('super_admin.users.status', $user->id) }}"
-                            style="display:flex;gap:8px;align-items:center;min-width:220px">
+                            class="super-admin-inline-actions">
 
                             @csrf
                             @method('PATCH')
@@ -127,7 +104,7 @@
                 @empty
 
                 <tr>
-                    <td colspan="7" style="text-align:center;padding:32px">
+                    <td colspan="7" class="super-admin-empty">
                         No players registered yet.
                     </td>
                 </tr>

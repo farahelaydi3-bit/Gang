@@ -12,7 +12,7 @@ class WaitingList extends Model
     protected $table = 'waiting_list';
 
     protected $fillable = [
-        'user_id', 'court_id', 'booking_date', 'start_time', 'end_time',
+        'user_id', 'court_id', 'group_game_id', 'booking_date', 'start_time', 'end_time',
         'status', 'notified_at', 'offer_expires_at',
     ];
 
@@ -30,6 +30,11 @@ class WaitingList extends Model
     public function court()
     {
         return $this->belongsTo(Court::class);
+    }
+
+    public function groupGame()
+    {
+        return $this->belongsTo(GroupGame::class);
     }
 
     public function smsLogs()

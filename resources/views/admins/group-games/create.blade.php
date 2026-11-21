@@ -1,23 +1,17 @@
 @extends('admins.layout.app')
 
-@section('page-title', 'Create Group Game')
+@section('title', 'Create Group Game')
 
 @section('content')
 
 <div class="group-game-create-page">
 
     {{-- Page Header --}}
-    <div class="group-game-create-header">
-        <div>
-            <h1>Create Group Game</h1>
-            <p>Create a group game on one of your courts.</p>
-        </div>
-
-        <a href="{{ route('admin.group-games.index') }}"
-           class="admin-button-outline">
-            Back to Group Games
-        </a>
-    </div>
+    <x-super-admin.page-header title="Create Group Game" description="Schedule a group game on one of your courts.">
+        <x-slot:actions>
+            <a class="admin-button admin-button-outline" href="{{ route('admin.group-games.index') }}">Back to group games</a>
+        </x-slot:actions>
+    </x-super-admin.page-header>
 
     {{-- Create Form --}}
     <div class="admin-card group-game-form-card">
@@ -141,7 +135,9 @@
 
             </div>
 
-            {{-- Max Players & Price --}}
+            <p class="muted">The court price is divided evenly among the maximum number of players.</p>
+
+            {{-- Max Players --}}
             <div class="group-game-form-row">
 
                 <div class="form-group">
@@ -162,33 +158,13 @@
                     @enderror
                 </div>
 
-                <div class="form-group">
-                    <label for="player_price" class="form-label">
-                        Price Per Player (JOD)
-                    </label>
-
-                    <input type="number"
-                           name="player_price"
-                           id="player_price"
-                           class="form-control"
-                           min="0"
-                           step="0.01"
-                           placeholder="0.00"
-                           value="{{ old('player_price') }}"
-                           required>
-
-                    @error('player_price')
-                        <span class="form-error">{{ $message }}</span>
-                    @enderror
-                </div>
-
             </div>
 
             {{-- Form Actions --}}
             <div class="group-game-form-actions">
 
                 <a href="{{ route('admin.group-games.index') }}"
-                   class="admin-button-outline">
+                   class="admin-button admin-button-outline">
                     Cancel
                 </a>
 

@@ -1,23 +1,18 @@
 
 @extends('admins.layout.app')
 
-@section('page-title', 'Edit Group Game')
+@section('title', 'Edit Group Game')
 
 @section('content')
 
 <div class="group-game-edit-page">
 
     {{-- Page Header --}}
-    <div class="group-game-edit-header">
-        <div>
-            <h1>Edit Group Game</h1>
-            <p>Update your game details, schedule, and player settings.</p>
-        </div>
-
-        <a href="{{ route('admin.group-games.index') }}" class="admin-button-outline">
-            Back to Group Games
-        </a>
-    </div>
+    <x-super-admin.page-header title="Edit Group Game" description="Update the game schedule and player settings.">
+        <x-slot:actions>
+            <a class="admin-button admin-button-outline" href="{{ route('admin.group-games.index') }}">Back to group games</a>
+        </x-slot:actions>
+    </x-super-admin.page-header>
 
     {{-- Edit Form --}}
     <div class="admin-card group-game-edit-card">
@@ -150,28 +145,13 @@
                     @enderror
                 </div>
 
-                <div class="form-group">
-                    <label for="player_price" class="form-label">Price Per Player (JOD)</label>
-
-                    <input type="number"
-                           name="player_price"
-                           id="player_price"
-                           class="form-control"
-                           min="0"
-                           step="0.01"
-                           value="{{ old('player_price', $game->player_price) }}"
-                           required>
-
-                    @error('player_price')
-                        <span class="form-error">{{ $message }}</span>
-                    @enderror
-                </div>
+                <p class="muted">The court price is divided evenly among the maximum number of players.</p>
 
             </div>
 
             {{-- Form Actions --}}
             <div class="group-game-edit-actions">
-                <a href="{{ route('admin.group-games.index') }}" class="admin-button-outline">
+                <a href="{{ route('admin.group-games.index') }}" class="admin-button admin-button-outline">
                     Cancel
                 </a>
 

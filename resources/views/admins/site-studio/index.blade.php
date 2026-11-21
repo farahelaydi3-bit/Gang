@@ -6,11 +6,11 @@
 
 @php
     $themes = [
-        'forest' => 'أبيض + أخضر | ملاعب كرة القدم',
-        'sand' => 'أبيض + رملي | التنس الرملي',
-        'ocean' => 'أبيض + كحلي | الريشة والبادل',
-        'orange' => 'أبيض + برتقالي | كرة السلة',
-        'midnight' => 'أبيض + رمادي | كلاسيكي',
+        'forest' => 'White + green | Football',
+        'sand' => 'White + sand | Tennis',
+        'ocean' => 'White + navy | Badminton and padel',
+        'orange' => 'White + orange | Basketball',
+        'midnight' => 'White + grey | Classic',
     ];
 @endphp
 
@@ -21,7 +21,7 @@
     ========================= */
 
     .studio {
-        max-width: 1200px;
+        max-width: none;
         margin: 0 auto;
         color: #24324a;
     }
@@ -34,10 +34,10 @@
 
     .studio-panel {
         margin-bottom: 18px;
-        padding: 24px;
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 18px;
+        padding: 22px;
+        background: var(--admin-surface);
+        border: 1px solid var(--admin-border);
+        border-radius: 16px;
         box-shadow: 0 5px 20px rgba(15, 30, 50, 0.035);
         overflow-wrap: anywhere;
     }
@@ -60,38 +60,11 @@
        Hero
     ========================= */
 
-    .studio-hero {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 24px;
 
-        padding: 30px;
-        margin-bottom: 22px;
 
-        background: linear-gradient(110deg, #0b1b33, #173b41);
-        color: #fff;
-        border-radius: 20px;
-    }
 
-    .studio-hero h2 {
-        margin: 12px 0;
-        font-size: 30px;
-    }
 
-    .studio-hero p {
-        max-width: 620px;
-        margin: 0;
-        color: #b9d8e0;
-        line-height: 1.9;
-    }
 
-    .studio-trial-title {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 28px;
-    }
 
     /* =========================
        Text & Status
@@ -118,14 +91,10 @@
         color: #236448;
     }
 
-    .studio-hero .studio-pill {
-        background: #244c4c;
-        color: #bff5dc;
-    }
 
-    .studio-number {
-        background: #e7f5f3;
-        color: #12665e;
+.studio-number {
+        background: #FAF2E8;
+        color: #89501D;
     }
 
     .studio-url {
@@ -168,8 +137,8 @@
         box-sizing: border-box;
 
         padding: 11px 13px;
-        background: #fff;
-        border: 1px solid #cbd5e1;
+        background: var(--admin-surface);
+        border: 1px solid var(--admin-border);
         border-radius: 10px;
 
         color: #1e293b;
@@ -186,9 +155,9 @@
     .studio-form input:focus,
     .studio-form select:focus,
     .studio-form textarea:focus {
-        outline: 2px solid #99d5cb;
+        outline: 2px solid #D4AE86;
         outline-offset: 1px;
-        border-color: #0f766e;
+        border-color: var(--admin-primary);
     }
 
     .studio-form input[type="file"] {
@@ -200,10 +169,10 @@
     .studio-form input[type="file"]::file-selector-button {
         margin-inline-end: 12px;
         padding: 7px 12px;
-        background: #e9f3f1;
-        border: 1px solid #b8cdd5;
+        background: #F3E9DC;
+        border: 1px solid var(--admin-border);
         border-radius: 8px;
-        color: #134e4a;
+        color: var(--admin-text);
         cursor: pointer;
     }
 
@@ -217,8 +186,8 @@
         gap: 12px;
 
         padding: 14px;
-        background: #f0faf7;
-        border: 1px solid #c6e7dc;
+        background: #FAF2E8;
+        border: 1px solid var(--admin-border);
         border-radius: 12px;
 
         color: #43516b;
@@ -233,7 +202,7 @@
         width: 20px;
         height: 20px;
         margin: 4px 0 0;
-        accent-color: #0f766e;
+        accent-color: var(--admin-primary);
         cursor: pointer;
     }
 
@@ -257,47 +226,14 @@
        Buttons
     ========================= */
 
-    .studio-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
 
-        min-height: 46px;
-        padding: 11px 18px;
 
-        background: #0f766e;
-        color: #fff;
-        border: 0;
-        border-radius: 10px;
 
-        font: inherit;
-        font-weight: 700;
-        text-decoration: none;
-        cursor: pointer;
-    }
 
-    .studio-btn:hover {
-        filter: brightness(0.93);
-    }
 
-    .studio-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
 
-    .studio-btn.alt {
-        background: #e7eff2;
-        color: #214451;
-    }
 
-    .studio-btn.warn {
-        background: #b45309;
-    }
 
-    .studio-btn.danger {
-        background: #b91c1c;
-    }
 
     .studio-actions {
         display: flex;
@@ -309,25 +245,11 @@
        Alerts
     ========================= */
 
-    .studio-errors,
-    .studio-alert {
-        margin-bottom: 16px;
-        padding: 15px 18px;
-        border-radius: 12px;
-        line-height: 1.8;
-    }
 
-    .studio-errors {
-        background: #fff1f2;
-        color: #9f1239;
-    }
 
-    .studio-alert {
-        background: #e9fbf1;
-        color: #17623f;
-    }
 
-    .studio-empty {
+
+.studio-empty {
         padding: 25px;
         background: #fff8e9;
         color: #825817;
@@ -346,7 +268,7 @@
         object-fit: contain;
 
         background: #f8fafc;
-        border: 1px solid #dce5ee;
+        border: 1px solid var(--admin-border);
         border-radius: 12px;
     }
 
@@ -364,8 +286,8 @@
         min-width: 0;
 
         padding: 10px;
-        background: #fff;
-        border: 1px solid #dce5ee;
+        background: var(--admin-surface);
+        border: 1px solid var(--admin-border);
         border-radius: 12px;
     }
 
@@ -413,7 +335,7 @@
     .studio-preview {
         width: 100%;
         height: 500px;
-        background: #fff;
+        background: var(--admin-surface);
         border: 1px solid #d7e0ea;
         border-radius: 14px;
     }
@@ -431,11 +353,8 @@
             padding: 18px;
         }
 
-        .studio-hero {
-            padding: 22px;
-        }
 
-        .studio-preview {
+.studio-preview {
             height: 380px;
         }
     }
@@ -449,103 +368,41 @@
             height: 120px;
         }
 
-        .studio-hero h2 {
-            font-size: 24px;
-        }
-    }
+
+}
 </style>
 @endpush
 
 @section('content')
 
-<div class="studio">
+<div class="studio" lang="en" dir="ltr">
 
     {{-- =========================================
          Hero
     ========================================= --}}
 
-    <section class="studio-hero">
-        <div>
-            <span class="studio-pill">
-                Gang Site Studio
-            </span>
-
-            <h2>موقعك الرياضي، بهويتك الخاصة</h2>
-
-            <p>
-                أنشئ موقعًا رياضيًا بقالب جاهز يجمع رياضاتك
-                ويربط الزوار بصفحات حجز ملاعبك داخل Gang.
-                يساعدك Gemini في كتابة النصوص التعريفية.
-            </p>
-        </div>
-
-        <div>
-            <strong class="studio-trial-title">
-                6 أشهر مجانًا
-            </strong>
-
-            <p>
-                ثم 5 دنانير أردنية شهريًا.
-                يؤكد المسؤول استلام الدفعات يدويًا.
-            </p>
-        </div>
-    </section>
-
-    {{-- =========================================
-         Notifications
-    ========================================= --}}
-
-    @if ($errors->any())
-        <div class="studio-errors" role="alert">
-            <strong>يرجى مراجعة البيانات المدخلة:</strong>
-
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    @if (session('success'))
-        <div class="studio-alert" role="status">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="studio-errors" role="alert">
-            {{ session('error') }}
-        </div>
-    @endif
-
-    {{-- =========================================
-         Create Website
-    ========================================= --}}
+    <x-super-admin.page-header title="Gang Site Studio" description="Build and manage your facility website and connect visitors to court bookings." />
+    <x-super-admin.form-errors />
 
     @if (!$website)
 
-        <section class="studio-panel">
-            <h3>إنشاء موقع جديد</h3>
+        <section class="admin-card studio-panel">
+            <h3>Create a website</h3>
 
             <p class="studio-hint">
-                يمكنك إنشاء موقع واحد لمجمعك الرياضي.
-                تُضاف أقسام الرياضات تلقائيًا بناءً
-                على ملاعبك المعتمدة.
+                Create one website for your facility. Sports sections are generated from your approved courts.
             </p>
 
             @if ($sports->isEmpty())
 
                 <div class="studio-empty">
-                    لا توجد ملاعب معتمدة في حسابك حتى الآن.
-                    أضف ملعبًا وانتظر موافقة المسؤول
-                    لتتمكن من إنشاء موقعك.
+                    You need an approved court before you can create a website.
                 </div>
 
             @else
 
                 <p class="studio-hint">
-                    الرياضات المتاحة:
+                    Available sports:
                     {{ $sports->pluck('name')->join(' · ') }}
                 </p>
 
@@ -559,7 +416,7 @@
 
                     <div class="studio-field">
                         <label for="create-name">
-                            اسم الموقع
+                            Website name
                         </label>
 
                         <input
@@ -575,7 +432,7 @@
 
                     <div class="studio-field">
                         <label for="create-tagline">
-                            الجملة التعريفية (اختياري)
+                            Tagline (optional)
                         </label>
 
                         <input
@@ -584,13 +441,13 @@
                             name="tagline"
                             maxlength="180"
                             value="{{ old('tagline') }}"
-                            placeholder="وجهتك للأجواء الرياضية"
+                            placeholder="Your local sports destination"
                         >
                     </div>
 
                     <div class="studio-field">
                         <label for="create-intro">
-                            نبذة عن المجمع (اختياري)
+                            About the facility (optional)
                         </label>
 
                         <textarea
@@ -602,7 +459,7 @@
 
                     <div class="studio-field">
                         <label for="create-theme">
-                            قالب الموقع
+                            Website theme
                         </label>
 
                         <select
@@ -623,7 +480,7 @@
 
                     <div class="studio-field">
                         <label for="create-logo">
-                            شعار الموقع (اختياري)
+                            Website logo (optional)
                         </label>
 
                         <input
@@ -634,13 +491,13 @@
                         >
 
                         <p class="studio-hint">
-                            JPG أو PNG أو WEBP، بحد أقصى 4 ميجابايت.
+                            JPG, PNG or WEBP, up to 4 MB.
                         </p>
                     </div>
 
                     <div class="studio-field">
                         <label for="create-hero">
-                            صورة الغلاف الرئيسية (اختياري)
+                            Cover photo (optional)
                         </label>
 
                         <input
@@ -651,14 +508,13 @@
                         >
 
                         <p class="studio-hint">
-                            تظهر في القسم الرئيسي من موقعك.
-                            الحد الأقصى 6 ميجابايت.
+                            Shown at the top of your website. Maximum 6 MB.
                         </p>
                     </div>
 
                     <div class="studio-field">
                         <label for="create-maps">
-                            رابط موقع المجمع على Google Maps (اختياري)
+                            Facility link on Google Maps (optional)
                         </label>
 
                         <input
@@ -684,8 +540,7 @@
                             >
 
                             <span>
-                                أؤكد أن رابط الموقع يشير إلى
-                                الموقع الصحيح للمجمع الرياضي.
+                                I confirm the link points to my facility.
                             </span>
                         </label>
 
@@ -694,12 +549,12 @@
                             data-studio-map-error
                             role="alert"
                         >
-                            يجب تأكيد صحة موقع المجمع قبل الحفظ.
+                            Confirm the facility location before saving.
                         </p>
                     </div>
 
-                    <button type="submit" class="studio-btn">
-                        إنشاء الموقع
+                    <button type="submit" class="admin-button">
+                        Create website
                     </button>
                 </form>
 
@@ -712,29 +567,26 @@
              Website Status
         ===================================== --}}
 
-        <section class="studio-panel studio-row">
+        <section class="admin-card studio-panel studio-row">
             <div>
                 <h3>{{ $website->name }}</h3>
 
-                <span class="studio-pill">
-                    {{ $website->is_published ? 'منشور' : 'مسودة' }}
-                </span>
-
-                <span class="studio-number">
-                    {{ $website->is_active ? 'مفعّل' : 'معطّل من المسؤول' }}
-                </span>
+                <x-dashboard-status :state="$website->is_published ? 'active' : 'draft'"
+                    :label="$website->is_published ? 'Published' : 'Draft'" />
+                <x-dashboard-status :state="$website->is_active ? 'active' : 'inactive'"
+                    :label="$website->is_active ? 'Active' : 'Disabled by an administrator'" />
 
                 <p class="studio-hint">
                     @if ($website->trial_ends_at)
-                        نهاية الفترة المجانية:
+                        Trial ends:
                         {{ $website->trial_ends_at->format('Y-m-d') }}
                     @else
-                        تبدأ الفترة المجانية عند نشر الموقع لأول مرة.
+                        The free trial starts when you first publish your website.
                     @endif
 
                     @if ($website->paid_until)
                         <br>
-                        الاشتراك مدفوع حتى:
+                        Paid through:
                         {{ $website->paid_until->format('Y-m-d') }}
                     @endif
                 </p>
@@ -761,9 +613,9 @@
 
                         <button
                             type="submit"
-                            class="studio-btn warn"
+                            class="admin-button admin-button-outline"
                         >
-                            إلغاء النشر
+                            Unpublish website
                         </button>
                     </form>
                 @else
@@ -775,9 +627,9 @@
 
                         <button
                             type="submit"
-                            class="studio-btn"
+                            class="admin-button"
                         >
-                            نشر الموقع
+                            Publish website
                         </button>
                     </form>
                 @endif
@@ -794,8 +646,8 @@
 
                 {{-- Website Settings --}}
 
-                <section class="studio-panel">
-                    <h3>الهوية والمحتوى</h3>
+                <section class="admin-card studio-panel">
+                    <h3>Website settings</h3>
 
                     <form
                         class="studio-form"
@@ -808,7 +660,7 @@
 
                         <div class="studio-field">
                             <label for="edit-name">
-                                اسم الموقع
+                                Website name
                             </label>
 
                             <input
@@ -823,7 +675,7 @@
 
                         <div class="studio-field">
                             <label for="edit-tagline">
-                                الجملة التعريفية
+                                Tagline
                             </label>
 
                             <input
@@ -837,7 +689,7 @@
 
                         <div class="studio-field">
                             <label for="edit-intro">
-                                نبذة عن الموقع
+                                Website introduction
                             </label>
 
                             <textarea
@@ -849,7 +701,7 @@
 
                         <div class="studio-field">
                             <label for="edit-theme">
-                                قالب الموقع
+                                Website theme
                             </label>
 
                             <select
@@ -870,7 +722,7 @@
 
                         <div class="studio-field">
                             <label for="edit-logo">
-                                تغيير الشعار
+                                Replace logo
                             </label>
 
                             <input
@@ -883,7 +735,7 @@
 
                         <div class="studio-field">
                             <label for="edit-hero">
-                                صورة الغلاف الرئيسية
+                                Cover photo
                             </label>
 
                             <input
@@ -894,15 +746,14 @@
                             >
 
                             <p class="studio-hint">
-                                تظهر على يسار الصفحة.
-                                الحد الأقصى 6 ميجابايت.
+                                Maximum 6 MB.
                             </p>
 
                             @if ($website->hero_image_path)
                                 <img
                                     class="studio-cover-thumb"
                                     src="{{ '/storage/' . ltrim($website->hero_image_path, '/') }}"
-                                    alt="صورة الغلاف الحالية"
+                                    alt="Current cover photo"
                                     loading="lazy"
                                 >
                             @endif
@@ -910,7 +761,7 @@
 
                         <div class="studio-field">
                             <label for="edit-maps">
-                                رابط موقع المجمع على Google Maps
+                                Facility link on Google Maps
                             </label>
 
                             <input
@@ -936,8 +787,7 @@
                                 >
 
                                 <span>
-                                    أؤكد أن رابط الموقع يشير إلى
-                                    الموقع الصحيح للمجمع الرياضي.
+                                    I confirm the link points to my facility.
                                 </span>
                             </label>
 
@@ -946,30 +796,26 @@
                                 data-studio-map-error
                                 role="alert"
                             >
-                                يجب تأكيد صحة موقع المجمع قبل الحفظ.
+                                Confirm the facility location before saving.
                             </p>
                         </div>
 
                         <button
                             type="submit"
-                            class="studio-btn"
+                            class="admin-button"
                         >
-                            حفظ التعديلات
+                            Save changes
                         </button>
                     </form>
                 </section>
 
                 {{-- Gemini --}}
 
-                <section class="studio-panel">
-                    <h3>تحسين النصوص بالذكاء الاصطناعي ✨</h3>
+                <section class="admin-card studio-panel">
+                    <h3>AI copywriting</h3>
 
                     <p class="studio-hint">
-                        يساعدك Gemini في كتابة الجملة التعريفية
-                        ونبذة الموقع وأوصاف الرياضات المعتمدة.
-
-                        لا يغيّر القالب أو الألوان
-                        أو صور الموقع.
+                        Use Gemini to write the tagline, introduction, and descriptions for approved sports. Your theme, colours, and photos stay the same.
                     </p>
 
                     <form
@@ -981,9 +827,9 @@
 
                         <button
                             type="submit"
-                            class="studio-btn"
+                            class="admin-button"
                         >
-                            ✨ توليد / تحديث النصوص
+                            Generate new copy
                         </button>
                     </form>
                 </section>
@@ -997,50 +843,39 @@
 
                 {{-- Preview --}}
 
-                <section class="studio-panel">
+                <section class="admin-card studio-panel">
                     <div class="studio-row">
-                        <h3>معاينة الموقع</h3>
+                        <h3>Website preview</h3>
 
                         <a
-                            class="studio-btn alt"
+                            class="admin-button admin-button-outline"
                             href="{{ route('admin.site-studio.preview') }}"
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            فتح المعاينة
+                            Open preview
                         </a>
                     </div>
 
                     <iframe
                         class="studio-preview"
-                        title="معاينة الموقع الرياضي"
+                        title="Sports website preview"
                         loading="lazy"
                         src="{{ route('admin.site-studio.preview') }}"
                     ></iframe>
 
                     <p class="studio-hint">
-                        تُحفظ التعديلات وتُحدَّث نسخة الموقع المنشورة
-                        تلقائيًا بعد نجاح الحفظ.
-                        أعد تحميل الصفحة لعرض أحدث معاينة.
+                        The published website updates when you save. Refresh the page to see the latest preview.
                     </p>
                 </section>
 
                 {{-- Subscription --}}
 
-                <section class="studio-panel">
-                    <h3>سياسة الاشتراك</h3>
+                <section class="admin-card studio-panel">
+                    <h3>Subscription policy</h3>
 
                     <p class="studio-hint">
-                        تستفيد من فترة تجريبية مجانية مدتها
-                        6 أشهر، تبدأ عند نشر موقعك لأول مرة.
-
-                        بعد انتهاء الفترة المجانية،
-                        تبلغ رسوم الاشتراك 5 دنانير أردنية شهريًا.
-
-                        يُجدَّد الاشتراك يدويًا بعد أن يؤكد
-                        المسؤول استلام الدفعة.
-
-                        لا تتوفر خدمة الدفع الإلكتروني حاليًا.
+                        The six-month free trial starts when you first publish. After that, the website costs 5 JOD per month. An administrator renews it after confirming payment. Online payment is currently unavailable.
                     </p>
                 </section>
             </div>
@@ -1050,20 +885,18 @@
              Sport Sections
         ===================================== --}}
 
-        <section class="studio-panel">
+        <section class="admin-card studio-panel">
 
             <div class="studio-row">
-                <h3>أقسام الرياضات</h3>
+                <h3>Sport sections</h3>
 
                 <span class="studio-number">
-                    5 صور كحد أقصى لكل رياضة
+                    Up to 5 photos per sport
                 </span>
             </div>
 
             <p class="studio-hint">
-                تظهر هنا الرياضات المرتبطة بملاعبك المعتمدة.
-                يمكنك تعديل عنوان كل قسم ووصفه وترتيبه وصوره.
-                يُضاف زر الحجز تلقائيًا لكل ملعب.
+                These sections come from your approved courts. You can edit their titles, descriptions, order, and photos. Each court gets a booking link automatically.
             </p>
 
             @forelse (
@@ -1078,7 +911,7 @@
                         <h4>{{ $section->sport->name }}</h4>
 
                         <span class="studio-number">
-                            {{ count($section->images ?? []) }} / 5 صور
+                            {{ count($section->images ?? []) }} / 5 photos
                         </span>
                     </div>
 
@@ -1093,7 +926,7 @@
 
                         <div class="studio-field">
                             <label for="section-title-{{ $section->id }}">
-                                عنوان القسم
+                                Section title
                             </label>
 
                             <input
@@ -1108,7 +941,7 @@
 
                         <div class="studio-field">
                             <label for="section-description-{{ $section->id }}">
-                                وصف الرياضة
+                                Sport description
                             </label>
 
                             <textarea
@@ -1120,7 +953,7 @@
 
                         <div class="studio-field">
                             <label for="section-order-{{ $section->id }}">
-                                ترتيب القسم
+                                Display order
                             </label>
 
                             <input
@@ -1136,7 +969,7 @@
 
                         <div class="studio-field">
                             <label for="section-images-{{ $section->id }}">
-                                إضافة صور للرياضة
+                                Add sport photos
                             </label>
 
                             <input
@@ -1148,17 +981,15 @@
                             >
 
                             <p class="studio-hint">
-                                الصور المدعومة: JPG وPNG وWEBP.
-                                الحد الأقصى 4 ميجابايت لكل صورة،
-                                وبحد إجمالي 5 صور للقسم.
+                                JPG, PNG or WEBP, up to 4 MB per photo and 5 photos per sport.
                             </p>
                         </div>
 
                         <button
                             type="submit"
-                            class="studio-btn"
+                            class="admin-button"
                         >
-                            حفظ قسم {{ $section->sport->name }}
+                            Save section for {{ $section->sport->name }}
                         </button>
                     </form>
 
@@ -1174,7 +1005,7 @@
 
                                     <img
                                         src="{{ '/storage/' . ltrim($path, '/') }}"
-                                        alt="صورة {{ $section->sport->name }}"
+                                        alt="Photo of {{ $section->sport->name }}"
                                         loading="lazy"
                                     >
 
@@ -1193,9 +1024,9 @@
 
                                         <button
                                             type="submit"
-                                            aria-label="حذف صورة {{ $section->sport->name }}"
+                                            aria-label="Delete photo for {{ $section->sport->name }}"
                                         >
-                                            حذف الصورة ×
+                                            Delete photo
                                         </button>
                                     </form>
 
@@ -1212,7 +1043,7 @@
             @empty
 
                 <div class="studio-empty">
-                    لا توجد حاليًا رياضات مرتبطة بملاعب معتمدة.
+                    No sports are linked to approved courts yet.
                 </div>
 
             @endforelse

@@ -1,129 +1,51 @@
 @extends('admins.layout.app')
 
-@section('page-title', 'Reservations')
+@section('title', 'Reservations')
 
 @section('content')
 
     <div class="reservations-page">
 
-        {{-- Reservation Statistics --}}
-        <div class="reservation-stats">
+        <x-super-admin.page-header title="Reservations" description="Find court bookings and manage their status." />
+        <x-super-admin.form-errors />
 
-            <div class="stat-card">
-                <div class="stat-card-info">
-                    <span class="stat-card-label">Pending Reservations</span>
-                    <h3>{{ $reservationStats->pending ?? 0 }}</h3>
-                </div>
-                <div class="stat-card-icon pending-icon">
-                    <i class="fas fa-clock"></i>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-card-info">
-                    <span class="stat-card-label">Confirmed Reservations</span>
-                    <h3>{{ $reservationStats->confirmed ?? 0 }}</h3>
-                </div>
-                <div class="stat-card-icon confirmed-icon">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-card-info">
-                    <span class="stat-card-label">Cancelled Reservations</span>
-                    <h3>{{ $reservationStats->cancelled ?? 0 }}</h3>
-                </div>
-                <div class="stat-card-icon cancelled-icon">
-                    <i class="fas fa-times-circle"></i>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-card-info">
-                    <span class="stat-card-label">Completed Reservations</span>
-                    <h3>{{ $reservationStats->completed ?? 0 }}</h3>
-                </div>
-                <div class="stat-card-icon completed-icon">
-                    <i class="fas fa-flag-checkered"></i>
-                </div>
-            </div>
-
+        <div class="stats-grid" aria-label="Reservation totals">
+            @foreach (['pending' => 'Pending', 'confirmed' => 'Confirmed', 'cancelled' => 'Cancelled', 'completed' => 'Completed'] as $status => $label)
+                <div class="stat-card"><div class="stat-info"><span>{{ $label }}</span><strong>{{ $reservationStats->{$status} ?? 0 }}</strong></div></div>
+            @endforeach
         </div>
 
-
-        {{-- Reservations Section --}}
-        <div class="admin-card reservations-card">
-
-            <div class="admin-card-header">
-                <div>
-                    <h2>Reservations</h2>
-                    <p>Manage and track your court reservations.</p>
+        <section class="admin-card super-admin-filter" aria-label="Filter reservations">
+            <form action="{{ route('admin.reservations.index') }}" method="GET" class="super-admin-filter-form">
+                <div class="super-admin-filter-field super-admin-filter-field--search">
+                    <label class="form-label" for="reservation-search">Search</label>
+                    <input class="form-control" id="reservation-search" name="search" type="search" placeholder="Customer name" value="{{ request('search') }}">
                 </div>
-            </div>
-
-
-            {{-- Search & Filters --}}
-            <form action="{{ route('admin.reservations.index') }}" method="GET" class="reservations-filters">
-
-                <div class="reservation-search">
-                    <input type="text" name="search" placeholder="Search by customer name..."
-                        value="{{ request('search') }}">
-
-                    <button type="submit" class="admin-button">
-                        <i class="fas fa-search"></i>
-                        Search
-                    </button>
-                </div>
-
-
-                <div class="reservation-filter-group">
-
-                    {{-- Status Filter --}}
-                    <select name="status" class="form-control">
-                        <option value="">All Statuses</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>
-                            Pending
-                        </option>
-                        <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>
-                            Confirmed
-                        </option>
-                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>
-                            Cancelled
-                        </option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>
-                            Completed
-                        </option>
+                <div class="super-admin-filter-field">
+                    <label class="form-label" for="reservation-status">Status</label>
+                    <select id="reservation-status" name="status" class="form-control">
+                        <option value="">All statuses</option>
+                        @foreach (['pending', 'confirmed', 'cancelled', 'completed'] as $status)
+                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
+                        @endforeach
                     </select>
-
-
-                    {{-- Booking Type Filter --}}
-                    <select name="type" class="form-control">
-                        <option value="">All Types</option>
-                        <option value="individual" {{ request('type') == 'individual' ? 'selected' : '' }}>
-                            Individual
-                        </option>
-                        <option value="group" {{ request('type') == 'group' ? 'selected' : '' }}>
-                            Group
-                        </option>
-                        <option value="subscription" {{ request('type') == 'subscription' ? 'selected' : '' }}>
-                            Subscription
-                        </option>
-                    </select>
-
-                    <button type="submit" class="admin-button-outline">
-                        Filter
-                    </button>
-
-                    <a href="{{ route('admin.reservations.index') }}" class="admin-button-outline">
-                        Reset
-                    </a>
-
                 </div>
-
+                <div class="super-admin-filter-field">
+                    <label class="form-label" for="reservation-type">Booking type</label>
+                    <select id="reservation-type" name="type" class="form-control">
+                        <option value="">All types</option>
+                        @foreach (['individual', 'group', 'subscription'] as $type)
+                            <option value="{{ $type }}" @selected(request('type') === $type)>{{ ucfirst($type) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" class="admin-button">Filter</button>
+                <a href="{{ route('admin.reservations.index') }}" class="admin-button admin-button-outline">Reset</a>
             </form>
+        </section>
 
-
+        <div class="admin-card super-admin-table-card">
+            <div class="admin-card-header"><h2>All reservations</h2></div>
             {{-- Reservations Table --}}
             <div class="admin-table-wrap">
 
@@ -157,7 +79,7 @@
                                 </td>
 
                                 <td>
-                                    {{ $reservation->user->name ?? 'N/A' }}
+                                    {{ $reservation->user?->name ?? $reservation->creatorAdmin?->name ?? 'Group game' }}
                                 </td>
 
                                 <td>
@@ -187,9 +109,7 @@
                                 </td>
 
                                 <td>
-                                    <span class="status-badge {{ $reservation->booking_status }}">
-                                        {{ ucfirst($reservation->booking_status) }}
-                                    </span>
+                                    <x-dashboard-status :state="$reservation->booking_status" />
                                 </td>
 
                                 <td>
@@ -202,7 +122,7 @@
                                                 @csrf
                                                 @method('PATCH')
 
-                                                <button type="submit" class="action-btn action-confirm">
+                                                <button type="submit" class="admin-button">
                                                     Confirm
                                                 </button>
                                             </form>
@@ -215,7 +135,7 @@
                                                 @csrf
                                                 @method('PATCH')
 
-                                                <button type="submit" class="action-btn action-complete">
+                                                <button type="submit" class="admin-button admin-button-outline">
                                                     Complete
                                                 </button>
                                             </form>
@@ -227,7 +147,7 @@
                                                 @csrf
                                                 @method('PATCH')
 
-                                                <button type="submit" class="action-btn action-cancel">
+                                                <button type="submit" class="admin-button admin-button-danger">
                                                     Cancel
                                                 </button>
                                             </form>
@@ -267,7 +187,7 @@
 
             {{-- Pagination --}}
             <div class="reservations-pagination">
-                {{ $reservations->links() }}
+                {{ $reservations->withQueryString()->links('components.super-admin.pagination') }}
             </div>
 
         </div>

@@ -1,0 +1,342 @@
+@font-face {
+    font-family: Manrope;
+    src: url("../../courtbook-assets/fonts/manrope-latin-wght-normal.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 200 800;
+    font-display: swap;
+}
+
+.super-login {
+    color: var(--admin-text);
+    background: radial-gradient(ellipse at 75% 0%, #fffcf8 0%, transparent 62%), var(--admin-background);
+    font: 500 14px/1.6 Manrope, "Dashboard Cairo", system-ui, sans-serif;
+}
+
+.super-login *, .super-login *::before, .super-login *::after {
+    box-sizing: border-box;
+}
+
+.super-login :focus-visible {
+    outline: 2px solid var(--admin-primary);
+    outline-offset: 3px;
+}
+
+.super-login-shell {
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: 32px 24px 56px;
+}
+
+.super-login-top {
+    margin: 0 0 18px;
+}
+
+.super-login-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 0;
+    color: var(--admin-text);
+    font-weight: 750;
+    text-decoration: none;
+}
+
+.super-login-home:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.super-login-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+    width: min(960px, calc(100vw - 48px));
+    min-height: 482px;
+    border: 1px solid var(--admin-border);
+    border-radius: 24px;
+    background: var(--admin-surface);
+    box-shadow: 0 28px 70px -42px #1d355770;
+}
+
+.super-login-brand.overview-welcome {
+    display: block;
+    min-width: 0;
+    padding: clamp(30px, 5vw, 56px);
+    border: 0;
+    border-end-end-radius: 0;
+    border-start-end-radius: 0;
+    box-shadow: none;
+}
+
+.super-login-brand-content {
+    position: relative;
+    z-index: 1;
+}
+
+.super-login-logo {
+    display: block;
+    width: 72px;
+    height: 57px;
+    padding: 5px;
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    background: white;
+    object-fit: contain;
+}
+
+.super-login-brand h2 {
+    max-width: 10ch;
+    margin: 27px 0 10px;
+    color: #fff;
+    font-size: clamp(32px, 5vw, 54px);
+    font-weight: 800;
+    line-height: 1.04;
+    letter-spacing: -.055em;
+}
+
+.super-login-brand p {
+    max-width: 32ch;
+    margin: 0;
+    color: #F2E7DA;
+    font-size: 14px;
+}
+
+[dir="rtl"] .super-login-brand h2,
+[dir="rtl"] .super-login-panel h1 {
+    letter-spacing: 0;
+    line-height: 1.24;
+}
+
+.super-login-brand .overview-orbit-one {
+    top: -190px;
+    inset-inline-end: -98px;
+}
+
+.super-login-brand .overview-orbit-two {
+    inset-inline-end: 22%;
+    bottom: -270px;
+}
+
+.super-login-court {
+    position: absolute;
+    z-index: -1;
+    inset-inline-end: -80px;
+    inset-block-end: -20px;
+    width: 320px;
+    aspect-ratio: 1.85;
+    border: 1px solid #f2e7da52;
+    border-radius: 9px;
+    background-image: linear-gradient(90deg, transparent calc(50% - .5px), #f2e7da52 50%, transparent calc(50% + .5px));
+    transform: rotate(-16deg);
+    pointer-events: none;
+}
+
+.super-login-court::before {
+    content: "";
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 55px;
+    aspect-ratio: 1;
+    border: 1px solid #f2e7da52;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.super-login-court span {
+    position: absolute;
+    inset-block: 25%;
+    width: 17%;
+    border: 1px solid #f2e7da52;
+}
+
+.super-login-court span:first-child {
+    inset-inline-start: -1px;
+}
+
+.super-login-court span:last-child {
+    inset-inline-end: -1px;
+}
+
+.super-login-panel {
+    align-self: center;
+    min-width: 0;
+    padding: clamp(30px, 5vw, 58px);
+}
+
+.super-login-panel h1 {
+    margin: 0 0 26px;
+    color: var(--admin-text);
+    font-size: clamp(25px, 3.1vw, 33px);
+    font-weight: 800;
+    line-height: 1.16;
+    letter-spacing: -.045em;
+}
+
+.super-login-panel form {
+    display: grid;
+    gap: 18px;
+}
+
+.super-login-field label {
+    display: block;
+    margin: 0 0 6px;
+    font-weight: 750;
+}
+
+.super-login-field input {
+    display: block;
+    width: 100%;
+    min-height: 50px;
+    padding: 10px 13px;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-sm);
+    background: #fff;
+    color: var(--admin-text);
+    font: inherit;
+    font-size: 16px;
+}
+
+.super-login-field input[aria-invalid="true"] {
+    border-color: var(--admin-danger);
+}
+
+.super-login-password {
+    position: relative;
+}
+
+.super-login-password:has(button:not([hidden])) input {
+    padding-inline-end: 76px;
+}
+
+[dir="rtl"] .super-login-password:has(button:not([hidden])) input {
+    padding-inline: 76px 13px;
+}
+
+.super-login-password:has(button:not([hidden])) input::-ms-reveal {
+    display: none;
+}
+
+.super-login-password button {
+    position: absolute;
+    inset-block: 5px;
+    inset-inline-end: 5px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #89501D;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.super-login-password button:hover {
+    background: var(--admin-primary-light);
+}
+
+.super-login-error {
+    margin: 7px 0 0;
+    color: #A52A35;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.super-login-status {
+    margin: 0 0 16px;
+    padding: 9px 12px;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-sm);
+    background: var(--admin-primary-light);
+}
+
+.super-login-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-block-start: 18px;
+}
+
+.super-login-links a {
+    color: #89501D;
+    font-weight: 800;
+    text-underline-offset: 3px;
+}
+
+.super-login-submit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 51px;
+    margin-top: 4px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: var(--admin-radius-sm);
+    background: #965014;
+    color: #fff;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background-color .18s ease;
+}
+
+.super-login-submit:hover {
+    background: #763C10;
+}
+
+@media (max-width: 720px) {
+    .super-login-shell {
+        padding: 20px 14px 28px;
+    }
+
+    .super-login-card {
+        grid-template-columns: minmax(0, 1fr);
+        width: min(480px, calc(100vw - 28px));
+        min-height: 0;
+    }
+
+    .super-login-brand.overview-welcome {
+        min-height: 0;
+        padding: 22px 24px;
+        border-radius: 23px 23px 0 0;
+    }
+
+    .super-login-logo {
+        width: 56px;
+        height: 43px;
+        padding: 4px;
+        border-radius: 9px;
+    }
+
+    .super-login-brand h2 {
+        max-width: none;
+        margin-top: 12px;
+        font-size: clamp(24px, 7vw, 34px);
+    }
+
+    .super-login-brand p {
+        font-size: 13px;
+    }
+
+    .super-login-court {
+        inset-inline-end: -100px;
+        inset-block-end: -60px;
+        width: 245px;
+    }
+
+    .super-login-panel {
+        padding: 26px 24px 28px;
+    }
+
+    .super-login-panel h1 {
+        margin-bottom: 19px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .super-login-submit {
+        transition: none;
+    }
+}

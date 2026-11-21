@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Court;
 use App\Models\Subscription;
 use App\Events\BookingCancelled;
-use App\Services\WaitingListOfferService;
 use App\Services\BookingPricingService;
 use App\Services\CourtSlotAvailabilityService;
 class BookingController extends Controller
@@ -407,9 +406,14 @@ public function cancel(Request $request, Booking $booking)
     });
 
     BookingCancelled::dispatch($cancelledBooking);
-    app(WaitingListOfferService::class)->afterCancellation($cancelledBooking);
 
-    return response()->json($cancelledBooking);
+    if ($request->expectsJson()) {
+        return response()->json($cancelledBooking);
+    }
+
+    return redirect()
+        ->route('courtbook.bookings')
+        ->with('success', __('Booking cancelled. The time is available again.'));
 }
 
 

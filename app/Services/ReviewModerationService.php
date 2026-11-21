@@ -39,13 +39,13 @@ PROMPT;
 
             $decoded = json_decode($result->text(), true);
 
-            if (! is_array($decoded) || ! isset($decoded['decision'])) {
+            if (! is_array($decoded) || ! in_array($decoded['decision'] ?? null, ['safe', 'spam', 'abusive'], true)) {
                 return ['decision' => 'pending', 'reason' => 'Malformed AI response'];
             }
 
             return [
                 'decision' => $decoded['decision'],
-                'reason'   => $decoded['reason'] ?? '',
+                'reason'   => mb_substr((string) ($decoded['reason'] ?? ''), 0, 2000),
             ];
         } catch (\Throwable $e) {
             Log::error('Gemini moderation failed: ' . $e->getMessage());

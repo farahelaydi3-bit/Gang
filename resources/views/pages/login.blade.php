@@ -5,13 +5,7 @@
 
 @section('content')
 
-<div class="wrap page courts-page login-page">
-
-    @include('pages.heading', [
-    'eyebrow' => 'Ready to play?',
-    'heading' => 'Welcome back',
-    'description' => 'Log in to your Gang account.'
-    ])
+<div class="wrap page login-page">
     @if (session('status'))
     <div class="panel login-status" role="status">
         {{ session('status') }}

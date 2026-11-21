@@ -2,72 +2,130 @@
 
 @section('title', 'فاتورة اشتراك الملعب')
 @section('page', 'subscription-invoice')
+
 @push('styles')
 <style>
-.gang-invoice {max-width:850px;margin:35px auto 70px;direction:rtl;color:#18372b}
-.gang-invoice .invoice-card {border-radius:24px;background:#fff;border:1px solid #d9e9df;padding:clamp(20px,4vw,36px);box-shadow:0 15px 35px #102d1810}
-.gang-invoice h1 {margin:0 0 10px}
-.gang-invoice .muted-line{color:#6b7c72;line-height:1.7}
-.gang-invoice .invoice-grid {display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:25px 0}
-.gang-invoice .invoice-field {background:#f4faf6;border:1px solid #e1eee4;padding:16px;border-radius:13px}
-.gang-invoice .invoice-field small {display:block;color:#66766c;margin-bottom:7px}
-.gang-invoice .invoice-breakdown {border-top:1px solid #e2eae5;padding-top:16px;margin-top:18px}
-.gang-invoice .invoice-line{display:flex;justify-content:space-between;gap:15px;padding:11px 0}
-.gang-invoice .total{font-size:1.4rem;font-weight:900;color:#138747;border-top:2px solid #d6eadd}
-.gang-invoice .invoice-table{width:100%;border-collapse:collapse;text-align:right;margin-top:15px}
-.gang-invoice .invoice-table th,.gang-invoice .invoice-table td{padding:12px 8px;border-bottom:1px solid #eef1ee}
-.gang-invoice .invoice-scroll{overflow-x:auto}
-.gang-invoice .pay-button{width:100%;border:none;background:#16a34a;color:#fff;font:inherit;font-weight:800;border-radius:12px;padding:18px;cursor:pointer;margin:24px 0 12px}
-.gang-invoice .alert{padding:13px;border-radius:12px;background:#fff3e9;color:#8b4318;margin:15px 0}
-@media(max-width:600px){.gang-invoice .invoice-grid{grid-template-columns:1fr}}
+.gang-invoice{max-width:1040px;margin:0 auto;padding-block:1.2rem 2.5rem;direction:rtl;color:#193b29}
+.invoice-back{display:inline-flex;align-items:center;gap:.4rem;margin-bottom:.8rem;color:#52763b;font-size:.8rem;font-weight:850;text-decoration:none}
+.invoice-back:hover{color:#176b45}
+.invoice-hero{position:relative;isolation:isolate;overflow:hidden;margin-bottom:1rem;padding:clamp(1.35rem,3vw,2.2rem);border:1px solid #dce9db;border-radius:24px;background:radial-gradient(circle at 95% 0%,#c8f36b38,transparent 27%),linear-gradient(120deg,#f7faf5,#eef5e9);box-shadow:0 16px 36px -30px #123b2a66}
+.invoice-hero::after{position:absolute;z-index:-1;inset-inline-end:-52px;bottom:-162px;width:270px;height:270px;border:1px solid #176b4526;border-radius:50%;box-shadow:0 0 0 22px #176b4508,0 0 0 48px #176b4506;content:"";pointer-events:none}
+.invoice-hero .eyebrow{display:inline-flex;align-items:center;gap:.45rem;color:#557b31;font-size:.7rem;font-weight:900;letter-spacing:.1em}
+.invoice-hero .eyebrow::before{width:7px;height:7px;border-radius:50%;background:#a4ce4f;box-shadow:0 0 0 4px #a4ce4f30;content:""}
+.invoice-hero h1{position:relative;margin:.55rem 0 .35rem;color:#123b2a;font-size:clamp(1.8rem,4vw,2.65rem);letter-spacing:-.045em}
+.invoice-hero p{position:relative;max-width:62ch;margin:0;color:#617267;font-size:.9rem;line-height:1.7}
+.invoice-card{padding:clamp(1rem,3vw,1.7rem);border:1px solid #e0e9de;border-radius:22px;background:#fff;box-shadow:0 14px 32px -28px #123b2a70}
+.invoice-alert{display:flex;align-items:flex-start;gap:.55rem;margin:0 0 .8rem;padding:.75rem .85rem;border:1px solid #e7d9bc;border-radius:13px;background:#fff9ec;color:#765a23;font-size:.8rem;line-height:1.65}
+.invoice-alert::before{display:grid;place-items:center;flex:none;width:21px;height:21px;border-radius:50%;background:#f8edcf;color:#89691f;font-weight:900;content:"!"}
+.invoice-alert>ul{margin:0;padding-inline-start:1.1rem}
+.invoice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem;margin:0 0 1.2rem}
+.invoice-field{display:grid;align-content:start;gap:.3rem;min-width:0;padding:.8rem .9rem;border:1px solid #e7eee3;border-radius:14px;background:#f9fbf6}
+.invoice-field small{color:#768477;font-size:.7rem;font-weight:750}
+.invoice-field strong{color:#234733;font-size:.85rem;overflow-wrap:anywhere}
+.invoice-section-heading{display:flex;align-items:center;gap:.65rem;margin:1.1rem 0 .65rem}
+.invoice-section-icon{display:grid;place-items:center;flex:none;width:36px;height:36px;border:1px solid #deebc5;border-radius:12px;background:#f1f7e5;color:#668b2c}
+.invoice-section-heading h2{margin:0;color:#193b29;font-size:1rem}
+.invoice-section-heading p{margin:.12rem 0 0;color:#7a887c;font-size:.72rem}
+.invoice-scroll{overflow-x:auto;border:1px solid #e8eee5;border-radius:14px}
+.invoice-table{width:100%;border-collapse:collapse;text-align:right;white-space:nowrap}
+.invoice-table th,.invoice-table td{padding:.72rem .8rem;border-bottom:1px solid #edf1eb;font-size:.78rem}
+.invoice-table th{background:#f8faf5;color:#69796d;font-size:.7rem;font-weight:850}
+.invoice-table td{color:#344b39;font-weight:700}
+.invoice-table tbody tr:last-child td{border-bottom:0}
+.invoice-breakdown{max-width:560px;margin:1.1rem 0 0 auto;padding:.35rem .9rem;border:1px solid #e7eee3;border-radius:15px;background:#fbfcf9}
+.invoice-line{display:flex;justify-content:space-between;gap:15px;padding:.68rem 0;color:#68776b;font-size:.8rem}
+.invoice-line strong{color:#344b39}
+.invoice-line.total{margin-top:.2rem;padding-top:.85rem;border-top:1px solid #dfe9db;color:#234733;font-size:.9rem;font-weight:850}
+.invoice-line.total strong{color:#193b29;font-size:1.12rem}
+.invoice-actions{max-width:560px;margin:1rem 0 0 auto}
+.invoice-pay-button{display:flex;width:100%;align-items:center;justify-content:center;gap:.45rem;min-height:50px;padding:.7rem 1rem;border:1px solid #c8f36b;border-radius:13px;background:#c8f36b;color:#193b29;font:inherit;font-size:.86rem;font-weight:900;box-shadow:0 10px 20px -15px #123b2a99;cursor:pointer;transition:background .18s ease,transform .18s ease}
+.invoice-pay-button:hover{transform:translateY(-1px);background:#ddf4a2}
+.invoice-note{margin:.55rem 0 0;color:#718076;font-size:.72rem;line-height:1.7}
+.invoice-paid{display:inline-flex;align-items:center;gap:.45rem;margin-top:1rem;padding:.55rem .75rem;border:1px solid #dcebbd;border-radius:999px;background:#f1f7e5;color:#557b31;font-size:.8rem;font-weight:850}
+.invoice-footer-link{display:inline-flex;margin-top:.8rem;color:#557b31;font-size:.78rem;font-weight:850;text-decoration:none}
+.invoice-footer-link:hover{color:#176b45;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:720px){.invoice-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.gang-invoice{padding-block:.8rem 1.5rem}.invoice-hero{padding:1.15rem;border-radius:19px}.invoice-grid{grid-template-columns:1fr 1fr;gap:.45rem}.invoice-field{padding:.7rem}.invoice-card{padding:1rem;border-radius:18px}.invoice-table th,.invoice-table td{padding:.65rem .6rem}.invoice-line{font-size:.76rem}}
 </style>
 @endpush
+
 @section('content')
 <div class="wrap page gang-invoice" dir="rtl">
-  <div class="invoice-card">
-    <h1>فاتورة الاشتراك</h1>
-    <p class="muted-line">راجع تفاصيل الملعب والمواعيد وقيمة الخصم قبل الانتقال للدفع الآمن عبر Stripe.</p>
-    @if(session('payment_error')) <div class="alert" role="alert">{{ session('payment_error') }}</div> @endif
-    @if($errors->any())<div class="alert" role="alert">@foreach($errors->all() as $error)<div>{{ $error }}</div>@endforeach</div>@endif
-    @if(request()->boolean('cancelled'))<div class="alert">تم الرجوع من Stripe بدون إكمال الدفع. مواعيد الطلب ما زالت محجوزة مؤقتًا.</div>@endif
+  <a class="invoice-back" href="{{ route('courtbook.my-subscriptions') }}"><span aria-hidden="true">→</span> اشتراكاتي</a>
+
+  <header class="invoice-hero">
+    <span class="eyebrow">اشتراك Gang</span>
+    <h1>فاتورة اشتراكك</h1>
+    <p>راجع الملعب ومواعيد لعبك والسعر النهائي، وإذا كل شي تمام كمّل للدفع.</p>
+  </header>
+
+  <section class="invoice-card">
+    @if (session('payment_error'))
+      <div class="invoice-alert" role="alert">{{ session('payment_error') }}</div>
+    @endif
+    @if ($errors->any())
+      <div class="invoice-alert" role="alert"><ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
+    @endif
+    @if (request()->boolean('cancelled'))
+      <div class="invoice-alert" role="status">رجعت من الدفع بدون ما تكمّله. مواعيدك لسه محجوزة مؤقتًا.</div>
+    @endif
+
     <div class="invoice-grid">
-      <div class="invoice-field"><small>اسم الملعب</small><strong>{{ $subscription->court->name }}</strong></div>
+      <div class="invoice-field"><small>الملعب</small><strong>{{ $subscription->court->name }}</strong></div>
       <div class="invoice-field"><small>رقم الاشتراك</small><strong>#{{ $subscription->id }}</strong></div>
       <div class="invoice-field"><small>مدة الباقة</small><strong>{{ $subscription->duration_days }} يوم</strong></div>
       <div class="invoice-field"><small>عدد المواعيد</small><strong>{{ $subscription->bookings->count() }} موعد</strong></div>
       <div class="invoice-field"><small>مجموع ساعات اللعب</small><strong>{{ number_format((float) $subscription->total_hours, 1) }} ساعة</strong></div>
-      <div class="invoice-field"><small>تاريخ البداية</small><strong>{{ $subscription->start_date->format('Y-m-d') }}</strong></div>
+      <div class="invoice-field"><small>بداية الاشتراك</small><strong>{{ $subscription->start_date->locale(app()->getLocale())->translatedFormat('j M Y') }}</strong></div>
     </div>
-    <h2>مواعيد الحجز</h2>
-    <div class="invoice-scroll"><table class="invoice-table"><thead><tr><th>التاريخ</th><th>من</th><th>إلى</th></tr></thead><tbody>
-      @foreach($subscription->bookings as $booking)
-       <tr><td>{{ $booking->booking_date->format('Y-m-d') }}</td><td>{{ substr($booking->start_time,0,5) }}</td><td>{{ substr($booking->end_time,0,5) }}</td></tr>
-      @endforeach
-    </tbody></table></div>
+
+    <div class="invoice-section-heading">
+      <span class="invoice-section-icon" aria-hidden="true">◷</span>
+      <div><h2>مواعيد لعبك</h2><p>هاي الأوقات المحجوزة ضمن اشتراكك</p></div>
+    </div>
+    <div class="invoice-scroll">
+      <table class="invoice-table">
+        <thead><tr><th>التاريخ</th><th>من</th><th>إلى</th></tr></thead>
+        <tbody>
+          @foreach ($subscription->bookings as $booking)
+            <tr>
+              <td>{{ $booking->booking_date->locale(app()->getLocale())->translatedFormat('j M Y') }}</td>
+              <td>{{ substr($booking->start_time, 0, 5) }}</td>
+              <td>{{ substr($booking->end_time, 0, 5) }}</td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+
     @php
-       $afterDiscount = (float) $subscription->amount;
-       $discountPercent = (float) $subscription->discount_percentage;
-       $beforeDiscount = $discountPercent < 100 ? round($afterDiscount / (1-$discountPercent/100), 2) : 0;
+      $afterDiscount = (float) $subscription->amount;
+      $discountPercent = (float) $subscription->discount_percentage;
+      $beforeDiscount = $discountPercent < 100 ? round($afterDiscount / (1 - $discountPercent / 100), 2) : 0;
     @endphp
+
     <div class="invoice-breakdown">
-      <div class="invoice-line"><span>السعر قبل الخصم</span><strong>{{ number_format($beforeDiscount,2) }} د.أ</strong></div>
-      <div class="invoice-line"><span>نسبة الخصم</span><strong>{{ number_format($discountPercent,0) }}%</strong></div>
-      <div class="invoice-line"><span>قيمة الخصم</span><strong>-{{ number_format($beforeDiscount-$afterDiscount,2) }} د.أ</strong></div>
-      <div class="invoice-line total"><span>المبلغ النهائي</span><strong>{{ number_format($afterDiscount,2) }} د.أ</strong></div>
+      <div class="invoice-line"><span>السعر قبل الخصم</span><strong>{{ number_format($beforeDiscount, 2) }} د.أ</strong></div>
+      <div class="invoice-line"><span>نسبة الخصم</span><strong>{{ number_format($discountPercent, 0) }}%</strong></div>
+      <div class="invoice-line"><span>قيمة الخصم</span><strong>−{{ number_format($beforeDiscount - $afterDiscount, 2) }} د.أ</strong></div>
+      <div class="invoice-line total"><span>المبلغ النهائي</span><strong>{{ number_format($afterDiscount, 2) }} د.أ</strong></div>
     </div>
-    @if($subscription->paid_at)
-      <p style="color:#138747;font-weight:800">تم الدفع وتأكيد الاشتراك.</p>
-      <a href="{{ route('courtbook.my-subscriptions') }}">عرض اشتراكاتي</a>
-    @elseif($subscription->status === 'pending')
-      <form method="POST" action="{{ route('subscriptions.stripe.checkout',$subscription) }}">
-        @csrf
-        <button type="submit" class="pay-button">تأكيد والدفع عبر Stripe — {{ number_format($afterDiscount,2) }} د.أ</button>
-      </form>
-      <p class="muted-line">لن يُخصم أي مبلغ قبل إكمال عملية الدفع في Stripe. الحجز مؤقت حتى تأكيد الدفع أو إلغاء الطلب.</p>
+
+    @if ($subscription->paid_at)
+      <p class="invoice-paid"><span aria-hidden="true">✓</span> اشتراكك مدفوع ومؤكد.</p>
+    @elseif ($subscription->status === 'pending')
+      <div class="invoice-actions">
+        <form method="POST" action="{{ route('subscriptions.stripe.checkout', $subscription) }}">
+          @csrf
+          <button type="submit" class="invoice-pay-button">كمّل الاشتراك وادفع <span aria-hidden="true">←</span> {{ number_format($afterDiscount, 2) }} د.أ</button>
+        </form>
+        <p class="invoice-note">مواعيدك محجوزة مؤقتًا لغاية ما تكمل الدفع أو تلغي الطلب.</p>
+      </div>
     @else
-      <p class="alert">هذا الطلب لم يعد متاحًا للدفع.</p>
+      <div class="invoice-alert" role="status" style="margin-top:1rem">هذا الاشتراك ما عاد متاح للدفع.</div>
     @endif
-    <a href="{{ route('courtbook.my-subscriptions') }}">اشتراكاتي</a>
-  </div>
+
+    <a class="invoice-footer-link" href="{{ route('courtbook.my-subscriptions') }}">ارجع لاشتراكاتي</a>
+  </section>
 </div>
 @endsection

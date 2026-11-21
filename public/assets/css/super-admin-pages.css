@@ -1,0 +1,483 @@
+.dashboard-layout {
+    font-family: "Dashboard Manrope", "Dashboard Cairo", Manrope, Cairo, system-ui, sans-serif;
+}
+
+.dashboard-layout .owner-content {
+    width: 100%;
+    max-width: 1514px;
+    min-width: 0;
+    margin-inline: auto;
+}
+
+.super-admin-page-header {
+    min-height: 142px;
+    margin-block-end: 20px;
+    padding: clamp(20px, 3vw, 31px);
+}
+
+.overview-page > .super-admin-page-header {
+    margin-block-end: 0;
+}
+
+.super-admin-page-header .overview-welcome-copy {
+    min-width: 0;
+}
+
+.super-admin-page-header h1 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(25px, 3.6vw, 37px);
+    line-height: 1.17;
+    letter-spacing: -.035em;
+    overflow-wrap: anywhere;
+}
+
+.super-admin-page-header .overview-welcome-copy > p {
+    margin-top: 6px;
+    color: #F2E7DA;
+    font-size: 13px;
+}
+
+.super-admin-page-header .overview-welcome-copy > .super-admin-page-reference {
+    margin: 0 0 6px;
+    font-weight: 800;
+}
+
+.super-admin-page-actions {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.dashboard-layout .super-admin-page-actions .admin-button {
+    min-height: 42px;
+    white-space: nowrap;
+}
+
+.dashboard-layout .overview-action-link {
+    min-height: 42px;
+    font-size: 13px;
+}
+
+.dashboard-layout .admin-button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.owner-subscriptions-table {
+    min-width: 820px;
+}
+
+.dashboard-layout :is(.reservations-page, .subscriptions-page, .group-games-page) {
+    min-width: 0;
+    gap: 20px;
+}
+
+.dashboard-layout :is(.reservations-page, .subscriptions-page, .group-games-page) > :is(.super-admin-page-header, .super-admin-filter, .stats-grid) {
+    margin-block-end: 0;
+}
+
+.owner-court-photo-preview {
+    max-width: min(300px, 100%);
+}
+
+.super-admin-page-meta {
+    display: grid;
+    gap: 4px;
+    color: #F2E7DA;
+    font-size: 12px;
+    font-weight: 750;
+    text-align: end;
+}
+
+.super-admin-table-card {
+    min-width: 0;
+}
+
+.dashboard-layout :is(.admin-card, .overview-panel, .super-profile-card, .super-profile-tip, .super-profile-account-chip) {
+    border-radius: 16px;
+}
+
+.dashboard-layout :is(.admin-card-header h2, .admin-card-header h3, .overview-panel-head h3) {
+    margin: 0;
+    color: var(--admin-text);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.dashboard-layout :is(.admin-table-wrap, .overview-table-wrap) {
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--admin-border);
+    border-radius: 11px;
+    background: var(--admin-surface);
+}
+
+.dashboard-layout :is(.admin-table, .overview-table) {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: start;
+}
+
+.dashboard-layout :is(.admin-table, .overview-table) :is(th, td) {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--admin-border);
+    vertical-align: middle;
+    text-align: start;
+}
+
+.dashboard-layout :is(.admin-table, .overview-table) th {
+    background: var(--admin-primary-light);
+    color: #52657E;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.dashboard-layout :is(.admin-table, .overview-table) td {
+    color: var(--admin-text);
+    font-size: 13px;
+}
+
+.dashboard-layout :is(.admin-table, .overview-table) tr:last-child td {
+    border-bottom: 0;
+}
+
+.dashboard-layout :is(.admin-table, .overview-table) tbody tr:hover {
+    background: #FAF2E8;
+}
+
+.dashboard-layout :is(.admin-table, .overview-table) :is(.super-admin-empty, .overview-table-empty) {
+    padding: 22px 14px !important;
+    color: #52657E !important;
+    text-align: center;
+}
+
+.dashboard-layout :is(.admin-table, .overview-table) .admin-button,
+.super-admin-pagination .admin-button {
+    min-height: 36px;
+    padding: 5px 11px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.dashboard-layout :is(.admin-table, .overview-table) .form-control {
+    min-height: 36px;
+    padding-inline: 10px 28px;
+    font-size: 13px;
+}
+
+.dashboard-layout .form-control {
+    border-color: var(--admin-border);
+    background-color: var(--admin-surface);
+    color: var(--admin-text);
+}
+
+.dashboard-layout .form-control:focus {
+    border-color: var(--admin-primary);
+    box-shadow: 0 0 0 3px #B5651D22;
+}
+
+.dashboard-layout :is(.badge, .overview-status) {
+    border: 1px solid var(--admin-border);
+    background: #F8F0E8;
+    color: #52657E;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.dashboard-layout :is(.badge-success, .overview-status-active, .overview-status-approved) {
+    border-color: #D1E5D9;
+    background: #EAF5EF;
+    color: #236447;
+}
+
+.dashboard-layout :is(.badge-warning, .overview-status-pending) {
+    border-color: #EFDBBF;
+    background: #FCF0DA;
+    color: #79440E;
+}
+
+.dashboard-layout :is(.badge-danger, .overview-status-suspended, .overview-status-rejected) {
+    border-color: #F5D0D3;
+    background: #FDEBED;
+    color: #A52A35;
+}
+
+.super-admin-form-errors {
+    margin-block-end: 14px;
+    padding: 11px 15px;
+    border: 1px solid #F5D0D3;
+    border-radius: 12px;
+    background: #FDEBED;
+    color: #A52A35;
+}
+
+.super-admin-form-errors ul {
+    margin: 0;
+    padding-inline-start: 20px;
+}
+
+.dashboard-layout .super-admin-filter {
+    margin-block-end: 16px;
+}
+
+.super-admin-filter-form,
+.super-admin-inline-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 8px;
+}
+
+.super-admin-inline-actions {
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.super-admin-inline-actions .form-control {
+    width: auto;
+    min-width: 7.5rem;
+}
+
+.super-admin-filter-field {
+    flex: 1 1 150px;
+    max-width: 290px;
+    min-width: min(100%, 150px);
+}
+
+.super-admin-filter-field--search {
+    flex-basis: 220px;
+    max-width: 420px;
+}
+
+.super-admin-pagination,
+.super-admin-pagination-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.super-admin-pagination {
+    justify-content: space-between;
+    margin-block-start: 14px;
+    color: #52657E;
+    font-size: 12px;
+}
+
+.super-admin-pagination-links .super-admin-page-number {
+    display: grid;
+    min-width: 34px;
+    min-height: 36px;
+    place-items: center;
+    padding-inline: 5px;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    background: var(--admin-surface);
+    color: var(--admin-text);
+    font-weight: 800;
+}
+
+.super-admin-pagination-links [aria-current="page"] {
+    border-color: var(--admin-primary-dark);
+    background: var(--admin-primary-dark);
+    color: white;
+}
+
+.super-admin-pagination-links a.super-admin-page-number:hover {
+    background: var(--admin-hover);
+}
+
+.super-admin-records {
+    display: grid;
+    gap: 12px;
+}
+
+.super-admin-record-badges,
+.super-admin-site-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 8px;
+}
+
+.super-admin-site-actions {
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.dashboard-layout .super-profile-page {
+    max-width: none;
+}
+
+.dashboard-layout .super-profile-form-footer .admin-button {
+    min-height: 42px;
+    padding-inline: 18px;
+    border-radius: var(--admin-radius-sm);
+    font-size: 14px;
+    transform: none;
+}
+
+.super-admin-record-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-block-end: 12px;
+}
+
+.super-admin-record-heading h2 {
+    margin: 0;
+    font-size: 16px;
+    overflow-wrap: anywhere;
+}
+
+.super-admin-record-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 156px), 1fr));
+    gap: 8px;
+    margin: 0;
+}
+
+.super-admin-record-facts > div {
+    padding: 9px 11px;
+    border: 1px solid var(--admin-border);
+    border-radius: 10px;
+    background: #FAF2E8;
+}
+
+.super-admin-record-facts dt,
+.super-admin-muted {
+    color: #52657E;
+    font-size: 12px;
+}
+
+.super-admin-record-facts dd {
+    margin: 3px 0 0;
+    font-weight: 750;
+    overflow-wrap: anywhere;
+}
+
+.super-admin-record-section {
+    margin-block-start: 14px;
+    padding-block-start: 12px;
+    border-block-start: 1px solid var(--admin-border);
+}
+
+.super-admin-record-section :is(h3, p) {
+    margin: 0 0 5px;
+    overflow-wrap: anywhere;
+}
+
+.super-admin-record-section h3 {
+    font-size: 13px;
+}
+
+.super-admin-record-section p {
+    white-space: pre-wrap;
+}
+
+.super-admin-court-photo {
+    display: block;
+    overflow: hidden;
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    background: #FAF2E8;
+}
+
+.super-admin-court-photo img {
+    display: block;
+    width: 100%;
+    max-height: 430px;
+    object-fit: contain;
+}
+
+.dashboard-layout a.super-admin-record-link {
+    color: var(--admin-text);
+    font-weight: 800;
+    text-decoration: underline;
+    text-decoration-color: #B5651D;
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+}
+
+.dashboard-layout a.super-admin-record-link:hover {
+    color: #89501D;
+}
+
+.super-admin-dialog {
+    width: min(430px, calc(100% - 28px));
+    max-height: calc(100dvh - 36px);
+    padding: 0;
+    border: 1px solid var(--admin-border);
+    border-radius: 17px;
+    background: var(--admin-surface);
+    color: var(--admin-text);
+    box-shadow: 0 24px 66px -34px #1D3557A0;
+}
+
+.super-admin-dialog[open]:not(:modal) {
+    position: static;
+    margin: 0 0 16px;
+}
+
+.super-admin-dialog::backdrop {
+    background: #152A48A8;
+}
+
+.super-admin-dialog-content {
+    padding: 22px;
+}
+
+.super-admin-dialog-content h2 {
+    margin: 0 0 16px;
+    font-size: 20px;
+}
+
+.super-admin-dialog-content .super-admin-form-errors {
+    margin-block: 10px 0;
+}
+
+.super-admin-dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: end;
+    gap: 8px;
+    margin-block-start: 18px;
+}
+
+@media (max-width: 560px) {
+    .super-admin-page-header {
+        min-height: 0;
+        margin-block-end: 14px;
+    }
+
+    .super-admin-page-meta {
+        text-align: start;
+    }
+
+    .dashboard-layout .admin-card {
+        padding: 14px;
+    }
+
+    .dashboard-layout :is(.admin-table, .overview-table) :is(th, td) {
+        padding: 10px 11px;
+    }
+
+    .super-admin-pagination-links .super-admin-page-number:not([aria-current="page"]) {
+        display: none;
+    }
+}
+
+@media (min-width: 1160px) {
+    .owner-overview-stats {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}

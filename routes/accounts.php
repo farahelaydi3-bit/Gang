@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -25,6 +24,7 @@ use App\Http\Controllers\Admin\GangSiteStudioController;
 use App\Http\Controllers\Admin\MyProfileController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Admin\GroupGameController;
+use App\Http\Controllers\Admin\SmsLogController;
 
 // =========================
 // Super Admin Routes
@@ -60,6 +60,9 @@ Route::prefix('super-admin')->name('super_admin.')->group(function () {
         Route::get('/admins', [AdminController::class, 'index'])
             ->name('admins.index');
 
+        Route::get('/admins/{admin}', [AdminController::class, 'show'])
+            ->name('admins.show');
+
         Route::patch('/admins/{admin}/status', [AdminController::class, 'updateStatus'])
             ->name('admins.status');
 
@@ -89,6 +92,9 @@ Route::prefix('super-admin')->name('super_admin.')->group(function () {
 
         Route::get('/courts/{court}', [CourtsController::class, 'show'])
             ->name('courts.show');
+
+        Route::get('/courts/{court}/photo', [CourtsController::class, 'photo'])
+            ->name('courts.photo');
 
         Route::patch('/courts/{court}/status', [CourtsController::class, 'updateStatus'])
             ->name('courts.status');
@@ -164,6 +170,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/application', [OwnerApplicationController::class, 'store'])
             ->name('application.store');
 
+        Route::patch('/application/{application}', [OwnerApplicationController::class, 'update'])
+            ->whereNumber('application')
+            ->name('application.update');
+
         Route::post('/logout', [AdminAuthController::class, 'logout'])
             ->name('logout');
 
@@ -183,6 +193,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::post('/courts/store', [MyCourtsController::class, 'store'])
                 ->name('courts.store');
+
+            Route::get('/courts/{id}', [MyCourtsController::class, 'show'])
+                ->whereNumber('id')
+                ->name('courts.show');
+
+            Route::get('/courts/{id}/photo', [MyCourtsController::class, 'photo'])
+                ->whereNumber('id')
+                ->name('courts.photo');
 
             Route::get('/courts/{id}/edit', [MyCourtsController::class, 'edit'])
                 ->name('courts.edit');
@@ -226,6 +244,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::patch('/group-games/{id}/cancel', [GroupGameController::class, 'cancel'])
                 ->name('group-games.cancel');
+
+            Route::patch('/group-games/{id}/complete', [GroupGameController::class, 'complete'])
+                ->name('group-games.complete');
+
+            Route::get('/sms-logs', [SmsLogController::class, 'index'])
+                ->name('sms-logs.index');
 
             // Gang Site Studio
             Route::get('/site-studio', [GangSiteStudioController::class, 'index'])

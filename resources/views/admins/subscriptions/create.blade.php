@@ -1,22 +1,16 @@
 @extends('admins.layout.app')
 
-@section('page-title', 'Create Subscription')
+@section('title', 'Create Subscription')
 
 @section('content')
 
 <div class="subscriptions-page">
 
-    <div class="section-header">
-        <div>
-            <h2>Create Subscription</h2>
-            <p>Create a subscription plan for a user. It will remain pending until payment.</p>
-        </div>
-
-        <a href="{{ route('admin.subscriptions.index') }}"
-           class="admin-button-outline">
-            Back to Subscriptions
-        </a>
-    </div>
+    <x-super-admin.page-header title="Create Subscription" description="Create a subscription plan that remains pending until payment.">
+        <x-slot:actions>
+            <a class="admin-button admin-button-outline" href="{{ route('admin.subscriptions.index') }}">Back to subscriptions</a>
+        </x-slot:actions>
+    </x-super-admin.page-header>
 
 
     {{-- Validation Errors --}}
@@ -177,7 +171,7 @@
             <div class="subscription-form-actions">
 
                 <a href="{{ route('admin.subscriptions.index') }}"
-                   class="admin-button-outline">
+                   class="admin-button admin-button-outline">
                     Cancel
                 </a>
 

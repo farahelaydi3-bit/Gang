@@ -114,10 +114,10 @@ private function validateMapsUrl(Request $request, ?string $url, ?string $existi
         || ($host === 'goo.gl' && str_starts_with($path, '/maps/'))
     );
     if (!$valid) {
-        throw ValidationException::withMessages(['maps_url' => 'استخدم رابط مشاركة من Google Maps يبدأ بـ https فقط.']);
+        throw ValidationException::withMessages(['maps_url' => 'Use an HTTPS share link from Google Maps.']);
     }
     if (!$request->boolean('maps_confirm')) {
-        throw ValidationException::withMessages(['maps_confirm' => 'يرجى وضع علامة الصح لتأكيد أن رابط Google Maps يشير إلى الموقع الصحيح للمجمع الرياضي قبل الحفظ.']);
+        throw ValidationException::withMessages(['maps_confirm' => 'Confirm the Google Maps link points to your facility before saving.']);
     }
 }
 
@@ -203,7 +203,7 @@ private function validateMapsUrl(Request $request, ?string $url, ?string $existi
             }
         });
         $this->refreshPublished($website, $builder);
-        return back()->with('success', 'تم تحديث النصوص باستخدام Gemini مع الحفاظ على القالب الذي اخترته.');
+        return back()->with('success', 'Website copy updated. Your selected theme was preserved.');
     }
 
     public function preview(GangSiteBuilder $builder)

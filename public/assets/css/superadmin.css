@@ -68,6 +68,144 @@ body.no-scroll {
     outline-offset: 2px;
 }
 
+@font-face {
+    font-family: "Dashboard Manrope";
+    src: url("../../courtbook-assets/fonts/manrope-latin-wght-normal.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 200 800;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Dashboard Cairo";
+    src: url("../../courtbook-assets/fonts/cairo-arabic-wght-normal.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 200 1000;
+    font-display: swap;
+    unicode-range: U+0600-06FF, U+0750-077F, U+0870-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC;
+}
+
+.dashboard-notifications {
+    display: grid;
+    gap: 9px;
+    margin-bottom: 16px;
+}
+
+.dashboard-notifications[data-enhanced] {
+    position: fixed;
+    z-index: 1200;
+    inset-block-start: max(16px, env(safe-area-inset-top));
+    inset-inline-end: 18px;
+    width: min(388px, calc(100% - 36px));
+    max-height: calc(100vh - 34px);
+    max-height: calc(100dvh - 34px);
+    overflow-y: auto;
+    margin: 0;
+    filter: drop-shadow(0 12px 18px #1D35571F);
+}
+
+.dashboard-notification {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 14px;
+    overflow: hidden;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    background: var(--admin-surface);
+    color: var(--admin-text);
+    font: 750 14px/1.55 "Dashboard Manrope", "Dashboard Cairo", Manrope, Cairo, system-ui, sans-serif;
+}
+
+.dashboard-notification p {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.dashboard-notification-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid #D6E5DA;
+    border-radius: 10px;
+    background: #ECF5EF;
+    color: #286144;
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.dashboard-notification--error .dashboard-notification-icon {
+    border-color: #F0C8CB;
+    background: var(--admin-danger-light);
+    color: #A52A35;
+}
+
+.dashboard-notification-close {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: #52657E;
+    font: 500 21px/1 system-ui, sans-serif;
+    cursor: pointer;
+}
+
+.dashboard-notification-close[hidden] {
+    display: none;
+}
+
+.dashboard-notification-close:hover {
+    border-color: var(--admin-border);
+    background: var(--admin-primary-light);
+    color: var(--admin-text);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .dashboard-notifications[data-enhanced] .dashboard-notification::after {
+        content: "";
+        position: absolute;
+        inset-inline: 0;
+        inset-block-end: 0;
+        height: 3px;
+        background: var(--admin-primary);
+        transform-origin: right;
+        animation: dashboard-notification-countdown 5s linear forwards;
+    }
+
+    .dashboard-notifications[data-enhanced] .dashboard-notification--error::after {
+        animation-duration: 8s;
+        background: #A52A35;
+    }
+
+    .dashboard-notifications[data-enhanced]:is(:hover, :focus-within) .dashboard-notification::after {
+        animation-play-state: paused;
+    }
+
+    @keyframes dashboard-notification-countdown {
+        to { transform: scaleX(0); }
+    }
+}
+
+@media (max-width: 900px) {
+    .dashboard-notifications[data-enhanced] {
+        inset-block-start: max(62px, env(safe-area-inset-top));
+        inset-inline-end: 12px;
+        width: min(388px, calc(100% - 24px));
+        max-height: calc(100vh - 76px);
+        max-height: calc(100dvh - 76px);
+    }
+}
+
 
 /* ---------- Sidebar ---------- */
 
@@ -983,6 +1121,38 @@ textarea.form-control {
 .super-profile-tip-icon{background:#F3E9DC;color:#B5651D}
 .super-profile-account-chip>span{background:#F3E9DC;color:#B5651D}
 @media(max-width:850px){.overview-action-link{background:#B5651D}}
+
+.dashboard-layout {
+    --super-admin-button-fill: #A35819;
+    --super-admin-button-hover: #82420F;
+}
+
+.dashboard-layout :is(.admin-button, .overview-action-link) {
+    background: var(--super-admin-button-fill);
+    color: #fff;
+}
+
+.dashboard-layout :is(.admin-button, .overview-action-link):hover {
+    background: var(--super-admin-button-hover);
+    box-shadow: none;
+}
+
+.dashboard-layout .admin-button.admin-button-outline {
+    background: var(--admin-surface);
+    color: var(--admin-text);
+}
+
+.dashboard-layout .admin-button.admin-button-outline:hover {
+    background: var(--admin-hover);
+}
+
+.dashboard-layout .admin-button.admin-button-danger {
+    background: #AC2D3A;
+}
+
+.dashboard-layout .admin-button.admin-button-danger:hover {
+    background: #8D222E;
+}
 @media(max-width:900px){.overview-sidebar-toggle{position:absolute;z-index:3;top:14px;inset-inline-start:14px;display:grid;width:38px;height:38px;place-items:center;padding:0;border:1px solid #ffffff55;border-radius:11px;background:#ffffff18;color:#fff;cursor:pointer}.overview-sidebar-toggle:hover{background:#ffffff2b}}
 
 /* Shared owner panel mobile menu after removing the top navigation bar */
