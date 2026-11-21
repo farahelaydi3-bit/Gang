@@ -21,6 +21,16 @@ class ProfileTest extends TestCase
         $response->assertOk();
     }
 
+    public function test_profile_shortcut_links_to_my_subscriptions(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get('/courtbook/profile')
+            ->assertOk()
+            ->assertSee(route('courtbook.my-subscriptions'));
+    }
+
     public function test_profile_information_can_be_updated(): void
     {
         $user = User::factory()->create();

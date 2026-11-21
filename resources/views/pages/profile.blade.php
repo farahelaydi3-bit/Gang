@@ -107,6 +107,17 @@
                         <span class="profile-shortcut-arrow" aria-hidden="true">←</span>
                     </a>
 
+                    <a class="profile-shortcut-card" href="{{ route('courtbook.my-subscriptions') }}">
+                        <span class="profile-shortcut-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5h16M6.5 19.5V8l5.5-3 5.5 3v11.5M9 10h.01M15 10h.01M9 13.5h.01M15 13.5h.01M10 19.5v-3h4v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                        <span class="profile-shortcut-copy">
+                            <strong>{{ __('My Subscriptions') }}</strong>
+                            <small>{{ __('Manage your packages, hours and schedule.') }}</small>
+                        </span>
+                        <span class="profile-shortcut-arrow" aria-hidden="true">←</span>
+                    </a>
+
                     <a class="profile-discover-card" href="{{ route('courtbook.courts') }}">
                         <img src="{{ asset('courtbook-assets/images/players.png') }}" alt="" loading="lazy">
                         <span class="profile-discover-overlay">
