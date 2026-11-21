@@ -13,13 +13,14 @@
 
     <link rel="stylesheet" href="{{ asset('assets/css/admins.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/superadmin.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/super-admin-pages.css') }}">
 
     @stack('styles')
 </head>
 
 <body>
 
-    <div class="owner-layout">
+    <div class="owner-layout dashboard-layout">
 
         {{-- Mobile overlay --}}
         <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleOwnerSidebar()"></div>
@@ -142,6 +143,7 @@
         });
     </script>
     @stack('scripts')
+    @yield('scripts')
 
 </body>
 </html>

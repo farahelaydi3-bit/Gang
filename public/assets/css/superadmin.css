@@ -1122,35 +1122,35 @@ textarea.form-control {
 .super-profile-account-chip>span{background:#F3E9DC;color:#B5651D}
 @media(max-width:850px){.overview-action-link{background:#B5651D}}
 
-.super-admin-layout {
+.dashboard-layout {
     --super-admin-button-fill: #A35819;
     --super-admin-button-hover: #82420F;
 }
 
-.super-admin-layout :is(.admin-button, .overview-action-link) {
+.dashboard-layout :is(.admin-button, .overview-action-link) {
     background: var(--super-admin-button-fill);
     color: #fff;
 }
 
-.super-admin-layout :is(.admin-button, .overview-action-link):hover {
+.dashboard-layout :is(.admin-button, .overview-action-link):hover {
     background: var(--super-admin-button-hover);
     box-shadow: none;
 }
 
-.super-admin-layout .admin-button.admin-button-outline {
+.dashboard-layout .admin-button.admin-button-outline {
     background: var(--admin-surface);
     color: var(--admin-text);
 }
 
-.super-admin-layout .admin-button.admin-button-outline:hover {
+.dashboard-layout .admin-button.admin-button-outline:hover {
     background: var(--admin-hover);
 }
 
-.super-admin-layout .admin-button.admin-button-danger {
+.dashboard-layout .admin-button.admin-button-danger {
     background: #AC2D3A;
 }
 
-.super-admin-layout .admin-button.admin-button-danger:hover {
+.dashboard-layout .admin-button.admin-button-danger:hover {
     background: #8D222E;
 }
 @media(max-width:900px){.overview-sidebar-toggle{position:absolute;z-index:3;top:14px;inset-inline-start:14px;display:grid;width:38px;height:38px;place-items:center;padding:0;border:1px solid #ffffff55;border-radius:11px;background:#ffffff18;color:#fff;cursor:pointer}.overview-sidebar-toggle:hover{background:#ffffff2b}}

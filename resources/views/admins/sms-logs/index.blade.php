@@ -1,15 +1,10 @@
 @extends('admins.layout.app')
 
-@section('page-title', 'SMS History')
+@section('title', 'SMS History')
 
 @section('content')
     <div class="group-games-page">
-        <div class="group-games-header">
-            <div>
-                <h1>SMS History</h1>
-                <p>Read-only records of waiting-list SMS attempts for your courts.</p>
-            </div>
-        </div>
+        <x-super-admin.page-header title="SMS History" description="Review waiting-list message attempts for your courts." />
 
         <div class="admin-card group-games-table-card">
             <div class="admin-table-wrap">
@@ -29,7 +24,7 @@
                                 <td>{{ $log->user?->name ?? $log->phone }}</td>
                                 <td>{{ $log->waitingList?->groupGame?->title ?? $log->waitingList?->court?->name ?? '—' }}</td>
                                 <td>{{ $log->message }}</td>
-                                <td>{{ ucfirst($log->status) }}</td>
+                                <td><x-dashboard-status :state="$log->status" /></td>
                                 <td>{{ ($log->sent_at ?? $log->created_at)->format('M j, Y H:i') }}</td>
                             </tr>
                         @empty
@@ -38,7 +33,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="admin-pagination">{{ $logs->links() }}</div>
+            <div class="admin-pagination">{{ $logs->links('components.super-admin.pagination') }}</div>
         </div>
     </div>
 @endsection

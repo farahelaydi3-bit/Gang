@@ -1,23 +1,17 @@
 @extends('admins.layout.app')
 
-@section('page-title', 'Create Group Game')
+@section('title', 'Create Group Game')
 
 @section('content')
 
 <div class="group-game-create-page">
 
     {{-- Page Header --}}
-    <div class="group-game-create-header">
-        <div>
-            <h1>Create Group Game</h1>
-            <p>Create a group game on one of your courts.</p>
-        </div>
-
-        <a href="{{ route('admin.group-games.index') }}"
-           class="admin-button-outline">
-            Back to Group Games
-        </a>
-    </div>
+    <x-super-admin.page-header title="Create Group Game" description="Schedule a group game on one of your courts.">
+        <x-slot:actions>
+            <a class="admin-button admin-button-outline" href="{{ route('admin.group-games.index') }}">Back to group games</a>
+        </x-slot:actions>
+    </x-super-admin.page-header>
 
     {{-- Create Form --}}
     <div class="admin-card group-game-form-card">
@@ -170,7 +164,7 @@
             <div class="group-game-form-actions">
 
                 <a href="{{ route('admin.group-games.index') }}"
-                   class="admin-button-outline">
+                   class="admin-button admin-button-outline">
                     Cancel
                 </a>
 

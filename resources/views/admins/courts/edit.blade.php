@@ -20,16 +20,11 @@
 <div class="dashboard-wrapper">
 
     {{-- Page Header --}}
-    <div class="section-header">
-        <div>
-            <h2>Edit Court</h2>
-            <p>Update your court information and pricing.</p>
-        </div>
-
-        <a href="{{ route('admin.courts.index') }}" class="admin-button-outline">
-            Back to My Courts
-        </a>
-    </div>
+    <x-super-admin.page-header title="Edit Court" description="Update your court information and pricing.">
+        <x-slot:actions>
+            <a class="admin-button admin-button-outline" href="{{ route('admin.courts.index') }}">Back to my courts</a>
+        </x-slot:actions>
+    </x-super-admin.page-header>
 
     {{-- Form --}}
     <div class="admin-card">
@@ -84,7 +79,7 @@
 
                 <p>Click on the map to update the court location.</p>
 
-                <button type="button" id="my-location-btn" class="admin-button-outline">
+                <button type="button" id="my-location-btn" class="admin-button admin-button-outline">
                     📍 Use My Location
                 </button>
 
@@ -111,12 +106,10 @@
             <div class="form-group">
                 <label class="form-label">Current Image</label>
 
-                @if ($court->image)
-                <div class="court-image" style="max-width: 300px; margin-bottom: 15px;">
-                    
-                    <img src="{{ asset('courtbook-assets/images/' . $court->image) }}" alt="{{ $court->name }}"
-                        onerror="this.onerror=null;this.src='{{ asset('storage/' . $court->image) }}';">
-                </div>
+                @if ($courtPhoto)
+                    <div class="super-admin-court-photo owner-court-photo-preview">
+                        <img src="{{ $courtPhoto }}" alt="{{ $court->name }}">
+                    </div>
                 @else
                 <p>No image uploaded.</p>
                 @endif
@@ -221,20 +214,13 @@
                 @enderror
             </div>
 
-            {{-- Status Notice --}}
-            <div class="form-group">
-                <p class="badge badge-warning">
-                    After updating, this court will be submitted for approval again.
-                </p>
-            </div>
-
             {{-- Actions --}}
             <div class="form-actions">
                 <button type="submit" class="admin-button">
                     Update Court
                 </button>
 
-                <a href="{{ route('admin.courts.index') }}" class="admin-button-outline">
+                <a href="{{ route('admin.courts.index') }}" class="admin-button admin-button-outline">
                     Cancel
                 </a>
             </div>

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
 
 class Court extends Model
 {
@@ -40,6 +41,25 @@ class Court extends Model
     public function admin()
     {
         return $this->belongsTo(Admin::class, 'admin_id');
+    }
+
+    public function bundledPhotoUrl(): ?string
+    {
+        $image = $this->image;
+
+        return $image && basename($image) === $image && is_file(public_path('courtbook-assets/images/' . $image))
+            ? asset('courtbook-assets/images/' . $image)
+            : null;
+    }
+
+    public function uploadedPhotoPath(): ?string
+    {
+        $path = $this->image;
+        if (! $path || ! preg_match('~\Acourts/[a-z0-9_-]+\.(?:jpe?g|png|webp)\z~i', $path)) {
+            return null;
+        }
+
+        return Storage::disk('public')->fileExists($path) ? $path : null;
     }
 
     public function bookings()

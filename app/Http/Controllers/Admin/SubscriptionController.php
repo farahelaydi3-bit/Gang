@@ -128,7 +128,7 @@ class SubscriptionController extends Controller
      */
     public function show($id)
     {
-        $subscription = Subscription::with(['user', 'payment', 'bookings'])
+        $subscription = Subscription::with(['user', 'court', 'payment', 'bookings' => fn ($query) => $query->orderBy('booking_date')->orderBy('start_time')])
             ->where('admin_id', auth('admin')->id())
             ->findOrFail($id);
 

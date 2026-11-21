@@ -21,16 +21,11 @@
 <div class="dashboard-wrapper">
 
     {{-- Page Header --}}
-    <div class="section-header">
-        <div>
-            <h2>Add New Court</h2>
-            <p>Fill in the information below to add a new court.</p>
-        </div>
-
-        <a href="{{ route('admin.courts.index') }}" class="admin-button-outline">
-            Back to My Courts
-        </a>
-    </div>
+    <x-super-admin.page-header title="Add Court" description="Set the court location, working hours, and prices.">
+        <x-slot:actions>
+            <a class="admin-button admin-button-outline" href="{{ route('admin.courts.index') }}">Back to my courts</a>
+        </x-slot:actions>
+    </x-super-admin.page-header>
 
     {{-- Form --}}
     <div class="admin-card">
@@ -259,7 +254,7 @@
                 </button>
 
                 <a href="{{ route('admin.courts.index') }}"
-                    class="admin-button-outline">
+                    class="admin-button admin-button-outline">
                     Cancel
                 </a>
             </div>

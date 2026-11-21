@@ -21,7 +21,7 @@
 
 <body>
 
-    <div class="owner-layout super-admin-layout">
+    <div class="owner-layout dashboard-layout super-admin-layout">
 
         <!-- Sidebar Overlay -->
         <div class="sidebar-overlay"

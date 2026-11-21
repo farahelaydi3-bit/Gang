@@ -4,44 +4,17 @@
 @section('page-title', 'My Profile')
 
 @section('content')
-    @php
-        $initial = \Illuminate\Support\Str::of($admin->name)->trim()->substr(0, 1)->upper();
-    @endphp
-
     <div class="super-profile-page">
-        <header class="super-profile-hero">
-            <div class="super-profile-hero-copy">
-                <span class="super-profile-kicker"><i></i>GANG · OWNER ACCOUNT</span>
-                <h2>Your profile, your control.</h2>
-                <p>Keep your venue account details current so you are ready to manage your courts and bookings.</p>
-                <span class="super-profile-role"><i></i>Court Owner</span>
-            </div>
-            <div class="super-profile-id-card">
-                <span class="super-profile-card-label">GANG <small>OWNER</small></span>
-                <span class="super-profile-avatar">{{ $initial }}</span>
-                <strong>{{ $admin->name }}</strong>
-                <small>Venue administrator</small>
-                <span class="super-profile-card-orbit" aria-hidden="true"></span>
-            </div>
-        </header>
-
-        @if ($errors->any())
-            <div class="super-profile-alert" role="alert">
-                <strong>Please review the information below.</strong>
-                <ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
-            </div>
-        @endif
+        <x-super-admin.page-header title="My Profile" description="Update your owner account and contact details." />
+        <x-super-admin.form-errors />
 
         <div class="super-profile-grid">
-            <main class="super-profile-main">
+            <div class="super-profile-main">
                 <section class="super-profile-card" aria-labelledby="owner-profile-details-title">
                     <div class="super-profile-section-head">
-                        <span class="super-profile-number">01</span>
-                        <div><span>OWNER ACCOUNT</span><h3 id="owner-profile-details-title">Personal information</h3></div>
+                        
+                        <h3 id="owner-profile-details-title">Personal information</h3>
                     </div>
-                    @if (session('success'))
-                        <p class="super-profile-success" role="status">{{ session('success') }}</p>
-                    @endif
                     <form method="POST" action="{{ route('admin.profile.update') }}" class="super-profile-form">
                         @csrf
                         @method('PUT')
@@ -62,11 +35,11 @@
                         </div>
                         <div class="super-profile-form-footer">
                             <p>Your details help us keep you updated about your courts and bookings.</p>
-                            <button type="submit">Save changes <span aria-hidden="true">→</span></button>
+                            <button type="submit" class="admin-button">Save changes</button>
                         </div>
                     </form>
                 </section>
-            </main>
+            </div>
 
             <aside class="super-profile-aside">
                 <section class="super-profile-tip">

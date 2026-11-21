@@ -2,27 +2,6 @@
 
 @section('title', 'Overview')
 @section('page-title', 'Platform Overview')
-@section('page-class', 'owner-overview-content')
-
-@push('styles')
-    <style>
-        .owner-overview-content{max-width:none!important;padding:26px 30px!important}
-        .owner-overview-content>.overview-page{max-width:1450px;margin:0 auto}
-        .owner-overview-courts .court-info{padding:16px}
-        .owner-overview-courts .court-info h3{color:#1D3557}
-        .owner-overview-courts .court-prices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 12px}
-        .owner-overview-courts .court-prices p{font-size:11px;color:#52657E}
-        .owner-overview-courts .court-prices strong{color:#1D3557}
-        .owner-overview-courts .court-deposit{font-size:11px;color:#68778B}
-        .owner-overview-courts .court-status{background:#F3E9DC;color:#B5651D}
-        .owner-overview-empty{grid-column:1/-1}
-        .owner-overview-action .overview-action-link{background:#B5651D}
-        .owner-overview-action .overview-action-link:hover{background:#965014}
-        @media(max-width:900px){.owner-overview-content{padding:68px 22px 22px!important}}
-        @media(max-width:560px){.owner-overview-content{padding:68px 14px 14px!important}.owner-overview-courts .court-prices{grid-template-columns:1fr}}
-    </style>
-@endpush
-
 @section('content')
     @php
         $stats = [
@@ -40,23 +19,13 @@
     @endphp
 
     <div class="overview-page">
-        <section class="overview-welcome">
-<div class="overview-welcome-copy">
-                <span class="overview-eyebrow"><i></i>GANG OWNER CENTER</span>
-                <h2>Welcome back, {{ Auth::guard('admin')->user()->name }}.</h2>
-                <p>Here’s what’s happening across your sports facilities.</p>
-            </div>
-            <div class="overview-welcome-side">
-                <span class="overview-live"><i></i>Owner snapshot</span>
-                <time>{{ now()->format('D, M j, Y') }}</time>
-            </div>
-            <span class="overview-orbit overview-orbit-one" aria-hidden="true"></span>
-            <span class="overview-orbit overview-orbit-two" aria-hidden="true"></span>
-            <span class="overview-ball overview-ball-one" aria-hidden="true">⚽</span>
-            <span class="overview-ball overview-ball-two" aria-hidden="true">🏀</span>
-        </section>
+        <x-super-admin.page-header title="Platform Overview" :description="'Manage courts and reservations for ' . (auth('admin')->user()->business_name ?: auth('admin')->user()->name) . '.'">
+            <x-slot:actions>
+                <div class="super-admin-page-meta"><time datetime="{{ now()->toDateString() }}">{{ now()->format('D, M j, Y') }}</time></div>
+            </x-slot:actions>
+        </x-super-admin.page-header>
 
-        <section class="overview-stats-grid" aria-label="Owner dashboard totals">
+        <section class="overview-stats-grid owner-overview-stats" aria-label="Owner dashboard totals">
             @foreach ($stats as $stat)
                 <article class="overview-stat-card overview-tone-{{ $stat['tone'] }}">
                     <span class="overview-stat-icon" aria-hidden="true">
@@ -111,30 +80,27 @@
             </aside>
         </div>
 
-        <section class="overview-panel overview-table-panel owner-overview-courts">
+        <section class="overview-panel overview-table-panel">
             <div class="overview-panel-head">
-                <div><span class="overview-section-kicker">YOUR FACILITIES</span><h3>My Courts</h3><p>Courts currently connected to your account.</p></div>
+                <div><h3>My courts</h3></div>
                 <a class="overview-view-all" href="{{ route('admin.courts.index') }}">View all <span aria-hidden="true">→</span></a>
             </div>
-            <div class="courts-grid">
-                @forelse ($MyCourts as $court)
-                    <article class="court-card">
-                        <div class="court-image"><img src="{{ asset('courtbook-assets/images/' . $court->image) }}" alt="{{ $court->name }}"></div>
-                        <div class="court-info">
-                            <h3>{{ $court->name }}</h3>
-                            <p class="court-sport">{{ $court->sports->name ?? 'Unknown Sport' }}</p>
-                            <div class="court-prices">
-                                <p><strong>Weekday:</strong> {{ number_format($court->weekday_price, 2) }} JOD</p>
-                                <p><strong>Weekend:</strong> {{ number_format($court->weekend_price, 2) }} JOD</p>
-                                <p><strong>Evening:</strong> {{ number_format($court->evening_price, 2) }} JOD</p>
-                            </div>
-                            <p class="court-deposit">Deposit: {{ number_format($court->deposit_amount, 2) }} JOD</p>
-                            <span class="court-status">{{ ucfirst($court->status) }}</span>
-                        </div>
-                    </article>
-                @empty
-                    <div class="empty-state owner-overview-empty"><p>You don't have any courts yet.</p></div>
-                @endforelse
+            <div class="overview-table-wrap">
+                <table class="overview-table admin-table">
+                    <thead><tr><th scope="col">Court</th><th scope="col">Sport</th><th scope="col">Address</th><th scope="col">Status</th></tr></thead>
+                    <tbody>
+                        @forelse ($MyCourts as $court)
+                            <tr>
+                                <td><a class="super-admin-record-link" href="{{ route('admin.courts.show', $court) }}" dir="auto">{{ $court->name }}</a></td>
+                                <td>{{ $court->sports?->name ?? '—' }}</td>
+                                <td dir="auto">{{ $court->address }}</td>
+                                <td><x-dashboard-status :state="$court->status" /></td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="4" class="overview-table-empty">You haven’t added any courts yet.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </section>
 
@@ -143,17 +109,23 @@
                 <div><span class="overview-section-kicker">LATEST ACTIVITY</span><h3>Recent reservations</h3></div>
                 <a class="overview-view-all" href="{{ route('admin.reservations.index') }}">View all <span aria-hidden="true">→</span></a>
             </div>
-            <div class="table-responsive">
+            <div class="overview-table-wrap">
                 <table class="overview-table admin-table">
                     <thead><tr><th>Customer</th><th>Court</th><th>Date</th><th>Time</th><th>Status</th></tr></thead>
                     <tbody>
                         @forelse ($RecentReservations as $reservation)
                             <tr>
                                 <td>{{ $reservation->user->name ?? 'Unknown User' }}</td>
-                                <td>{{ $reservation->court->name ?? 'Unknown Court' }}</td>
+                                <td>
+                                    @if ($reservation->court)
+                                        <a class="super-admin-record-link" href="{{ route('admin.courts.show', $reservation->court) }}">{{ $reservation->court->name }}</a>
+                                    @else
+                                        Unknown court
+                                    @endif
+                                </td>
                                 <td>{{ \Carbon\Carbon::parse($reservation->booking_date)->format('M d, Y') }}</td>
                                 <td>{{ \Carbon\Carbon::parse($reservation->start_time)->format('h:i A') }} – {{ \Carbon\Carbon::parse($reservation->end_time)->format('h:i A') }}</td>
-                                <td><span class="status-badge status-{{ strtolower($reservation->booking_status) }}">{{ ucfirst($reservation->booking_status) }}</span></td>
+                                <td><x-dashboard-status :state="$reservation->booking_status" /></td>
                             </tr>
                         @empty
                             <tr><td colspan="5" class="overview-table-empty">No reservations found.</td></tr>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Court;
 use App\Models\Sports;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class CourtsController extends Controller
@@ -60,10 +61,20 @@ class CourtsController extends Controller
             ->take(10)
             ->get();
 
-        return view('super-admins.court-details', compact(
-            'court',
-            'reviews'
-        ));
+        $courtPhoto = $court->bundledPhotoUrl();
+        if ($courtPhoto === null && $court->uploadedPhotoPath() !== null) {
+            $courtPhoto = route('super_admin.courts.photo', $court);
+        }
+
+        return view('super-admins.court-details', compact('court', 'reviews', 'courtPhoto'));
+    }
+
+    public function photo(Court $court)
+    {
+        $path = $court->uploadedPhotoPath();
+        abort_if($path === null, 404);
+
+        return Storage::disk('public')->response($path, headers: ['X-Content-Type-Options' => 'nosniff']);
     }
 
     public function updateStatus(Request $request, Court $court)
