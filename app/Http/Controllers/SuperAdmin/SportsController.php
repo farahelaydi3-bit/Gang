@@ -18,13 +18,13 @@ class SportsController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $validated = $request->validateWithBag('addSport', [
             'name' => 'required|string|max:255|unique:sports,name',
         ]);
 
         Sports::create($validated);
 
-        return back()->with('success', 'Sport added successfully.');
+        return redirect()->route('super_admin.sports.index')->with('success', 'Sport added successfully.');
     }
 
     public function update(Request $request, Sports $sport)
