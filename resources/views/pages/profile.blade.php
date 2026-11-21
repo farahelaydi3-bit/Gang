@@ -47,7 +47,6 @@
                             <span class="eyebrow">{{ __('YOUR ACCOUNT') }}</span>
                             <h2 id="profile-details-title">{{ __('Personal information') }}</h2>
                         </div>
-                        <a class="profile-text-link" href="{{ route('profile.edit') }}">{{ __('Update') }}</a>
                     </div>
 
                     <dl class="profile-details-list">
@@ -119,13 +118,6 @@
                         </span>
                     </a>
 
-                    <div class="profile-help-card">
-                        <span class="profile-help-mark" aria-hidden="true">?</span>
-                        <div>
-                            <strong>{{ __('Need to change your details?') }}</strong>
-                            <a href="{{ route('profile.edit') }}">{{ __('Manage account settings') }}</a>
-                        </div>
-                    </div>
                 </aside>
             </div>
         @else
