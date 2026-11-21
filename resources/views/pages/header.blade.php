@@ -4,7 +4,6 @@ $desktopLinks = [
 'courts' => 'Explore Courts',
 'nearby' => 'Nearby Courts',
 'games' => 'Find Games',
-'subscriptions' => 'Subscriptions',
 'assistant' => 'AI Assistant',
 ];
 
@@ -24,7 +23,7 @@ $activePage = match (request()->route()?->getName()) {
 'courtbook.game',
 'courtbook.create-game',
 'courtbook.waitlist' => 'games',
-'courtbook.my-subscriptions' => 'subscriptions',
+'courtbook.my-subscriptions' => 'courts',
 default => \Illuminate\Support\Str::after(
 request()->route()?->getName() ?? '',
 'courtbook.'

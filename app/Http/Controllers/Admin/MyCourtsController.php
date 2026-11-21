@@ -4,7 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Courts;
+use App\Models\Court as Courts;
 use App\Models\Sports;
 use Illuminate\Support\Facades\Storage;
 

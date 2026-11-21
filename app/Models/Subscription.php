@@ -21,6 +21,10 @@ class Subscription extends Model
         'status',
         'discount_percentage',
         'court_id',
+        'is_fixed_schedule',
+        'schedule_weekdays',
+        'scheduled_start_time',
+        'scheduled_end_time',
 'paid_at',
 'activated_at',
 'reserved_carryover_hours',
@@ -34,6 +38,8 @@ class Subscription extends Model
 return
 [
 'duration_days'=>'integer',
+'is_fixed_schedule' => 'boolean',
+'schedule_weekdays' => 'array',
 'total_hours'=>'decimal:2',
 'carried_over_hours'=>'decimal:2',
 'used_hours'=>'decimal:2',

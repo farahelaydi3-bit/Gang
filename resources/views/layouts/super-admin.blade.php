@@ -109,6 +109,13 @@
                 </a>
 
                 
+                <!-- Gang Site Studio -->
+                <a href="{{ route('super_admin.site-studio.index') }}"
+                    class="sidebar-link {{ request()->routeIs('super_admin.site-studio.*') ? 'active' : '' }}">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11M13 14h4"/></svg>
+                    <span>Gang Site Studio</span>
+                </a>
+
                 <!-- Players -->
                 <a href="{{ route('super_admin.users.index') }}"
                     class="sidebar-link {{ request()->routeIs('super_admin.users.*') ? 'active' : '' }}">

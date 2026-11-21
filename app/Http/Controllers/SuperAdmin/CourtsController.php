@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Courts;
+use App\Models\Court as Courts;
 use App\Models\Sports;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;

@@ -10,6 +10,7 @@ use App\Models\GroupGame;
 use App\Models\Booking;
 use App\Models\Sports;
 
+
 class DashboardController extends Controller
 {
     public function index()
@@ -23,7 +24,7 @@ $activeCourts = Court::where('status', 'approved')->count();
         $totalSports = Sports::count();
 
         $recentOwners = Admin::latest()->take(5)->get();
-        $recentCourts = Courts::with('admin', 'sports')->latest()->take(5)->get();
+        $recentCourts = Court::with('admin', 'sports')->latest()->take(5)->get();
 
         return view('super-admins.dashboard', compact(
             'totalPlayers',
