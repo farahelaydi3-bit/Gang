@@ -15,7 +15,12 @@
         @endif
 
         <header class="page-heading">
-            <span class="eyebrow">{{ $game->court->sports->name ?? 'Sport' }}</span>
+            <span class="eyebrow">
+                {{ $game->court->sports->name ?? 'Sport' }}
+                @if($game->skill_level)
+                    · {{ ucfirst($game->skill_level) }} Level
+                @endif
+            </span>
             <h1>{{ $game->title }}</h1>
             <p>{{ $game->court->name }}</p>
 
@@ -37,6 +42,26 @@
                     {{ __('View court') }}
                 </a>
 
+                <h2 class="mt-6">{{ __('Position Availability') }}</h2>
+                @if($game->position_slots)
+                    <ul>
+                        @foreach($game->position_slots as $position => $count)
+                            @php
+                                $taken = $game->joinedPlayers->where('pivot.position', $position)->count();
+                                $available = $count - $taken;
+                            @endphp
+                            <li>
+                                <strong>{{ ucfirst($position) }}</strong>: {{ $taken }} / {{ $count }}
+                                @if($available <= 0)
+                                    <span style="color:red;">(Full)</span>
+                                @else
+                                    <span style="color:green;">({{ $available }} left)</span>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+
                 <div class="mt-6 stack">
                     @auth
                         @if($game->joinedPlayers->contains(auth()->id()))
@@ -49,7 +74,21 @@
                         @elseif($game->status === 'open' && $game->joinedPlayers->count() < $game->max_players)
                             <form action="{{ route('games.join', $game->id) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="button">{{ __('Join Game') }}</button>
+                                <label>{{ __('Choose your position:') }}</label>
+                                <select name="position" required>
+                                    @foreach($game->position_slots as $position => $count)
+                                        @php
+                                            $taken = $game->joinedPlayers->where('pivot.position', $position)->count();
+                                            $available = $count - $taken;
+                                        @endphp
+                                        @if($available > 0)
+                                            <option value="{{ $position }}">
+                                                {{ ucfirst($position) }} ({{ $available }} spots left)
+                                            </option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="button mt-2">{{ __('Join Game') }}</button>
                             </form>
                         @else
                             <p class="muted">{{ __('This game is currently full.') }}</p>
@@ -74,7 +113,12 @@
 
                 <h3>{{ __('Players') }}</h3>
                 @forelse ($game->joinedPlayers as $player)
-                    <p>{{ $player->name }}</p>
+                    <p>
+                        {{ $player->name }}
+                        @if($player->pivot->position)
+                            <span class="muted">({{ ucfirst($player->pivot->position) }})</span>
+                        @endif
+                    </p>
                 @empty
                     <p class="muted">{{ __('No players have joined yet.') }}</p>
                 @endforelse

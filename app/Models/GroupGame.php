@@ -14,6 +14,8 @@ class GroupGame extends Model
         'court_id',
         'title',
         'description',
+        'skill_level',
+        'position_slots',
         'game_date',
         'start_time',
         'end_time',
@@ -23,10 +25,11 @@ class GroupGame extends Model
     ];
 
     protected $casts = [
-        'game_date'    => 'date',
-        'start_time'   => 'string',
-        'end_time'     => 'string',
-        'player_price' => 'decimal:2',
+        'game_date'      => 'date',
+        'position_slots' => 'array',
+        'start_time'     => 'string',
+        'end_time'       => 'string',
+        'player_price'   => 'decimal:2',
     ];
 
     public function admin()
@@ -41,9 +44,7 @@ class GroupGame extends Model
 
     public function players()
     {
-        return $this->belongsToMany(User::class, 'game_players', 'group_game_id', 'user_id')
-            ->withPivot('status', 'joined_at')
-            ->withTimestamps();
+        return $this->belongsToMany(User::class, 'game_players', 'group_game_id', 'user_id')->withPivot('status', 'joined_at', 'position')->withTimestamps();
     }
 
     public function joinedPlayers()
