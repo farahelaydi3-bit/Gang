@@ -160,14 +160,27 @@ Route::post('/games/{game}/join', [GroupGameController::class, 'join'])
 Route::post('/games/{game}/leave', [GroupGameController::class, 'leave'])
     ->middleware('auth')->name('games.leave');
 
+Route::get('/games/{game}/payments/{payment}', [GroupGameController::class, 'paymentCheckout'])
+    ->middleware('auth')->name('games.payment.checkout');
+
+Route::post('/games/{game}/balance', [GroupGameController::class, 'balancePayment'])
+    ->middleware('auth')->name('games.payment.balance');
+
+Route::post('/games/{game}/payments/{payment}/confirm', [GroupGameController::class, 'confirmPayment'])
+    ->middleware('auth')->name('games.payment.confirm');
+
+Route::post('/games/{game}/payments/{payment}/cancel', [GroupGameController::class, 'cancelPayment'])
+    ->middleware('auth')->name('games.payment.cancel');
+
 
 Route::get('/waitlist', [WaitingListController::class, 'index'])->name('waitlist.index');
-Route::get('/waitlist/create', [WaitingListController::class, 'create'])->name('waitlist.create');
+Route::get('/waitlist/create', [WaitingListController::class, 'create'])
+    ->middleware('auth')->name('waitlist.create');
 
 Route::post('/waitlist', [WaitingListController::class, 'store'])
     ->middleware('auth')->name('waitlist.store');
 
-Route::delete('/waitlist/{id}', [WaitingListController::class, 'destroy'])
+Route::delete('/waitlist/{waitingList}', [WaitingListController::class, 'destroy'])
     ->middleware('auth')->name('waitlist.destroy');
 
 Route::get('/courtbook/waitlist', [WaitingListController::class, 'index'])

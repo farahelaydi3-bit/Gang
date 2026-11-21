@@ -76,7 +76,7 @@
 
                     <p><em>{{ $report->notes }}</em></p>
 
-                    @if($report->action === 'auto_banned' && $report->admin)
+                    @if($report->action === 'auto_banned' && $report->admin && $report->resolutions->isEmpty())
                         <form action="{{ route('super_admin.admins.unban', $report->admin) }}"
                             method="POST"
                             onsubmit="return confirm('Reactivate this owner?');">

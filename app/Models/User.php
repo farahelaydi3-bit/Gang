@@ -53,6 +53,23 @@ class User extends Authenticatable
         return $this->hasMany(Review::class);
     }
 
+    public function groupGames()
+    {
+        return $this->belongsToMany(GroupGame::class, 'game_players', 'user_id', 'group_game_id')
+            ->withPivot('status', 'joined_at', 'payment_id', 'reservation_expires_at')
+            ->withTimestamps();
+    }
+
+    public function waitingList()
+    {
+        return $this->hasMany(WaitingList::class);
+    }
+
+    public function smsLogs()
+    {
+        return $this->hasMany(SmsLog::class);
+    }
+
     public function subscription()
     {
     return $this->hasMany(Subscription ::class);

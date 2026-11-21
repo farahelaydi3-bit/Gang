@@ -24,4 +24,14 @@ class Admin extends Authenticatable
     {
         return $this->hasMany(OwnerApplication::class);
     }
+
+    public function groupGames()
+    {
+        return $this->hasMany(GroupGame::class);
+    }
+
+    public function smsLogs()
+    {
+        return $this->hasMany(SmsLog::class);
+    }
 }

@@ -141,7 +141,9 @@
 
             </div>
 
-            {{-- Max Players & Price --}}
+            <p class="muted">The court price is divided evenly among the maximum number of players.</p>
+
+            {{-- Max Players --}}
             <div class="group-game-form-row">
 
                 <div class="form-group">
@@ -158,26 +160,6 @@
                            required>
 
                     @error('max_players')
-                        <span class="form-error">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div class="form-group">
-                    <label for="player_price" class="form-label">
-                        Price Per Player (JOD)
-                    </label>
-
-                    <input type="number"
-                           name="player_price"
-                           id="player_price"
-                           class="form-control"
-                           min="0"
-                           step="0.01"
-                           placeholder="0.00"
-                           value="{{ old('player_price') }}"
-                           required>
-
-                    @error('player_price')
                         <span class="form-error">{{ $message }}</span>
                     @enderror
                 </div>

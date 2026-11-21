@@ -135,6 +135,14 @@
                                             </button>
                                         </form>
 
+                                        @if(in_array($game->status, ['open', 'full'], true))
+                                            <form action="{{ route('admin.group-games.complete', $game->id) }}" method="POST">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="game-action-btn">Mark completed</button>
+                                            </form>
+                                        @endif
+
                                         <form action="{{ route('admin.group-games.destroy', $game->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')

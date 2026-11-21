@@ -19,12 +19,7 @@ Schema::create('payments', function (Blueprint $table) {
     $table->dateTime('payment_date')->nullable();
     $table->timestamps();
 });
-        // Exactly one target: a booking OR a subscription (MySQL 8.0.16+).
-        if (Schema::getConnection()->getDriverName() === 'mysql') {
-            \Illuminate\Support\Facades\DB::statement(
-                'ALTER TABLE payments ADD CONSTRAINT payments_exactly_one_target_chk CHECK ((booking_id IS NOT NULL) <> (subscription_id IS NOT NULL))'
-            );
-        }
+        // Payment target constraints are added after all supported target columns exist.
     }
 
     public function down(): void
