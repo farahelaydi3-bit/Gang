@@ -4,40 +4,15 @@
 @section('page-title', 'My Profile')
 
 @section('content')
-    @php
-        $initial = \Illuminate\Support\Str::of($superAdmin->name)->trim()->substr(0, 1)->upper();
-    @endphp
-
     <div class="super-profile-page">
-        <header class="super-profile-hero">
-            <div class="super-profile-hero-copy">
-                <span class="super-profile-kicker"><i></i>COURTBOOK · PLATFORM ADMIN</span>
-                <h2>Your profile, your control.</h2>
-                <p>Keep your administrator details current and your account secure.</p>
-                <span class="super-profile-role"><i></i>Super Admin</span>
-            </div>
-            <div class="super-profile-id-card">
-                <span class="super-profile-card-label">COURTBOOK <small>ADMIN</small></span>
-                <span class="super-profile-avatar">{{ $initial }}</span>
-                <strong>{{ $superAdmin->name }}</strong>
-                <small>Platform administrator</small>
-                <span class="super-profile-card-orbit" aria-hidden="true"></span>
-            </div>
-        </header>
-
-        @if ($errors->any())
-            <div class="super-profile-alert" role="alert">
-                <strong>Please review the highlighted information.</strong>
-                <ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
-            </div>
-        @endif
+        <x-super-admin.page-header title="My Profile" description="Update your administrator details and password." />
+        <x-super-admin.form-errors />
 
         <div class="super-profile-grid">
-            <main class="super-profile-main">
+            <div class="super-profile-main">
                 <section class="super-profile-card" aria-labelledby="super-profile-details-title">
                     <div class="super-profile-section-head">
-                        <span class="super-profile-number">01</span>
-                        <div><span>ADMIN ACCOUNT</span><h3 id="super-profile-details-title">Personal information</h3></div>
+                        <h3 id="super-profile-details-title">Personal information</h3>
                     </div>
                     @if (session('profile-updated'))
                         <p class="super-profile-success" role="status">Your profile information has been saved.</p>
@@ -61,16 +36,14 @@
                             @error('phone')<small>{{ $message }}</small>@enderror
                         </div>
                         <div class="super-profile-form-footer">
-                            <p>Your information is used to manage the CourtBook platform account.</p>
-                            <button type="submit">Save changes <span aria-hidden="true">→</span></button>
+                            <button class="admin-button" type="submit">Save changes</button>
                         </div>
                     </form>
                 </section>
 
                 <section class="super-profile-card" aria-labelledby="super-profile-security-title">
                     <div class="super-profile-section-head">
-                        <span class="super-profile-number">02</span>
-                        <div><span>ACCOUNT SECURITY</span><h3 id="super-profile-security-title">Change password</h3></div>
+                        <h3 id="super-profile-security-title">Change password</h3>
                     </div>
                     @if (session('password-updated'))
                         <p class="super-profile-success" role="status">Your password has been updated.</p>
@@ -94,23 +67,17 @@
                         </div>
                         <div class="super-profile-form-footer">
                             <p>Choose a password with at least 8 characters.</p>
-                            <button type="submit">Update password <span aria-hidden="true">→</span></button>
+                            <button class="admin-button" type="submit">Update password</button>
                         </div>
                     </form>
                 </section>
-            </main>
+            </div>
 
             <aside class="super-profile-aside">
                 <section class="super-profile-tip">
-                    <span class="super-profile-tip-icon" aria-hidden="true">✦</span>
-                    <span>ADMIN TIP</span>
-                    <h3>Keep your access protected.</h3>
+                    <h3>Account security</h3>
                     <p>Use a unique password and update it if you think someone else may know it.</p>
                 </section>
-                <div class="super-profile-account-chip">
-                    <span aria-hidden="true">✓</span>
-                    <div><strong>Administrator access</strong><small>Manage your details without affecting platform records.</small></div>
-                </div>
             </aside>
         </div>
     </div>
