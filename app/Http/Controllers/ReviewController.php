@@ -7,6 +7,8 @@ use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use App\Jobs\ModerateReview;
+
 
 class ReviewController extends Controller
 {
@@ -48,38 +50,70 @@ class ReviewController extends Controller
     }
 
     // Store a new review.
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'booking_id' => ['required', 'integer'],
-            'rating' => ['required', 'integer', 'between:1,5'],
-            'comment' => ['nullable', 'string', 'max:2000'],
-        ]);
+    // public function store(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'booking_id' => ['required', 'integer'],
+    //         'rating' => ['required', 'integer', 'between:1,5'],
+    //         'comment' => ['nullable', 'string', 'max:2000'],
+    //     ]);
 
-        $booking = $this->reviewableBooking(
-            (int) $validated['booking_id']
-        );
+    //     $booking = $this->reviewableBooking(
+    //         (int) $validated['booking_id']
+    //     );
 
-        abort_if(
-            Review::where('booking_id', $booking->id)->exists(),
-            409,
-            'This booking has already been reviewed.'
-        );
+    //     abort_if(
+    //         Review::where('booking_id', $booking->id)->exists(),
+    //         409,
+    //         'This booking has already been reviewed.'
+    //     );
 
-        $review = new Review();
+    //     $review = new Review();
 
-        $review->booking_id = $booking->id;
-        $review->user_id = Auth::id();
-        $review->court_id = $booking->court_id;
-        $review->rating = $validated['rating'];
-        $review->comment = $validated['comment'] ?? null;
+    //     $review->booking_id = $booking->id;
+    //     $review->user_id = Auth::id();
+    //     $review->court_id = $booking->court_id;
+    //     $review->rating = $validated['rating'];
+    //     $review->comment = $validated['comment'] ?? null;
 
-        $review->save();
+    //     $review->save();
 
-        return redirect()
-            ->route('reviews.show', $review)
-            ->with('success', 'Review submitted successfully.');
+    //     return redirect()
+    //         ->route('reviews.show', $review)
+    //         ->with('success', 'Review submitted successfully.');
+    // }
+
+
+	public function store(Request $request)
+{
+    $validated = $request->validate([
+        'booking_id' => ['required', 'integer'],
+        'rating'     => ['required', 'integer', 'between:1,5'],
+        'comment'    => ['nullable', 'string', 'max:2000'],
+    ]);
+
+    $booking = $this->reviewableBooking((int) $validated['booking_id']);
+
+    abort_if(Review::where('booking_id', $booking->id)->exists(), 409);
+
+    $review = Review::create([
+        'booking_id' => $booking->id,
+        'user_id'    => Auth::id(),
+        'court_id'   => $booking->court_id,
+        'rating'     => $validated['rating'],
+        'comment'    => $validated['comment'] ?? null,
+        'ai_decision'=> 'pending',
+    ]);
+
+    if (! empty($validated['comment'])) {
+        ModerateReview::dispatch($review->id);
     }
+
+    return redirect()
+        ->route('reviews.show', $review)
+        ->with('success', 'Review submitted. AI moderation running in background.');
+}
+
 
     // Display a specific review.
     public function show(Review $review)

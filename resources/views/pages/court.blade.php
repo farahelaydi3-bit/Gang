@@ -2,9 +2,19 @@
 
 @php
     $court = \App\Models\Court::query()
-        ->with(['sports', 'reviews.user'])
+        ->with(['sports', 'reviewSummary'])
         ->withAvg('reviews', 'rating')
         ->findOrFail(request()->route('court'));
+
+    // Public reviews = only safe ones
+    $publicReviews = $court->reviews()
+        ->with('user')
+        ->where(function ($q) {
+            $q->whereNotIn('ai_decision', ['spam', 'abusive'])
+              ->orWhereNull('ai_decision');
+        })
+        ->latest()
+        ->get();
 @endphp
 
 @section('title', $court->name)
@@ -72,18 +82,28 @@
                     </section>
                 </div>
 
-                <section class="court-detail-card court-reviews-card">
-                    <div class="court-reviews-heading">
-                        <div>
-                            <span class="court-card-kicker">{{ __('FROM THE PLAYERS') }}</span>
-                            <h2>{{ __('Reviews') }}</h2>
-                        </div>
-                        @if ($court->reviews_avg_rating)
-                            <span class="court-review-average">★ {{ number_format($court->reviews_avg_rating, 1) }} <small>/ 5</small></span>
+                @if($court->reviewSummary)
+                    <div class="panel" style="margin-top:1rem;">
+                        <h3>🤖 AI Review Summary</h3>
+                        <p>{{ $court->reviewSummary->summary }}</p>
+                        <p class="muted">
+                            Based on {{ $court->reviewSummary->total_reviews }} reviews ·
+                            Avg {{ $court->reviewSummary->average_rating }}/5
+                        </p>
+                        @if($court->reviewSummary->top_praises)
+                            <p><strong>What players love:</strong>
+                                {{ $court->reviewSummary->top_praises }}</p>
+                        @endif
+                        @if($court->reviewSummary->top_complaints)
+                            <p><strong>What players complain about:</strong>
+                                {{ $court->reviewSummary->top_complaints }}</p>
                         @endif
                     </div>
-                @forelse ($court->reviews as $review)
-                    <article class="court-review">
+                @endif
+
+                <h2>{{ __('Reviews') }}</h2>
+                @forelse ($publicReviews as $review)
+                    <article class="panel">
                         <div class="row spread">
                             <strong>{{ $review->user->name }}</strong>
                             <span class="rating">★ {{ $review->rating }} / 5</span>
@@ -101,27 +121,16 @@
             <aside class="court-booking-card">
                 <span class="court-card-kicker">{{ __('READY WHEN YOU ARE') }}</span>
                 <h2>{{ __('Book this court') }}</h2>
-                <div class="court-booking-price">
-                    <strong>{{ number_format($court->weekday_price, 2) }}</strong>
-                    <span>JOD / {{ __('hour') }}</span>
-                </div>
-                <div class="court-booking-facts">
-                    <p><span>{{ __('Minimum booking') }}</span><strong>{{ $court->min_booking_minutes }} {{ __('minutes') }}</strong></p>
-                    <p><span>{{ __('Deposit') }}</span><strong>{{ number_format($court->deposit_amount, 2) }} JOD</strong></p>
-                </div>
-                <div class="court-booking-actions">
-                    @auth('web')
-                        <a class="button court-booking-button" href="{{ route('courtbook.booking.create', ['court_id' => $court->id]) }}">
-                            {{ __('Book Now') }}
-                        </a>
-                    @else
-                        <a class="button court-booking-button" href="{{ route('login') }}">
-                            {{ __('Log in to book') }}
-                        </a>
-                    @endauth
-                    <a class="button court-subscribe-button"
-                        href="{{ route('courtbook.subscriptions', ['court_id' => $court->id]) }}">
-                        {{ __('Subscribe') }}
+                <p>{{ number_format($court->weekday_price, 2) }} JOD / {{ __('hour') }}</p>
+                <p>{{ __('Minimum booking') }}: {{ $court->min_booking_minutes }} {{ __('minutes') }}</p>
+                <p>{{ __('Deposit') }}: {{ number_format($court->deposit_amount, 2) }} JOD</p>
+                @auth
+                    <a class="button" href="{{ route('courtbook.booking.create', ['court_id' => $court->id]) }}">
+                        {{ __('Book Now') }}
+                    </a>
+                @else
+                    <a class="button" href="{{ route('login') }}">
+                        {{ __('Log in to book') }}
                     </a>
                 </div>
             </aside>
