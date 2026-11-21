@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Admin;
 use App\Models\SuperAdmin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
@@ -29,7 +30,7 @@ class AdminRegisteredController extends Controller
         // Temporary MVP assignment: use the first existing Super Admin.
         $superAdmin = SuperAdmin::query()->firstOrFail();
 
-        Admin::create([
+        $admin = Admin::create([
             'super_admin_id' => $superAdmin->id,
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -39,7 +40,10 @@ class AdminRegisteredController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('admin.login')
-            ->with('success', 'Your owner application has been submitted. You can log in to check its status.');
+        Auth::guard('admin')->login($admin);
+        $request->session()->regenerate();
+
+        return redirect()->route('admin.pending')
+            ->with('success', 'Your owner account has been created. Complete your application below.');
     }
 }
