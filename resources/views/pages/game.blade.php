@@ -4,6 +4,10 @@
 @section('page', 'game')
 
 @section('content')
+
+@php
+    $positionSlots = $game->position_slots ?: ['player' => (int) $game->max_players];
+@endphp
     <div class="wrap page">
         <a class="muted" href="{{ route('games.index') }}">← {{ __('Find games') }}</a>
 
@@ -43,11 +47,13 @@
                 </a>
 
                 <h2 class="mt-6">{{ __('Position Availability') }}</h2>
-                @if($game->position_slots)
+                @if($positionSlots)
                     <ul>
-                        @foreach($game->position_slots as $position => $count)
+                        @foreach($positionSlots as $position => $count)
                             @php
-                                $taken = $game->joinedPlayers->where('pivot.position', $position)->count();
+                                                                            $taken = $game->position_slots
+                                                                                ? $game->joinedPlayers->where('pivot.position', $position)->count()
+                                                                                : $game->joinedPlayers->count();
                                 $available = $count - $taken;
                             @endphp
                             <li>
@@ -76,9 +82,11 @@
                                 @csrf
                                 <label>{{ __('Choose your position:') }}</label>
                                 <select name="position" required>
-                                    @foreach($game->position_slots as $position => $count)
+                                    @foreach($positionSlots as $position => $count)
                                         @php
-                                            $taken = $game->joinedPlayers->where('pivot.position', $position)->count();
+                                                                                        $taken = $game->position_slots
+                                                                                            ? $game->joinedPlayers->where('pivot.position', $position)->count()
+                                                                                            : $game->joinedPlayers->count();
                                             $available = $count - $taken;
                                         @endphp
                                         @if($available > 0)
