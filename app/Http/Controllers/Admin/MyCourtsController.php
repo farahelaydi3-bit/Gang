@@ -47,6 +47,8 @@ class MyCourtsController extends Controller
             'weekend_price' => 'required|numeric|min:0',
             'evening_price' => 'required|numeric|min:0',
             'deposit_amount' => 'required|numeric|min:0',
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
         ]);
 
         // Upload Court Image
@@ -95,6 +97,8 @@ class MyCourtsController extends Controller
             'weekend_price' => 'required|numeric|min:0',
             'evening_price' => 'required|numeric|min:0',
             'deposit_amount' => 'required|numeric|min:0',
+            'latitude' => 'nullable|required_with:longitude|numeric|between:-90,90',
+            'longitude' => 'nullable|required_with:latitude|numeric|between:-180,180',
         ]);
 
         // Replace Court Image if a new one was uploaded
