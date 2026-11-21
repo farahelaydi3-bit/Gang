@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use App\Services\PhoneOtpService;
 
 class RegisteredUserController extends Controller
 {
@@ -28,12 +29,16 @@ class RegisteredUserController extends Controller
      *
      * @throws ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, PhoneOtpService $otp): RedirectResponse
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'phone' => ['required', 'string', 'max:10','min:10'],
+            'phone' => [
+    'required',
+    'regex:/^07[0-9]{8}$/',
+    'unique:users,phone',
+],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -48,6 +53,12 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect('/');
+        try {
+    $otp->send($user);
+} catch (\Throwable $e) {
+    report($e);
+}
+
+return redirect()->route('phone.verify');
     }
 }

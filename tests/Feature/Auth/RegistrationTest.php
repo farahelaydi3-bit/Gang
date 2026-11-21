@@ -1,6 +1,7 @@
 <?php
 
 namespace Tests\Feature\Auth;
+use App\Services\PhoneOtpService;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -18,6 +19,9 @@ class RegistrationTest extends TestCase
 
 public function test_new_users_can_register(): void
 {
+    $this->mock(PhoneOtpService::class)
+    ->shouldReceive('send')
+    ->once();
     $response = $this->post('/register', [
         'name' => 'Test User',
         'email' => 'test@example.com',
@@ -27,7 +31,6 @@ public function test_new_users_can_register(): void
     ]);
 
     $this->assertAuthenticated();
-
-    $response->assertRedirect('/');
+$response->assertRedirect(route('phone.verify'));
 }
 }

@@ -13,6 +13,7 @@ use App\Http\Controllers\GroupGameController;
 use App\Http\Controllers\WaitingListController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PublicGangSiteController;
+use App\Http\Controllers\Auth\PhoneVerificationController;
 
 // Static HTML + CSS website; Laravel only enforces publication/subscription access.
 Route::get('/sites/{slug}', [PublicGangSiteController::class, 'show'])->name('gang.sites.show');
@@ -203,6 +204,18 @@ Route::middleware('auth')->group(function () {
         'update',
     ])->name('bookings.update');
 
+Route::middleware('auth')->group(function () {
+    Route::get('/verify-phone', [PhoneVerificationController::class, 'show'])
+        ->name('phone.verify');
+
+    Route::post('/verify-phone/send', [PhoneVerificationController::class, 'send'])
+        ->middleware('throttle:3,10')
+        ->name('phone.send');
+
+    Route::post('/verify-phone', [PhoneVerificationController::class, 'verify'])
+        ->middleware('throttle:10,10')
+        ->name('phone.confirm');
+});
 
 });
 require __DIR__ . '/auth.php';
