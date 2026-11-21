@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
+<html lang="ar" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Owner application | Gang</title>
+    <title>طلب الانضمام | Gang</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -68,8 +68,8 @@
 <body>
     <header class="application-header">
         <a href="{{ route('courtbook.home') }}" class="application-brand">
-            <img src="{{ asset('courtbook-assets/images/gang-logo.png') }}" alt="Gang logo">
-            <span class="application-brand-copy"><strong>Gang</strong><small>Sports community</small></span>
+            <img src="{{ asset('courtbook-assets/images/gang-logo.png') }}" alt="شعار Gang">
+<span class="application-brand-copy"><strong>Gang</strong><small>مجتمعنا الرياضي</small></span>
         </a>
         <div class="application-header-actions">
             <span class="application-header-user">{{ $admin->name }}</span>
@@ -77,7 +77,7 @@
                 @csrf
                 <button class="application-logout" type="submit">
                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4m5 4 5 5-5 5m5-5H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    Logout
+تسجيل الخروج
                 </button>
             </form>
         </div>
@@ -87,9 +87,9 @@
         @if ($application && $application->status === 'submitted')
             <section class="application-hero">
                 <div class="application-hero-copy">
-                    <span class="application-eyebrow"><i></i>OWNER ONBOARDING</span>
-                    <h1>Your facility is in review.</h1>
-                    <p>Thanks, {{ $admin->name }}. Your application is with our team now. We’ll review the details and update you when there’s a decision.</p>
+<span class="application-eyebrow"><i></i>انضمام المنشآت لـ GANG</span>
+<h1>طلب منشأتك قيد المراجعة.</h1>
+<p>يعطيك العافية {{ $admin->name }}. وصل طلبك لفريقنا، ورح نراجعه ونخبرك أول ما يصدر القرار.</p>
                 </div>
                 <span class="application-hero-mark" aria-hidden="true">
                     <svg viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="17" stroke="currentColor" stroke-width="2.2"/><path d="M15 24.5 21 30l12-13" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -106,48 +106,48 @@
             <article class="application-review-card">
                 <div class="application-review-hero">
                     <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                    <div><small>APPLICATION STATUS</small><h1>Application submitted</h1><p>Your account stays pending while our team reviews your facility and documents.</p></div>
+<div><small>حالة الطلب</small><h1>تم إرسال الطلب</h1><p>حسابك بضل بانتظار الموافقة لحد ما يراجع فريقنا تفاصيل المنشأة والمرفقات.</p></div>
                 </div>
                 <div class="application-review-content">
-                    <span class="application-review-status"><i></i>Under review</span>
-                    <h2>What happens next?</h2>
-                    <p>We’ll check the facility information and the sports you selected. You can return here to see your application details while you wait.</p>
+<span class="application-review-status"><i></i>قيد المراجعة</span>
+<h2>شو بصير هسا؟</h2>
+<p>رح نراجع معلومات المنشأة والرياضات اللي اخترتها. بتقدر ترجع لهون وتشوف تفاصيل طلبك وإنت بتستنى.</p>
                     <div class="application-review-timeline">
-                        <div><small>01 · Submitted</small><strong>{{ $application->submitted_at?->format('M j, Y · g:i A') ?? 'Received' }}</strong></div>
-                        <div><small>02 · Current step</small><strong>Team review</strong></div>
-                        <div><small>03 · Next</small><strong>Approval update</strong></div>
+<div><small>٠١ · انبعت</small><strong>{{ $application->submitted_at?->format('Y/m/d · g:i A') ?? 'وصلنا' }}</strong></div>
+<div><small>٠٢ · الخطوة الحالية</small><strong>مراجعة الفريق</strong></div>
+<div><small>٠٣ · الخطوة الجاية</small><strong>تحديث بخصوص الموافقة</strong></div>
                     </div>
                     <div class="application-review-summary">
-                        <div class="application-review-summary-head"><h2>Facility summary</h2><span>{{ $application->attachments->count() }} supporting file(s)</span></div>
+<div class="application-review-summary-head"><h2>ملخص المنشأة</h2><span>{{ $application->attachments->count() }} مرفقات</span></div>
                         <div class="application-summary-grid">
-                            <div class="application-summary-item"><small>Facility name</small><strong>{{ $application->facility_name }}</strong></div>
-                            <div class="application-summary-item"><small>Number of courts</small><strong>{{ number_format($application->courts_count) }}</strong></div>
-                            <div class="application-summary-item application-summary-item-wide"><small>Address</small><strong>{{ $application->address }}</strong></div>
-                            <div class="application-summary-item application-summary-item-wide"><small>Sports offered</small><strong>{{ $application->sports->pluck('name')->join(', ') ?: '—' }}</strong></div>
+<div class="application-summary-item"><small>اسم المنشأة</small><strong>{{ $application->facility_name }}</strong></div>
+<div class="application-summary-item"><small>عدد الملاعب</small><strong>{{ number_format($application->courts_count) }}</strong></div>
+<div class="application-summary-item application-summary-item-wide"><small>العنوان</small><strong>{{ $application->address }}</strong></div>
+<div class="application-summary-item application-summary-item-wide"><small>الرياضات المتوفرة</small><strong>{{ $application->sports->map(fn ($sport) => __($sport->name))->join('، ') ?: '—' }}</strong></div>
                         </div>
                     </div>
                     <div class="application-review-footer">
                         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z" stroke="currentColor" stroke-width="1.7"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        Your application details are saved securely with Gang.
+تفاصيل طلبك محفوظة بأمان على Gang.
                     </div>
                 </div>
             </article>
         @else
             <section class="application-hero">
                 <div class="application-hero-copy">
-                    <span class="application-eyebrow"><i></i>GANG · FACILITY PARTNERS</span>
-                    <h1>Bring your courts to the community.</h1>
-                    <p>Tell us about your facility and the sports you offer. Once approved, players can discover and book your courts through Gang.</p>
+<span class="application-eyebrow"><i></i>GANG · شركاء الملاعب</span>
+<h1>خلّي ملاعبك أقرب للّاعبين.</h1>
+<p>عرّفنا على منشأتك والرياضات اللي بتوفّرها. بعد الموافقة، اللاعبين بقدروا يلاقوا ملاعبك ويحجزوها من خلال Gang.</p>
                 </div>
                 <span class="application-hero-mark" aria-hidden="true">
                     <svg viewBox="0 0 48 48" fill="none"><path d="M24 5 40 14v20L24 43 8 34V14L24 5Z" stroke="currentColor" stroke-width="2"/><path d="M24 5v38M8 14l16 10 16-10M8 34l16-10 16 10" stroke="currentColor" stroke-width="1.6"/><circle cx="24" cy="24" r="5" stroke="currentColor" stroke-width="1.6"/></svg>
                 </span>
             </section>
 
-            <div class="application-progress" aria-label="Application progress">
-                <span class="application-progress-step is-current"><b>01</b>Facility</span><i class="application-progress-line"></i>
-                <span class="application-progress-step"><b>02</b>Sports</span><i class="application-progress-line"></i>
-                <span class="application-progress-step"><b>03</b>Submit</span>
+<div class="application-progress" aria-label="مراحل الطلب">
+<span class="application-progress-step is-current"><b>٠١</b>المنشأة</span><i class="application-progress-line"></i>
+<span class="application-progress-step"><b>٠٢</b>الرياضات</span><i class="application-progress-line"></i>
+<span class="application-progress-step"><b>٠٣</b>الإرسال</span>
             </div>
 
             @if (session('success'))
@@ -159,7 +159,7 @@
             @if ($errors->any())
                 <div class="application-alert application-alert-error" role="alert">
                     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v6m0 4h.01" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
-                    <div><strong>Please check the highlighted fields.</strong><ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
+<div><strong>تأكد من المعلومات المطلوبة:</strong><ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
                 </div>
             @endif
 
@@ -168,51 +168,51 @@
                     @if ($application && $application->status === 'rejected')
                         <div class="application-alert application-alert-error" role="alert">
                             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="m9 9 6 6m0-6-6 6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-                            <div><strong>Your previous application was not approved.</strong><p>{{ $application->review_notes ?: 'No reason was provided.' }}</p>You can update your details and submit a new application.</div>
+<div><strong>للأسف، ما تمت الموافقة على طلبك السابق.</strong><p>{{ $application->review_notes ?: 'ما انذكر سبب.' }}</p>عدّل معلوماتك وقدّم طلب جديد.</div>
                         </div>
                     @elseif ($admin->status === 'rejected')
-                        <div class="application-alert application-alert-error" role="alert"><strong>Your owner account was rejected. You can submit a new application for review.</strong></div>
+<div class="application-alert application-alert-error" role="alert"><strong>ما تمت الموافقة على حسابك كمالك منشأة. بتقدر تقدّم طلب جديد للمراجعة.</strong></div>
                     @endif
 
                     <div class="application-form-heading">
                         <span class="application-section-number">01</span>
-                        <div><small>YOUR APPLICATION</small><h2>Facility information</h2><p>Share a few details so our team can get to know your venue.</p></div>
+<div><small>طلب الانضمام</small><h2>معلومات المنشأة</h2><p>احكيلنا كم شغلة عن منشأتك عشان نتعرّف عليها.</p></div>
                     </div>
 
                     <form action="{{ route('admin.application.store') }}" method="POST" enctype="multipart/form-data" id="applicationForm">
                         @csrf
                         <div class="application-form-section">
-                            <h3 class="application-form-section-title"><span>⌂</span>About your facility</h3>
+<h3 class="application-form-section-title"><span>⌂</span>عن منشأتك</h3>
                             <div class="application-fields-grid">
                                 <div class="application-field application-field-wide">
-                                    <label for="facility_name">Facility name <i class="application-required">*</i></label>
-                                    <input id="facility_name" name="facility_name" type="text" maxlength="255" required value="{{ old('facility_name', $admin->business_name) }}" placeholder="e.g. Downtown Sports Club">
+<label for="facility_name">اسم المنشأة <i class="application-required">*</i></label>
+<input id="facility_name" name="facility_name" type="text" maxlength="255" required value="{{ old('facility_name', $admin->business_name) }}" placeholder="مثال: نادي وسط البلد الرياضي">
                                     @error('facility_name')<small class="application-field-error">{{ $message }}</small>@enderror
                                 </div>
                                 <div class="application-field">
-                                    <label for="address">Facility address <i class="application-required">*</i></label>
-                                    <input id="address" name="address" type="text" maxlength="255" required value="{{ old('address') }}" placeholder="City, area, street">
+<label for="address">عنوان المنشأة <i class="application-required">*</i></label>
+<input id="address" name="address" type="text" maxlength="255" required value="{{ old('address') }}" placeholder="المدينة، المنطقة، الشارع">
                                     @error('address')<small class="application-field-error">{{ $message }}</small>@enderror
                                 </div>
                                 <div class="application-field">
-                                    <label for="courts_count">Number of courts <i class="application-required">*</i></label>
-                                    <input id="courts_count" name="courts_count" type="number" min="1" max="1000" required value="{{ old('courts_count') }}" placeholder="e.g. 4">
+<label for="courts_count">عدد الملاعب <i class="application-required">*</i></label>
+<input id="courts_count" name="courts_count" type="number" min="1" max="1000" required value="{{ old('courts_count') }}" placeholder="مثال: ٤">
                                     @error('courts_count')<small class="application-field-error">{{ $message }}</small>@enderror
                                 </div>
                             </div>
                         </div>
 
                         <div class="application-form-section">
-                            <h3 class="application-form-section-title"><span>✦</span>Sports at your facility <i class="application-required">*</i></h3>
-                            <p class="application-field-hint" style="margin:-6px 0 10px">Select every sport your courts are set up for.</p>
+<h3 class="application-form-section-title"><span>✦</span>الرياضات الموجودة عندك <i class="application-required">*</i></h3>
+<p class="application-field-hint" style="margin:-6px 0 10px">اختار كل الرياضات اللي ملاعبك مجهّزة إلها.</p>
                             <div class="application-sports-grid">
                                 @forelse ($sports as $sport)
                                     <label class="application-sport-option">
                                         <input type="checkbox" name="sports[]" value="{{ $sport->id }}" @checked(in_array($sport->id, old('sports', [])))>
-                                        <span>{{ $sport->name }}</span>
+                                        <span>{{ __($sport->name) }}</span>
                                     </label>
                                 @empty
-                                    <p class="application-field-hint application-sports-empty">No sports are available yet. Please contact Gang administration.</p>
+<p class="application-field-hint application-sports-empty">ما في رياضات مضافة حاليًا. تواصل مع إدارة Gang.</p>
                                 @endforelse
                             </div>
                             @error('sports')<small class="application-field-error">{{ $message }}</small>@enderror
@@ -221,30 +221,30 @@
                         </div>
 
                         <div class="application-form-section">
-                            <h3 class="application-form-section-title"><span>✎</span>Tell us about the venue</h3>
+<h3 class="application-form-section-title"><span>✎</span>احكيلنا عن المكان</h3>
                             <div class="application-fields-grid">
                                 <div class="application-field application-field-wide">
-                                    <label for="facility_description">Facility description <i class="application-required">*</i></label>
-                                    <textarea id="facility_description" name="facility_description" maxlength="3000" required placeholder="Describe your courts, amenities, and what players can expect...">{{ old('facility_description') }}</textarea>
+<label for="facility_description">وصف المنشأة <i class="application-required">*</i></label>
+<textarea id="facility_description" name="facility_description" maxlength="3000" required placeholder="احكيلنا عن الملاعب والمرافق، وشو بتوفّروا للاعبين...">{{ old('facility_description') }}</textarea>
                                     @error('facility_description')<small class="application-field-error">{{ $message }}</small>@enderror
                                 </div>
                                 <div class="application-field application-field-wide">
-                                    <label for="application_message">Message to the Gang team <i class="application-required">*</i></label>
-                                    <textarea id="application_message" name="application_message" maxlength="5000" required placeholder="Introduce yourself and tell us why you’d like to join Gang...">{{ old('application_message') }}</textarea>
+<label for="application_message">رسالتك لفريق Gang <i class="application-required">*</i></label>
+<textarea id="application_message" name="application_message" maxlength="5000" required placeholder="عرّفنا عن حالك واحكيلنا ليش حاب تنضم لـ Gang...">{{ old('application_message') }}</textarea>
                                     @error('application_message')<small class="application-field-error">{{ $message }}</small>@enderror
                                 </div>
                             </div>
                         </div>
 
                         <div class="application-form-section">
-                            <h3 class="application-form-section-title"><span>↑</span>Supporting documents</h3>
+<h3 class="application-form-section-title"><span>↑</span>مرفقات بتدعم طلبك</h3>
                             <div class="application-field">
-                                <label for="attachments">Photos or documents <span style="color:#89958b;font-weight:600">(optional)</span></label>
+<label for="attachments">صور أو مستندات <span style="color:#89958b;font-weight:600">(اختياري)</span></label>
                                 <label class="application-file-drop" for="attachments" id="application-file-drop">
                                     <input id="attachments" type="file" name="attachments[]" accept=".jpg,.jpeg,.png,.webp,.pdf" multiple>
                                     <span class="application-file-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M4 15.5v3A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                                    <strong>Drop files here or browse</strong>
-                                    <small>Up to 5 files · 5 MB each · JPG, PNG, WEBP or PDF</small>
+<strong>اسحب الملفات لهون أو اضغط عشان تختار</strong>
+<small>لحد ٥ ملفات · حجم الملف ٥ ميغابايت · JPG أو PNG أو WEBP أو PDF</small>
                                     <span class="application-file-list" id="application-file-list"></span>
                                 </label>
                                 @error('attachments')<small class="application-field-error">{{ $message }}</small>@enderror
@@ -254,15 +254,15 @@
 
                         <div class="application-terms-accept">
                             <input id="terms_accepted" name="terms_accepted" type="checkbox" value="1" required @checked(old('terms_accepted'))>
-                            <label for="terms_accepted">I have read and agree to the <a href="{{ route('admin.terms') }}" target="_blank" rel="noopener">Owner Terms &amp; Conditions</a>, including Gang’s {{ number_format(config('owner.commission_percentage'), 0) }}% commission on completed bookings.</label>
+<label for="terms_accepted">قرأت ووافقت على <a href="{{ route('admin.terms') }}" target="_blank" rel="noopener">شروط وأحكام مالكي المنشآت</a>، ومنها عمولة Gang بنسبة {{ number_format(config('owner.commission_percentage'), 0) }}٪ على الحجوزات المكتملة.</label>
                             <input type="hidden" name="terms_version" value="{{ config('owner.terms_version') }}">
                         </div>
                         @error('terms_accepted')<small class="application-field-error">{{ $message }}</small>@enderror
 
                         <div class="application-submit-row">
-                            <p class="application-submit-note">By submitting, you confirm the facility details are accurate. Our team will review your application before activation.</p>
+<p class="application-submit-note">لما تبعت الطلب، بتأكد إن معلومات المنشأة صحيحة. فريقنا رح يراجعها قبل تفعيل حسابك.</p>
                             <button type="submit" class="application-submit" id="submitButton" @disabled($sports->isEmpty())>
-                                Submit for review <span aria-hidden="true">→</span>
+ابعت الطلب للمراجعة <span aria-hidden="true">←</span>
                             </button>
                         </div>
                     </form>
@@ -270,20 +270,20 @@
 
                 <aside class="application-sidebar">
                     <section class="application-side-card">
-                        <h3 class="application-side-title"><i aria-hidden="true">✓</i>What you’ll need</h3>
+<h3 class="application-side-title"><i aria-hidden="true">✓</i>شو لازم تجهّز؟</h3>
                         <ul class="application-check-list">
-                            <li><i>✓</i>Facility name and location</li>
-                            <li><i>✓</i>Number of courts and sports offered</li>
-                            <li><i>✓</i>A short description of your venue</li>
-                            <li><i>✓</i>Optional photos or supporting documents</li>
+<li><i>✓</i>اسم المنشأة وموقعها</li>
+<li><i>✓</i>عدد الملاعب والرياضات الموجودة</li>
+<li><i>✓</i>وصف بسيط عن المكان</li>
+<li><i>✓</i>صور أو مستندات، إذا متوفرة</li>
                         </ul>
                     </section>
                     <section class="application-side-card">
-                        <h3 class="application-side-title"><i aria-hidden="true">↗</i>What happens next?</h3>
-                        <p>Our team reviews your facility information. Once approved, you can set up your courts and make them available to players.</p>
+<h3 class="application-side-title"><i aria-hidden="true">↗</i>شو الخطوة الجاية؟</h3>
+<p>فريقنا براجع معلومات منشأتك. بعد الموافقة، بتقدر تضيف ملاعبك وتخليها متاحة للاعبين.</p>
                     </section>
                     <div class="application-contact-card">
-                        <span aria-hidden="true">?</span><div><strong>Need a hand?</strong><small>Contact the Gang team if you have questions about your application.</small></div>
+<span aria-hidden="true">؟</span><div><strong>بدك مساعدة؟</strong><small>تواصل مع فريق Gang إذا عندك أي سؤال عن طلبك.</small></div>
                     </div>
                 </aside>
             </div>
@@ -304,7 +304,7 @@
 
             const updateSportsCount = () => {
                 const selected = sports.filter((sport) => sport.checked).length;
-                sportsCount.textContent = selected ? `${selected} sport${selected === 1 ? '' : 's'} selected` : 'No sports selected yet';
+            sportsCount.textContent = selected ? `مختار ${selected} رياضة` : 'لسه ما اخترت رياضة';
             };
             sports.forEach((sport) => sport.addEventListener('change', updateSportsCount));
             updateSportsCount();
@@ -315,7 +315,7 @@
                 fileDrop.classList.toggle('has-files', files.length > 0);
                 files.forEach((file) => {
                     const item = document.createElement('span');
-                    item.textContent = `${file.name} · ${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+                    item.textContent = `${file.name} · ${(file.size / (1024 * 1024)).toFixed(2)} ميغابايت`;
                     fileList.appendChild(item);
                 });
             });
@@ -323,13 +323,13 @@
             form.addEventListener('submit', (event) => {
                 if (!sports.some((sport) => sport.checked)) {
                     event.preventDefault();
-                    sportsCount.textContent = 'Please select at least one sport to continue.';
+                    sportsCount.textContent = 'اختار رياضة وحدة عالأقل عشان تكمل.';
                     sportsCount.style.color = '#E63946';
                     sports[0]?.focus();
                     return;
                 }
                 submitButton.disabled = true;
-                submitButton.innerHTML = 'Submitting application <span aria-hidden="true">…</span>';
+                submitButton.innerHTML = 'بنبعت طلبك… <span aria-hidden="true">…</span>';
             });
         })();
     </script>
