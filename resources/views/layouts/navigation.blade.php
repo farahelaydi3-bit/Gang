@@ -1,12 +1,12 @@
 <nav class="bg-white border-b border-gray-100" aria-label="{{ __('Main navigation') }}">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between min-h-16 gap-6">
-            <a href="{{ route('dashboard') }}" aria-label="{{ __('Dashboard') }}">
+            <a href="{{ route('courtbook.home') }}" aria-label="{{ __('Home') }}">
                 <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
             </a>
 
             <div class="flex items-center gap-4">
-                <a href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a>
+                <a href="{{ route('courtbook.home') }}">{{ __('Home') }}</a>
                 <a href="{{ route('profile.edit') }}">{{ __('Profile') }}</a>
 
                 <form method="post" action="{{ route('logout') }}">

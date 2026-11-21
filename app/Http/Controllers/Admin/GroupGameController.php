@@ -4,7 +4,6 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\GroupGame;
-use App\Models\Booking;
 use App\Models\Court;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +15,7 @@ class GroupGameController extends Controller
      */
     public function index()
     {
-        $games = GroupGame::with('booking')
+        $games = GroupGame::with(['court', 'joinedPlayers'])
             ->where('admin_id', auth('admin')->id())
             ->withCount('joinedPlayers')
             ->latest()
@@ -162,10 +161,6 @@ class GroupGameController extends Controller
         DB::transaction(function () use ($game) {
             $game->update(['status' => 'cancelled']);
 
-            // Cancel linked booking if it is still pending
-            $game->booking()
-                ->where('booking_status', 'pending')
-                ->update(['booking_status' => 'cancelled']);
         });
 
         return redirect()
