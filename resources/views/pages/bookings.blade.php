@@ -82,11 +82,31 @@
                                     </div>
                                     <div class="booking-pass-footer">
                                         <span>{{ __('Booking total') }} <strong>{{ number_format((float) $booking->total_price, 2) }} JOD</strong></span>
-                                        @if ($booking->booking_status === 'pending')
-                                            <a class="booking-pass-action" href="{{ route('courtbook.payments.checkout', [$booking, 'deposit']) }}">
-                                                {{ __('Continue payment') }} <span aria-hidden="true">{{ app()->isLocale('ar') ? '←' : '→' }}</span>
-                                            </a>
-                                        @endif
+                                        
+
+@if ($booking->booking_status === 'pending')
+    <a class="booking-pass-action"
+       href="{{ route('courtbook.payments.checkout', [$booking, 'deposit']) }}">
+        {{ __('Continue payment') }}
+    </a>
+
+@elseif ($booking->booking_status === 'completed')
+
+    @if ($booking->review)
+        <a class="booking-pass-action"
+           href="{{ route('reviews.show', $booking->review) }}">
+            ★ {{ __('View Review') }}
+        </a>
+    @else
+        <a class="booking-pass-action"
+           href="{{ route('reviews.create', ['booking_id' => $booking->id]) }}">
+            ★ {{ __('Write Review') }}
+        </a>
+    @endif
+
+@endif
+
+
                                     </div>
                                 </div>
                                 <div class="booking-pass-date" aria-label="{{ $booking->booking_date->translatedFormat('F j, Y') }}">
