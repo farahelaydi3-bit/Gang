@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -25,6 +24,7 @@ use App\Http\Controllers\Admin\GangSiteStudioController;
 use App\Http\Controllers\Admin\MyProfileController;
 use App\Http\Controllers\Admin\SubscriptionController;
 use App\Http\Controllers\Admin\GroupGameController;
+use App\Http\Controllers\Admin\SmsLogController;
 
 // =========================
 // Super Admin Routes
@@ -164,6 +164,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/application', [OwnerApplicationController::class, 'store'])
             ->name('application.store');
 
+        Route::patch('/application/{application}', [OwnerApplicationController::class, 'update'])
+            ->whereNumber('application')
+            ->name('application.update');
+
         Route::post('/logout', [AdminAuthController::class, 'logout'])
             ->name('logout');
 
@@ -226,6 +230,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::patch('/group-games/{id}/cancel', [GroupGameController::class, 'cancel'])
                 ->name('group-games.cancel');
+
+            Route::patch('/group-games/{id}/complete', [GroupGameController::class, 'complete'])
+                ->name('group-games.complete');
+
+            Route::get('/sms-logs', [SmsLogController::class, 'index'])
+                ->name('sms-logs.index');
 
             // Gang Site Studio
             Route::get('/site-studio', [GangSiteStudioController::class, 'index'])

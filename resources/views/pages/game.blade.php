@@ -5,9 +5,6 @@
 
 @section('content')
 
-@php
-    $positionSlots = $game->position_slots ?: ['player' => (int) $game->max_players];
-@endphp
     <div class="wrap page">
         <a class="muted" href="{{ route('games.index') }}">← {{ __('Find games') }}</a>
 
@@ -28,8 +25,8 @@
             <h1>{{ $game->title }}</h1>
             <p>{{ $game->court->name }}</p>
 
-            @if($game->joinedPlayers->count() === 0)
-                <a href="{{ route('games.edit', $game->id) }}" class="button outline mt-4" style="display: inline-block;">
+            @if(auth('admin')->check() && (int) $game->admin_id === (int) auth('admin')->id() && $game->joinedPlayers->count() === 0)
+                <a href="{{ route('admin.group-games.edit', $game->id) }}" class="button outline mt-4" style="display: inline-block;">
                     {{ __('Edit Game') }}
                 </a>
             @endif
@@ -46,63 +43,46 @@
                     {{ __('View court') }}
                 </a>
 
-                <h2 class="mt-6">{{ __('Position Availability') }}</h2>
-                @if($positionSlots)
-                    <ul>
-                        @foreach($positionSlots as $position => $count)
-                            @php
-                                                                            $taken = $game->position_slots
-                                                                                ? $game->joinedPlayers->where('pivot.position', $position)->count()
-                                                                                : $game->joinedPlayers->count();
-                                $available = $count - $taken;
-                            @endphp
-                            <li>
-                                <strong>{{ ucfirst($position) }}</strong>: {{ $taken }} / {{ $count }}
-                                @if($available <= 0)
-                                    <span style="color:red;">(Full)</span>
-                                @else
-                                    <span style="color:green;">({{ $available }} left)</span>
-                                @endif
-                            </li>
-                        @endforeach
-                    </ul>
-                @endif
+                <h2 class="mt-6">{{ __('Entry Price') }}</h2>
+                <p>
+                    @if((float) $game->player_price > 0)
+                        {{ number_format((float) $game->player_price, 2) }} JOD per player
+                    @else
+                        {{ __('Free entry') }}
+                    @endif
+                </p>
 
                 <div class="mt-6 stack">
                     @auth
-                        @if($game->joinedPlayers->contains(auth()->id()))
-                            <form action="{{ route('games.leave', $game->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="button outline" style="color: red; border-color: red;">
-                                    {{ __('Leave Game') }}
-                                </button>
-                            </form>
-                        @elseif($game->status === 'open' && $game->joinedPlayers->count() < $game->max_players)
+                        @if($participation && in_array($participation->status, ['joined', 'attended'], true))
+                            @if(in_array($game->status, ['open', 'full'], true))
+                                <form action="{{ route('games.leave', $game->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="button outline" style="color: red; border-color: red;">
+                                        {{ __('Leave Game') }}
+                                    </button>
+                                </form>
+                            @endif
+                            @if($game->status === 'completed')
+                                <p class="muted">{{ __('Your remaining player balance is due now.') }}</p>
+                                <form action="{{ route('games.payment.balance', $game->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="button">{{ __('Pay remaining balance') }}</button>
+                                </form>
+                            @endif
+                        @elseif($participation && $participation->status === 'pending' && $participation->payment_id)
+                            <a class="button" href="{{ route('games.payment.checkout', [$game->id, $participation->payment_id]) }}">
+                                {{ __('Continue payment') }}
+                            </a>
+                        @elseif($offerInProgress)
+                            <p class="muted">{{ __('A place is currently being offered to the next player on the waiting list.') }}</p>
+                        @elseif($game->status === 'open' && $game->reservedPlayers->count() < $game->max_players)
                             <form action="{{ route('games.join', $game->id) }}" method="POST">
                                 @csrf
-                                <label>{{ __('Choose your position:') }}</label>
-                                <select name="position" required>
-                                    @foreach($positionSlots as $position => $count)
-                                        @php
-                                                                                        $taken = $game->position_slots
-                                                                                            ? $game->joinedPlayers->where('pivot.position', $position)->count()
-                                                                                            : $game->joinedPlayers->count();
-                                            $available = $count - $taken;
-                                        @endphp
-                                        @if($available > 0)
-                                            <option value="{{ $position }}">
-                                                {{ ucfirst($position) }} ({{ $available }} spots left)
-                                            </option>
-                                        @endif
-                                    @endforeach
-                                </select>
-                                <button type="submit" class="button mt-2">{{ __('Join Game') }}</button>
+                                <button type="submit" class="button">{{ __('Join Game') }}</button>
                             </form>
                         @else
                             <p class="muted">{{ __('This game is currently full.') }}</p>
-                            <a href="{{ route('waitlist.create') }}?court_id={{ $game->court_id }}&booking_date={{ $game->game_date->format('Y-m-d') }}&start_time={{ $game->start_time }}&end_time={{ $game->end_time }}" class="button outline">
-                                {{ __('Join Waitlist for this time') }}
-                            </a>
                         @endif
                     @else
                         <p class="muted">
@@ -116,17 +96,12 @@
                 <h2>{{ __('Game schedule') }}</h2>
                 <p>{{ $game->game_date->format('M j, Y') }}</p>
                 <p>{{ $game->start_time }} – {{ $game->end_time }}</p>
-                <p>{{ $game->joinedPlayers->count() }} / {{ $game->max_players }} {{ __('players') }}</p>
+                <p>{{ $game->reservedPlayers->count() }} / {{ $game->max_players }} {{ __('players') }}</p>
                 <p>{{ __('Status') }}: {{ __(ucfirst($game->status)) }}</p>
 
                 <h3>{{ __('Players') }}</h3>
                 @forelse ($game->joinedPlayers as $player)
-                    <p>
-                        {{ $player->name }}
-                        @if($player->pivot->position)
-                            <span class="muted">({{ ucfirst($player->pivot->position) }})</span>
-                        @endif
-                    </p>
+                    <p>{{ $player->name }}</p>
                 @empty
                     <p class="muted">{{ __('No players have joined yet.') }}</p>
                 @endforelse

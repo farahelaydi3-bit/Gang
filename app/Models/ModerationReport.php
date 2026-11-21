@@ -17,7 +17,13 @@ class ModerationReport extends Model
         'ai_decision',
         'ai_reason',
         'notes',
+        'pre_ban_state',
+        'related_report_id',
         'reviewed_by_super_admin_id',
+    ];
+
+    protected $casts = [
+        'pre_ban_state' => 'array',
     ];
 
     public function review()
@@ -33,5 +39,10 @@ class ModerationReport extends Model
     public function admin()
     {
         return $this->belongsTo(Admin::class);
+    }
+
+    public function resolutions()
+    {
+        return $this->hasMany(self::class, 'related_report_id');
     }
 }

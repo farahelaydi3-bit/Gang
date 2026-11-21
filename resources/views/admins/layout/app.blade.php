@@ -68,6 +68,10 @@
                     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.7a3.5 3.5 0 0 1 0 6.6M18 14.3c2 .8 3.5 2.6 3.5 5.7"/></svg>
                     <span>Group  Games</span>
                 </a> 
+                <a href="{{ route('admin.sms-logs.index') }}"
+                    class="sidebar-link {{ request()->routeIs('admin.sms-logs.*') ? 'active' : '' }}">
+                    <span>SMS History</span>
+                </a>
                 <a href="{{ url('/admin/subscriptions') }}"
                     class="sidebar-link {{ request()->is('admin/subscription*') ? 'active' : '' }}">
                     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h4"/></svg>
@@ -114,6 +118,7 @@
             </button>
 
             <section class="owner-content @yield('page-class')">
+                <x-dashboard-notifications />
                 @yield('content')
             </section>
 
@@ -136,42 +141,6 @@
             }
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-@if (session('success'))
-    <script>
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'success',
-            iconColor: '#5a7a4c',
-            background: '#fffcf5',
-            color: '#2a2320',
-            title: @json(session('success')),
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true
-        });
-    </script>
-@endif
-
-@if (session('error'))
-    <script>
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: 'error',
-            iconColor: '#b4483b',
-            background: '#fffcf5',
-            color: '#2a2320',
-            title: @json(session('error')),
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true
-        });
-    </script>
-@endif
-
     @stack('scripts')
 
 </body>

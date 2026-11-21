@@ -3,15 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
 use App\Models\OwnerApplication;
 use App\Models\Sports;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
+use RuntimeException;
+use Throwable;
 
 class OwnerApplicationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         /** @var \App\Models\Admin $admin */
         $admin = Auth::guard('admin')->user();
@@ -30,11 +36,22 @@ class OwnerApplicationController extends Controller
             ->first();
 
         $sports = Sports::orderBy('name')->get();
+        $editing = $request->boolean('edit') && $application?->status === 'submitted';
 
-        return view('admins.pending', compact('admin', 'application', 'sports'));
+        return view('admins.pending', compact('admin', 'application', 'sports', 'editing'));
     }
 
     public function store(Request $request)
+    {
+        return $this->save($request);
+    }
+
+    public function update(Request $request, string $application)
+    {
+        return $this->save($request, $application);
+    }
+
+    private function save(Request $request, ?string $applicationId = null)
     {
         /** @var \App\Models\Admin $admin */
         $admin = Auth::guard('admin')->user();
@@ -102,42 +119,71 @@ class OwnerApplicationController extends Controller
             'attachments' => 'المرفقات',
         ]);
 
-        // Keep database changes together
-        $application = DB::transaction(function () use ($admin, $validated) {
+        $files = $request->file('attachments', []);
+        $storedPaths = [];
 
-            $application = OwnerApplication::create([
-                'admin_id' => $admin->id,
-                'facility_name' => $validated['facility_name'],
-                'address' => $validated['address'],
-                'courts_count' => $validated['courts_count'],
-                'facility_description' => $validated['facility_description'],
-                'application_message' => $validated['application_message'],
-                'terms_accepted_at' => now(),
-                'terms_version' => config('owner.terms_version'),
-                'status' => 'submitted',
-                'submitted_at' => now(),
-            ]);
+        try {
+            return DB::transaction(function () use ($admin, $applicationId, $validated, $files, &$storedPaths) {
+                // Review decisions also update the application row before the owner account.
+                $application = $applicationId === null
+                    ? new OwnerApplication(['admin_id' => $admin->id, 'status' => 'submitted', 'submitted_at' => now()])
+                    : $admin->applications()->lockForUpdate()->findOrFail($applicationId);
+                $admin = Admin::query()->lockForUpdate()->findOrFail($admin->id);
 
-            $application->sports()->sync($validated['sports']);
+                if (! in_array($admin->status, ['pending', 'rejected'], true)) {
+                    return redirect()->route('admin.pending')
+                        ->with('error', 'لا يمكنك إرسال طلب انضمام أو تعديله بحالة حسابك الحالية.');
+                }
 
-            $admin->update(['status' => 'pending']);
+                if ($application->status !== 'submitted') {
+                    return redirect()->route('admin.pending')
+                        ->with('error', 'انتهت مراجعة الطلب. لم يعد متاحًا للتعديل.');
+                }
 
-            return $application;
-        });
+                if ($applicationId === null && $admin->applications()->where('status', 'submitted')->exists()) {
+                    return redirect()->route('admin.pending')
+                        ->with('error', 'لديك طلب انضمام قيد المراجعة بالفعل.');
+                }
 
-        // Save files on the private local disk
-        foreach ($request->file('attachments', []) as $file) {
-            $path = $file->store(
-                'owner-applications/' . $application->id,
-                'local'
-            );
+                if ($applicationId !== null && $files !== [] && $application->attachments()->count() + count($files) > 5) {
+                    throw ValidationException::withMessages([
+                        'attachments' => 'يجب ألّا يتجاوز مجموع المرفقات الحالية والجديدة ٥ ملفات.',
+                    ]);
+                }
 
-            $application->attachments()->create([
-                'original_name' => $file->getClientOriginalName(),
-                'file_path' => $path,
-                'mime_type' => $file->getMimeType(),
-                'file_size' => $file->getSize(),
-            ]);
+                $application->fill(Arr::only($validated, [
+                    'facility_name', 'address', 'courts_count', 'facility_description', 'application_message',
+                ]))->fill([
+                    'terms_accepted_at' => now(),
+                    'terms_version' => config('owner.terms_version'),
+                ])->save();
+                $application->sports()->sync($validated['sports']);
+                $admin->update(['status' => 'pending']);
+
+                foreach ($files as $file) {
+                    $path = $file->store('owner-applications/' . $application->id, 'local');
+                    if ($path === false) {
+                        throw new RuntimeException('Could not store owner application attachment.');
+                    }
+                    $storedPaths[] = $path;
+
+                    $application->attachments()->create([
+                        'original_name' => $file->getClientOriginalName(),
+                        'file_path' => $path,
+                        'mime_type' => $file->getMimeType(),
+                        'file_size' => $file->getSize(),
+                    ]);
+                }
+
+                return redirect()->route('admin.pending')->with('success', $applicationId === null
+                    ? 'تم إرسال طلب انضمام منشأتك للمراجعة.'
+                    : 'تم حفظ تعديلاتك. طلبك ما زال قيد المراجعة.');
+            });
+        } catch (Throwable $error) {
+            if ($storedPaths !== []) {
+                Storage::disk('local')->delete($storedPaths);
+            }
+            throw $error;
         }
 
         return redirect()->route('admin.pending')

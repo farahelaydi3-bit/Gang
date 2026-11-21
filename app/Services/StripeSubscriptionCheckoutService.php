@@ -47,21 +47,19 @@ class StripeSubscriptionCheckoutService
         if (!$first || \Illuminate\Support\Carbon::parse($first->booking_date->toDateString().' '.$first->start_time)->lte(now()->addMinutes(35))) {
             throw ValidationException::withMessages(['subscription' => 'The first appointment is too close. Please create a new subscription with a later date.']);
         }
-        // JOD has three minor-unit decimal places in Stripe; 10 fils = 0.010 JOD.
-        $amount = (int) round((float) $subscription->amount * 1000);
+        $amount = (int) round((float) $subscription->amount * 100);
         if ($amount < 500 || $amount % 10 !== 0) {
             throw ValidationException::withMessages(['subscription' => 'Subscription amount is invalid for Stripe JOD payments.']);
         }
         $response = Http::withBasicAuth($this->secret(), '')
             ->asForm()->acceptJson()->timeout(20)
-            ->withHeaders(['Idempotency-Key' => 'gang-subscription-'.$subscription->id.'-checkout-v1'])
+            ->withHeaders(['Idempotency-Key' => 'gang-subscription-'.$subscription->id.'-checkout-usd-v2'])
             ->post('https://api.stripe.com/v1/checkout/sessions', [
                 'mode' => 'payment',
-                'payment_method_types' => ['card'],
                 'customer_email' => $subscription->user->email,
                 'client_reference_id' => (string) $subscription->id,
                 'metadata[subscription_id]' => (string) $subscription->id,
-                'line_items[0][price_data][currency]' => 'jod',
+                'line_items[0][price_data][currency]' => config('gang_stripe.currency', 'usd'),
                 'line_items[0][price_data][unit_amount]' => $amount,
                 'line_items[0][price_data][product_data][name]' => 'Gang subscription — '.$subscription->court->name,
                 'line_items[0][quantity]' => 1,
@@ -84,11 +82,11 @@ class StripeSubscriptionCheckoutService
         $id = filter_var($session['client_reference_id'] ?? null, FILTER_VALIDATE_INT);
         if (!$id || ($requiredSubscriptionId !== null && $id !== $requiredSubscriptionId) ||
             (string) ($session['metadata']['subscription_id'] ?? '') !== (string) $id ||
-            strtolower((string) ($session['currency'] ?? '')) !== 'jod') {
+            strtolower((string) ($session['currency'] ?? '')) !== config('gang_stripe.currency', 'usd')) {
             throw new RuntimeException('Stripe session metadata does not match subscription.');
         }
         $subscription = Subscription::findOrFail($id);
-        if ((int) ($session['amount_total'] ?? -1) !== (int) round((float) $subscription->amount * 1000)) {
+        if ((int) ($session['amount_total'] ?? -1) !== (int) round((float) $subscription->amount * 100)) {
             throw new RuntimeException('Stripe payment amount mismatch.');
         }
         // Activation takes the court lock first. Do not acquire the subscription lock

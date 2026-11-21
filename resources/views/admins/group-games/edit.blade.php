@@ -150,22 +150,7 @@
                     @enderror
                 </div>
 
-                <div class="form-group">
-                    <label for="player_price" class="form-label">Price Per Player (JOD)</label>
-
-                    <input type="number"
-                           name="player_price"
-                           id="player_price"
-                           class="form-control"
-                           min="0"
-                           step="0.01"
-                           value="{{ old('player_price', $game->player_price) }}"
-                           required>
-
-                    @error('player_price')
-                        <span class="form-error">{{ $message }}</span>
-                    @enderror
-                </div>
+                <p class="muted">The court price is divided evenly among the maximum number of players.</p>
 
             </div>
 

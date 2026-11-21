@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Court;
 use App\Models\Subscription;
 use App\Events\BookingCancelled;
-use App\Services\WaitingListOfferService;
 use App\Services\BookingPricingService;
 use App\Services\CourtSlotAvailabilityService;
 class BookingController extends Controller
@@ -26,49 +25,54 @@ class BookingController extends Controller
         return view('pages.booking-create', compact('courts'));
     }
 
-    public function index(Request $request)
-    {
-        $bookings = collect();
-        $upcomingCount = 0;
-        $completedCount = 0;
-        $cancelledCount = 0;
-        $hasAnyBookings = false;
+public function index(Request $request)
+{
+    $bookings = collect();
+    $upcomingCount = 0;
+    $completedCount = 0;
+    $cancelledCount = 0;
+    $hasAnyBookings = false;
 
-        if ($request->user()) {
-            $userBookings = Booking::query()
-                ->where('user_id', $request->user()->id);
+    if ($request->user()) {
+        $userBookings = Booking::query()
+            ->where('user_id', $request->user()->id);
 
-            $statusCounts = (clone $userBookings)
-                ->selectRaw('booking_status, COUNT(*) as total')
-                ->groupBy('booking_status')
-                ->pluck('total', 'booking_status');
+        $statusCounts = (clone $userBookings)
+            ->selectRaw('booking_status, COUNT(*) as total')
+            ->groupBy('booking_status')
+            ->pluck('total', 'booking_status');
 
-            $upcomingCount = (clone $userBookings)
-                ->whereIn('booking_status', ['pending', 'confirmed'])
-                ->whereDate('booking_date', '>=', today())
-                ->count();
-            $completedCount = (int) ($statusCounts['completed'] ?? 0);
-            $cancelledCount = (int) ($statusCounts['cancelled'] ?? 0);
-            $hasAnyBookings = $statusCounts->isNotEmpty();
+        $upcomingCount = (clone $userBookings)
+            ->whereIn('booking_status', ['pending', 'confirmed'])
+            ->whereDate('booking_date', '>=', today())
+            ->count();
 
-            $bookings = (clone $userBookings)
-                ->with(['court.sports', 'review'])
-                ->whereIn('booking_status', ['pending', 'confirmed'])
-                ->orderByRaw('CASE WHEN booking_date >= ? THEN 0 ELSE 1 END', [today()->toDateString()])
-                ->orderBy('booking_date')
-                ->orderBy('start_time')
-                ->paginate(5)
-                ->withQueryString();
-        }
+        $completedCount = (int) ($statusCounts['completed'] ?? 0);
+        $cancelledCount = (int) ($statusCounts['cancelled'] ?? 0);
+        $hasAnyBookings = $statusCounts->isNotEmpty();
 
-        return view('pages.bookings', compact(
-            'bookings',
-            'upcomingCount',
-            'completedCount',
-            'cancelledCount',
-            'hasAnyBookings',
-        ));
+        $bookings = (clone $userBookings)
+            ->with(['court.sports', 'review'])
+            ->whereIn('booking_status', ['pending', 'confirmed', 'completed'])
+            ->orderByRaw(
+                'CASE WHEN booking_date >= ? THEN 0 ELSE 1 END',
+                [today()->toDateString()]
+            )
+            ->orderBy('booking_date')
+            ->orderBy('start_time')
+            ->paginate(5)
+            ->withQueryString();
     }
+
+    return view('pages.bookings', compact(
+        'bookings',
+        'upcomingCount',
+        'completedCount',
+        'cancelledCount',
+        'hasAnyBookings',
+    ));
+}
+
     public function show(Request $request, Booking $booking)
     {
         abort_unless(
@@ -402,7 +406,6 @@ public function cancel(Request $request, Booking $booking)
     });
 
     BookingCancelled::dispatch($cancelledBooking);
-    app(WaitingListOfferService::class)->afterCancellation($cancelledBooking);
 
     return response()->json($cancelledBooking);
 }

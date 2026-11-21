@@ -9,6 +9,8 @@ use App\Models\CourtReviewSummary;
 use App\Models\ModerationReport;
 use App\Models\Review;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class SuperAdminReviewController extends Controller
 {
@@ -17,7 +19,7 @@ class SuperAdminReviewController extends Controller
      */
     public function flagged()
     {
-        $reports = ModerationReport::with(['review.user', 'court', 'admin'])
+        $reports = ModerationReport::with(['review.user', 'court', 'admin', 'resolutions'])
             ->latest()
             ->paginate(20, ['*'], 'reports_page');
 
@@ -33,19 +35,43 @@ class SuperAdminReviewController extends Controller
      */
     public function unbanOwner(Request $request, Admin $admin)
     {
-        $admin->update(['status' => 'active']);
+        DB::transaction(function () use ($admin) {
+            $lockedAdmin = Admin::whereKey($admin->id)->lockForUpdate()->firstOrFail();
+            if ($lockedAdmin->status !== 'suspended') {
+                throw ValidationException::withMessages(['admin' => 'This owner is not currently suspended.']);
+            }
 
-        Court::where('admin_id', $admin->id)
-            ->update(['status' => 'approved']);
+            $banReport = ModerationReport::where('admin_id', $lockedAdmin->id)
+                ->where('action', 'auto_banned')
+                ->whereDoesntHave('resolutions')
+                ->latest('id')
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        ModerationReport::create([
-            'review_id'                  => $request->input('review_id'),
-            'court_id'                   => $request->input('court_id'),
-            'admin_id'                   => $admin->id,
-            'action'                     => 'unbanned',
-            'notes'                      => 'Super Admin overrode AI: owner reactivated.',
-            'reviewed_by_super_admin_id' => auth('super_admin')->id(),
-        ]);
+            $previousState = $banReport->pre_ban_state ?? [];
+            $lockedAdmin->update(['status' => $previousState['owner_status'] ?? 'active']);
+
+            $courtStatuses = $previousState['court_statuses'] ?? [];
+            foreach ($courtStatuses as $courtId => $status) {
+                Court::where('admin_id', $lockedAdmin->id)->whereKey($courtId)->update(['status' => $status]);
+            }
+
+            // Older reports predate restoration snapshots. Preserve the former behavior for those records.
+            if ($courtStatuses === []) {
+                Court::where('admin_id', $lockedAdmin->id)->where('status', 'inactive')->update(['status' => 'approved']);
+            }
+
+            ModerationReport::create([
+                'review_id' => $banReport->review_id,
+                'court_id' => $banReport->court_id,
+                'admin_id' => $lockedAdmin->id,
+                'action' => 'unbanned',
+                'related_report_id' => $banReport->id,
+                'notes' => 'Super Admin restored the owner and court statuses recorded before the AI suspension.',
+                'reviewed_by_super_admin_id' => auth('super_admin')->id(),
+            ]);
+
+        });
 
         return back()->with('success', "Owner {$admin->name} has been reactivated.");
     }

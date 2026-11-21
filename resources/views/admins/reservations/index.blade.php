@@ -157,7 +157,7 @@
                                 </td>
 
                                 <td>
-                                    {{ $reservation->user->name ?? 'N/A' }}
+                                    {{ $reservation->user?->name ?? $reservation->creatorAdmin?->name ?? 'Group game' }}
                                 </td>
 
                                 <td>

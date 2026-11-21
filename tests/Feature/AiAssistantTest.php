@@ -67,7 +67,7 @@ class AiAssistantTest extends TestCase
 
     public function test_assistant_page_exists_for_guests(): void
     {
-        $this->get('/assistant')->assertOk()->assertSee('Gang AI Assistant');
+        $this->get('/assistant')->assertOk()->assertSee('مساعد Gang');
     }
 
     public function test_catalog_excludes_unapproved_courts(): void
