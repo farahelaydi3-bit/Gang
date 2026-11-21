@@ -4,14 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Court;
-
 
 class GroupGame extends Model
 {
     use HasFactory;
 
- protected $fillable = [
+    protected $fillable = [
         'admin_id',
         'court_id',
         'title',
@@ -24,31 +22,32 @@ class GroupGame extends Model
         'status',
     ];
 
+    protected $casts = [
+        'game_date'    => 'date',
+        'start_time'   => 'string',
+        'end_time'     => 'string',
+        'player_price' => 'decimal:2',
+    ];
+
     public function admin()
     {
         return $this->belongsTo(Admin::class);
     }
 
-    public function booking()
+    public function court()
     {
-        return $this->belongsTo(Booking::class);
+        return $this->belongsTo(Court::class, 'court_id');
     }
 
     public function players()
     {
         return $this->belongsToMany(User::class, 'game_players', 'group_game_id', 'user_id')
-            ->withPivot('status', 'joined_at')->withTimestamps();
+            ->withPivot('status', 'joined_at')
+            ->withTimestamps();
     }
 
     public function joinedPlayers()
     {
         return $this->players()->wherePivot('status', 'joined');
     }
-
-       public function court()
-    {
-        return $this->belongsTo(Court::class, 'court_id');
-    }
-
-
 }
