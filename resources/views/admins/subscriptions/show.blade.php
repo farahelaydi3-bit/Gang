@@ -1,6 +1,7 @@
 @extends('admins.layout.app')
 
 @section('title', 'Subscription Details')
+@section('html-lang', 'en')
 
 @section('content')
     <x-super-admin.page-header :title="$subscription->package_name" :reference="'Subscription #' . $subscription->id">

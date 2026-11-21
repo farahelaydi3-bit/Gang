@@ -76,6 +76,25 @@ class SubscriptionFullTest extends TestCase
         $this->post('/subscriptions', [])->assertRedirect('/login');
     }
 
+    public function test_user_can_view_only_their_subscriptions_in_their_account_page(): void
+    {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $court = $this->court();
+        $this->subscription($user, $court);
+
+        $otherCourt = $this->court();
+        $otherCourt->update(['name' => 'Private Court']);
+        $this->subscription($otherUser, $otherCourt);
+
+        $this->actingAs($user)
+            ->get('/my-subscriptions')
+            ->assertOk()
+            ->assertSee('Test Court')
+            ->assertSee('95.00')
+            ->assertDontSee('Private Court');
+    }
+
     public function test_subscription_purchase_is_pending_and_discounted(): void
 {
     $user = User::factory()->create();

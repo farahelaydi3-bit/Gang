@@ -2,10 +2,11 @@
 @extends('admins.layout.app')
 
 @section('title', 'Edit Subscription')
+@section('html-lang', 'en')
 
 @section('content')
 
-<div class="subscriptions-page">
+<div class="subscriptions-page" lang="en" dir="ltr">
 
     <x-super-admin.page-header title="Edit Subscription" description="Update subscription details and pricing.">
         <x-slot:actions>
@@ -20,6 +21,33 @@
 
             @csrf
             @method('PUT')
+
+            <div class="form-group">
+                <label for="court_id" class="form-label">Court</label>
+                <select name="court_id" id="court_id" class="form-control" required @disabled($courts->isEmpty())>
+                    <option value="">Choose one of your courts</option>
+                    @foreach($courts as $court)
+                        <option value="{{ $court->id }}"
+                            data-name="{{ $court->name }}"
+                            data-address="{{ $court->address }}"
+                            @selected(old('court_id', $subscription->court_id) == $court->id)>
+                            {{ $court->name }}{{ $court->address ? ' — '.$court->address : '' }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('court_id')
+                    <small class="form-error">{{ $message }}</small>
+                @enderror
+                <div class="subscription-court-preview" id="court-preview" aria-live="polite">
+                    <span class="subscription-court-preview-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="10" r="2.2" stroke="currentColor" stroke-width="1.7"/></svg>
+                    </span>
+                    <span class="subscription-court-preview-copy">
+                        <strong id="court-preview-name">Choose a court</strong>
+                        <span id="court-preview-address">Only courts managed by your account are listed.</span>
+                    </span>
+                </div>
+            </div>
 
             <div class="subscription-form-grid">
 
@@ -118,6 +146,14 @@
                 <small id="discount-message"></small>
             </div>
 
+            @if ($courts->isEmpty())
+                <div class="subscription-courts-empty" role="status">
+                    <strong>No courts available yet.</strong>
+                    Add one of your courts before updating this subscription.
+                    <a href="{{ route('admin.courts.create') }}">Add a court</a>
+                </div>
+            @endif
+
             <div class="subscription-form-actions">
 
                 <a href="{{ route('admin.subscriptions.index') }}"
@@ -125,7 +161,7 @@
                     Cancel
                 </a>
 
-                <button type="submit" class="admin-button">
+                <button type="submit" class="admin-button" @disabled($courts->isEmpty())>
                     Save Changes
                 </button>
 
@@ -145,6 +181,9 @@
     const discountInput = document.getElementById('subscription-discount');
     const finalPriceElement = document.getElementById('final-price');
     const discountMessage = document.getElementById('discount-message');
+    const courtSelect = document.getElementById('court_id');
+    const courtPreviewName = document.getElementById('court-preview-name');
+    const courtPreviewAddress = document.getElementById('court-preview-address');
 
     function updatePricePreview() {
         const price = parseFloat(priceInput.value) || 0;
@@ -162,9 +201,24 @@
         }
     }
 
+    function updateCourtPreview() {
+        const selectedCourt = courtSelect.options[courtSelect.selectedIndex];
+
+        if (!selectedCourt || !selectedCourt.value) {
+            courtPreviewName.textContent = 'Choose a court';
+            courtPreviewAddress.textContent = 'Only courts managed by your account are listed.';
+            return;
+        }
+
+        courtPreviewName.textContent = selectedCourt.dataset.name || selectedCourt.textContent.trim();
+        courtPreviewAddress.textContent = selectedCourt.dataset.address || 'Court selected for this subscription.';
+    }
+
     priceInput.addEventListener('input', updatePricePreview);
     discountInput.addEventListener('input', updatePricePreview);
+    courtSelect.addEventListener('change', updateCourtPreview);
 
     updatePricePreview();
+    updateCourtPreview();
 </script>
 @endsection

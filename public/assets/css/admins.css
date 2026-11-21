@@ -1881,6 +1881,65 @@ textarea.form-control {
     border-radius: 10px;
 }
 
+.subscription-court-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    padding: 14px 16px;
+    border: 1px solid #dce9db;
+    border-radius: 14px;
+    background: linear-gradient(120deg, #f7faf5, #eef5e9);
+    color: #183d2b;
+}
+
+.subscription-court-preview-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: #dff0df;
+    color: #176b45;
+}
+
+.subscription-court-preview-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.subscription-court-preview-copy {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.subscription-court-preview-copy strong {
+    font-size: 13px;
+}
+
+.subscription-court-preview-copy span {
+    color: #66796d;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.subscription-courts-empty {
+    margin: 0 0 18px;
+    padding: 14px 16px;
+    border: 1px solid #f0dfb8;
+    border-radius: 12px;
+    background: #fff9eb;
+    color: #765a23;
+}
+
+.subscription-courts-empty a {
+    margin-left: 5px;
+    color: #176b45;
+    font-weight: 800;
+}
+
 /* Table Card */
 .subscriptions-page .admin-card {
     border-radius: 16px;

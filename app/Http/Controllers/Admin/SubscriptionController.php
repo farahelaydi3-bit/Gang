@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Court;
 use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rule;
 
 class SubscriptionController extends Controller
 {
@@ -70,8 +72,11 @@ class SubscriptionController extends Controller
     public function create()
     {
         $users = User::orderBy('name')->get();
+        $courts = Court::where('admin_id', auth('admin')->id())
+            ->orderBy('name')
+            ->get();
 
-        return view('admins.subscriptions.create', compact('users'));
+        return view('admins.subscriptions.create', compact('users', 'courts'));
     }
 
 
@@ -82,6 +87,11 @@ class SubscriptionController extends Controller
     {
         $validated = $request->validate([
             'user_id' => ['required', 'exists:users,id'],
+            'court_id' => [
+                'required',
+                'integer',
+                Rule::exists('courts', 'id')->where('admin_id', auth('admin')->id()),
+            ],
             'package_name' => ['required', 'string', 'max:255'],
             'total_hours' => ['required', 'numeric', 'min:1'],
             'amount' => ['required', 'numeric', 'min:0'],
@@ -104,6 +114,7 @@ class SubscriptionController extends Controller
 
         Subscription::create([
             'user_id' => $validated['user_id'],
+            'court_id' => $validated['court_id'],
             'admin_id' => auth('admin')->id(),
             'package_name' => $validated['package_name'],
             'total_hours' => $validated['total_hours'],
@@ -143,8 +154,11 @@ public function edit($id)
 {
     $subscription = Subscription::where('admin_id', auth('admin')->id())
         ->findOrFail($id);
+    $courts = Court::where('admin_id', auth('admin')->id())
+        ->orderBy('name')
+        ->get();
 
-    return view('admins.subscriptions.edit', compact('subscription'));
+    return view('admins.subscriptions.edit', compact('subscription', 'courts'));
 }
 
 public function update(Request $request, $id)
@@ -153,6 +167,11 @@ public function update(Request $request, $id)
         ->findOrFail($id);
 
     $validated = $request->validate([
+        'court_id' => [
+            'required',
+            'integer',
+            Rule::exists('courts', 'id')->where('admin_id', auth('admin')->id()),
+        ],
         'package_name' => 'required|string|max:255',
         'total_hours' => 'required|numeric|min:1',
         'amount' => 'required|numeric|min:0',
@@ -166,6 +185,7 @@ public function update(Request $request, $id)
         - ($validated['amount'] * $discount / 100);
 
     $subscription->update([
+        'court_id' => $validated['court_id'],
         'package_name' => $validated['package_name'],
         'total_hours' => $validated['total_hours'],
         'amount' => $finalAmount,
