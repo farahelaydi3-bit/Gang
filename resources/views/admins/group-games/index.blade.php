@@ -57,7 +57,7 @@
                     <thead>
                         <tr>
                             <th>Game</th>
-                            <th>Booking</th>
+                            <th>Court and schedule</th>
                             <th>Players</th>
                             <th>Price / Player</th>
                             <th>Status</th>
@@ -82,9 +82,13 @@
                                     </small>
                                 </td>
 
-                                {{-- Booking --}}
+                                {{-- Court and schedule --}}
                                 <td>
-                                    #{{ $game->booking_id }}
+                                    <div>{{ $game->court?->name ?? '—' }}</div>
+                                    <small>
+                                        {{ $game->game_date?->format('M j, Y') }}
+                                        · {{ $game->start_time }}–{{ $game->end_time }}
+                                    </small>
                                 </td>
 
                                 {{-- Players --}}

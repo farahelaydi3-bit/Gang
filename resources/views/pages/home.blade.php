@@ -173,7 +173,7 @@
                     @endphp
                     <article class="home-game-card">
                         <div class="home-game-topline">
-                            <span class="home-game-sport">{{ $game->booking?->court?->sports?->name ?? __('Pickup game') }}</span>
+                            <span class="home-game-sport">{{ $game->court?->sports?->name ?? __('Pickup game') }}</span>
                             <span class="home-game-spots">{{ max(0, $game->max_players - $game->players_count) }} {{ __('spots left') }}</span>
                         </div>
                         <h3>
@@ -182,10 +182,10 @@
                             </a>
                         </h3>
                         <div class="home-game-details">
-                            <span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5" stroke="currentColor" stroke-width="1.7"/><path d="M7.5 3.5v3M16.5 3.5v3M3.5 9.5h17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>{{ $game->booking?->booking_date?->translatedFormat('D, M j') }}</span>
-                            <span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>{{ \Illuminate\Support\Carbon::parse($game->booking?->start_time)->format('g:i A') }}</span>
+                            <span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5" stroke="currentColor" stroke-width="1.7"/><path d="M7.5 3.5v3M16.5 3.5v3M3.5 9.5h17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>{{ $game->game_date?->translatedFormat('D, M j') }}</span>
+                            <span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>{{ \Illuminate\Support\Carbon::parse($game->start_time)->format('g:i A') }}</span>
                         </div>
-                        <p class="home-game-court">{{ $game->booking?->court?->name ?? __('Court details') }}</p>
+                        <p class="home-game-court">{{ $game->court?->name ?? __('Court details') }}</p>
                         <div class="home-game-progress" role="progressbar" aria-label="{{ __('Players joined') }}" aria-valuenow="{{ $game->players_count }}" aria-valuemin="0" aria-valuemax="{{ $game->max_players }}">
                             <span style="width: {{ $gameFill }}%"></span>
                         </div>

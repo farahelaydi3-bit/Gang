@@ -28,7 +28,7 @@ class HomeController extends Controller
         // Games query
 
         $games = GroupGame::query()
-    ->with('booking.court.sports')
+    ->with('court.sports')
     ->withCount([
         'players' => fn ($query) =>
             $query->where('game_players.status', 'joined')

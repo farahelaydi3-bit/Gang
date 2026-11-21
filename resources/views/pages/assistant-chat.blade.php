@@ -44,15 +44,28 @@
     .gang-ai-toolbar input {width:100%;border:1px solid #d5dfeb;border-radius:9px;padding:8px;}
     .gang-ai-toolbar button {border:1px solid #d4dfea;background:#fff;border-radius:9px;padding:7px 10px;cursor:pointer;font-size:12px;}
     @media(max-width:760px){.gang-ai-shell{grid-template-columns:minmax(0,1fr);}.gang-ai-sidebar{padding:12px;}.gang-ai-history{max-height:110px;}.gang-ai-main{min-height:72vh;max-height:82vh;}.gang-ai-thread{padding:13px;}.gang-ai-head{padding:14px;}.gang-ai-bubble{max-width:92%;}.gang-ai-compose{padding:10px;}}
+    .assistant-page .page-heading{margin-bottom:1.1rem}
+    .gang-ai-shell{grid-template-columns:245px minmax(0,1fr);gap:1rem;max-width:1190px}
+    .gang-ai-sidebar,.gang-ai-main{border:1px solid var(--line);border-radius:var(--radius);background:#fff;box-shadow:var(--shadow)}
+    .gang-ai-sidebar{padding:1rem}.gang-ai-sidebar h2{font-size:1rem;margin:0 0 1rem;color:var(--ink)}
+    .gang-ai-new{background:var(--green);font:inherit;font-weight:700}.gang-ai-new:hover{filter:brightness(.94)}
+    .gang-ai-history a{color:var(--ink);font-size:.88rem}.gang-ai-history a[aria-current="page"],.gang-ai-history a:hover{background:var(--soft);color:var(--dark)}
+    .gang-ai-delete{border-color:#f1d2d2;color:#a12b2b;font:inherit;font-size:.86rem}.gang-ai-main{height:clamp(520px,calc(100dvh - 250px),740px);min-height:520px;max-height:none}
+    .gang-ai-head{border-color:var(--line);background:#fff}.gang-ai-head h1{color:var(--ink)}.gang-ai-head p{color:var(--muted)}
+    .gang-ai-thread{background:var(--surface)}.gang-ai-bubble{color:var(--ink);border-color:var(--line);box-shadow:none}.gang-ai-bubble[data-role="user"]{color:var(--dark);background:var(--soft);border-color:var(--soft)}.gang-ai-bubble strong{color:var(--dark)}
+    .gang-ai-chip{border-color:var(--line);color:var(--dark);background:#fff;font:inherit;font-size:.82rem}.gang-ai-chip:hover{background:var(--soft);border-color:var(--soft)}.gang-ai-intro{border-color:var(--line);background:#fff;color:var(--ink)}.gang-ai-intro strong{color:var(--dark);font-size:1rem}
+    .gang-ai-court{border-color:var(--line);border-radius:14px;background:var(--surface);box-shadow:none}.gang-ai-court strong{color:var(--ink)}.gang-ai-court span{color:var(--muted)}.gang-ai-court .gang-ai-price,.gang-ai-court a{color:var(--dark);font-weight:700}
+    .gang-ai-compose{border-color:var(--line)}.gang-ai-compose textarea{border-color:var(--line);border-radius:12px;background:#fff;color:var(--ink)}.gang-ai-compose textarea:focus{outline:3px solid var(--soft);border-color:var(--green)}.gang-ai-compose button[type=submit]{background:var(--green);font:inherit;font-weight:700}.gang-ai-small{color:var(--muted)}.gang-ai-toolbar input{border-color:var(--line);font:inherit}.gang-ai-toolbar button{border-color:var(--line);color:var(--ink);font:inherit;font-size:.8rem}
+    @media(max-width:760px){.gang-ai-main{height:72vh;min-height:520px}.gang-ai-thread{padding:13px}}
+    @media(max-width:480px){.gang-ai-compose form{gap:7px}.gang-ai-compose button[type=submit]{padding-inline:14px}.gang-ai-chip{font-size:.75rem}}
 </style>
 @endpush
 
 <div class="gang-ai-shell" lang="ar">
     <aside class="gang-ai-sidebar" aria-label="المحادثات السابقة">
-        <h2>محادثات Gang</h2>
         <form method="POST" action="{{ route('ai.new') }}">
             @csrf
-            <button type="submit" class="gang-ai-new">＋ محادثة جديدة</button>
+            <button type="submit" class="gang-ai-new">＋ ابدأ محادثة جديدة</button>
         </form>
         @auth
             <nav class="gang-ai-history" aria-label="قائمة المحادثات">
@@ -67,7 +80,7 @@
                         </form>
                     </div>
                 @empty
-                    <p class="gang-ai-small gang-ai-empty-history">لسه ما عندك محادثات محفوظة.</p>
+                    <p class="gang-ai-small gang-ai-empty-history">لسه ما سألتني إشي.</p>
                 @endforelse
             </nav>
             @if ($current)
@@ -76,20 +89,20 @@
                         @csrf
                         @method('PATCH')
                         <input type="text" name="title" maxlength="100" required aria-label="عنوان المحادثة" value="{{ $current->title }}">
-                        <button type="submit">تغيير الاسم</button>
+                        <button type="submit">غيّر اسم المحادثة</button>
                     </form>
                     <form method="POST" action="{{ route('ai.delete', $current) }}" onsubmit="return confirm('حذف المحادثة نهائيًا؟')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit">حذف المحادثة</button>
+                        <button type="submit">احذف المحادثة</button>
                     </form>
                 </div>
             @endif
         @else
-            <p class="gang-ai-small">بتقدر تسأل بدون تسجيل دخول. <a href="{{ route('login') }}">سجّل دخول</a> لحفظ المحادثات وتأكيد الحجوزات.</p>
+            <p class="gang-ai-small">اسأل اللي بدك بدون تسجيل. وإذا بدك تحفظ محادثاتك وتحجز، <a href="{{ route('login') }}">سجّل دخولك</a>.</p>
             <form method="POST" action="{{ route('ai.new') }}" onsubmit="return confirm('بدك تمسح المحادثة الحالية؟')">
                 @csrf
-                <button type="submit" class="gang-ai-delete" style="margin-top:12px;">حذف المحادثة الحالية</button>
+                <button type="submit" class="gang-ai-delete" style="margin-top:12px;">امسح المحادثة الحالية</button>
             </form>
         @endauth
     </aside>
@@ -98,21 +111,21 @@
         <header class="gang-ai-head">
             
             <div>
-                <h1>Gang AI Assistant</h1>
-                <p>مساعدك الذكي لاكتشاف الملاعب والأسعار والأوقات المتاحة</p>
+                <h1>مساعد Gang</h1>
+                <p>احكيلي شو بدك تلعب، وبساعدك تلاقي ملعبك</p>
             </div>
         </header>
         <div class="gang-ai-thread" id="gang-ai-thread" aria-live="polite" aria-relevant="additions text">
             @if (count($messages) === 0)
                 <div class="gang-ai-intro" id="gang-ai-intro">
-                    <strong>أهلًا! شو الملعب اللي بدك إياه؟ ⚽</strong>
+                    <strong>شو بدنا نلعب اليوم؟ ⚽</strong>
                   <div>
-    اسألني عن الملاعب وأسعارها، أو خليني أقترحلك ملعب حسب منطقتك وميزانيتك ووقتك المناسب.
+    احكيلي الرياضة والمنطقة والوقت اللي بناسبك، وبشوفلك الملاعب وأسعارها والأوقات المتاحة.
 </div>
                     <div class="gang-ai-suggestions">
-                        <button type="button" class="gang-ai-chip" data-prompt="شو الملاعب المتوفرة وأسعارها؟">شو الملاعب وأسعارها؟</button>
-                        <button type="button" class="gang-ai-chip" data-prompt="اقترحلي ملعب كرة قدم بسعر مناسب في عمّان">اقترح ملعب كرة قدم</button>
-                        <button type="button" class="gang-ai-chip" data-prompt="في ملاعب فاضية يوم الجمعة؟">شو الأوقات الفاضية الجمعة؟</button>
+                        <button type="button" class="gang-ai-chip" data-prompt="شو الملاعب المتوفرة وأسعارها؟">ورجيني الملاعب والأسعار</button>
+                        <button type="button" class="gang-ai-chip" data-prompt="اقترحلي ملعب كرة قدم بسعر مناسب في عمّان">بدّي ملعب قدم بعمّان</button>
+                        <button type="button" class="gang-ai-chip" data-prompt="في ملاعب فاضية يوم الجمعة؟">في إشي فاضي الجمعة؟</button>
                     </div>
                 </div>
             @endif
@@ -122,10 +135,10 @@
         </div>
         <div class="gang-ai-compose">
             <form id="gang-ai-form" autocomplete="off">
-                <textarea name="message" id="gang-ai-input" required maxlength="1500" placeholder="مثال: بدي ملعب كرة قدم الجمعة الساعة 8 مساءً لمدة ساعتين..." aria-label="اكتب رسالتك"></textarea>
+                <textarea name="message" id="gang-ai-input" required maxlength="1500" placeholder="مثال: بدّي ملعب قدم الجمعة عالـ 8 لمدة ساعتين..." aria-label="اكتب رسالتك"></textarea>
                 <button type="submit" id="gang-ai-send">إرسال</button>
             </form>
-            <p class="gang-ai-small">الأسعار والتوفر من نظام Gang. يتم إرسال نص الرسالة إلى Gemini لفهم طلبك. لا تشارك معلومات حساسة.</p>
+            <p class="gang-ai-small">معلومات الملاعب والتوفر من Gang. نص رسالتك بوصل لـ Gemini عشان يفهم طلبك؛ لا تبعت معلومات حساسة.</p>
         </div>
     </section>
 </div>
@@ -242,7 +255,7 @@
         document.getElementById('gang-ai-intro')?.remove();
         bubble('user',clean);
         field.value=''; sendButton.disabled=true;
-        const progress=bubble('assistant','Gang بفكر......');
+        const progress=bubble('assistant','ثواني وبرد عليك...');
         let received=false;
         try {
             const response=await fetch(endpoints.send,{
@@ -293,7 +306,7 @@
                 for (const line of lines) processLine(line);
             }
             if (buffer.trim()) processLine(buffer);
-            if (!received && progress.textContent==='Gang بفكر......') progress.textContent='ما وصل رد من Gemini.';
+            if (!received && progress.textContent==='ثواني وبرد عليك...') progress.textContent='ما وصلني رد، جرّب كمان مرة.';
         } catch (error) { progress.textContent=error.message; }
         finally {sendButton.disabled=false;field.focus();bottom();}
     };

@@ -78,12 +78,6 @@ Route::middleware('auth')->group(function () {
 });
 Route::view('/modals', 'pages.modals')->name('courtbook.modals');
 
-// Player Dashboard
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 // Player Profile
 
 Route::middleware('auth')->group(function () {
