@@ -8,94 +8,94 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use App\Models\Court;
 use Illuminate\Support\Facades\DB;
+use App\Services\RecurringSubscriptionService;
 
 class SubscriptionController extends Controller
 {
     // Display subscriptions belonging to the logged-in user.
-    public function index()
-    {
-        $subscriptions = Subscription::where('user_id', Auth::id())
-            ->orderByDesc('created_at')
-            ->get();
+    public function index(Request $request)
+{
+    $subscriptions = Subscription::query()
+        ->where('user_id', $request->user()->id)
+        ->with(['admin', 'court', 'bookings' => fn ($q) => $q->orderBy('booking_date')->orderBy('start_time')])
+        ->latest('created_at')
+        ->get();
 
+    if ($request->expectsJson()) {
         return response()->json($subscriptions);
     }
 
+    return view('pages.my-subscriptions', compact('subscriptions'));
+}
+
     // Return the supported subscription durations and discounts.
-    public function create()
+public function create(Request $request)
 {
     $durations = [
         ['days' => 7, 'discount' => 5],
         ['days' => 14, 'discount' => 10],
         ['days' => 21, 'discount' => 15],
-        ['days' => 28, 'discount' => 25],
+        ['days' => 30, 'discount' => 25],
     ];
 
-    return view('pages.subscriptions', compact('durations'));
+    $courts = Court::query()
+        ->where('status', 'approved')
+        ->with('sports')
+        ->orderBy('name')
+        ->get();
+
+    $selectedCourtId = $request->integer('court_id');
+
+    return view('pages.subscriptions', compact(
+        'durations', 'courts', 'selectedCourtId'
+    ));
 }
 
     
    
-public function store(Request $request)
+private function scheduleRules(): array
 {
-    $validated = $request->validate([
+    return [
         'court_id' => ['required', 'integer', 'exists:courts,id'],
-        'total_hours' => ['required','numeric','min:1','max:100','multiple_of:0.5',],
-        'duration_days' => ['required', 'integer', Rule::in([7, 14, 21, 28])],
-    ]);
-
-    $court = Court::findOrFail($validated['court_id']);
-
-    $discounts = [
-        7 => 5,
-        14 => 10,
-        21 => 15,
-        28 => 25,
+        'start_date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
+        'duration_days' => ['required', 'integer', Rule::in([7, 14, 21, 30])],
+        'weekdays' => ['required', 'array', 'min:1', 'max:7'],
+        'weekdays.*' => ['required', 'integer', 'between:0,6', 'distinct'],
+        'start_time' => ['required', 'date_format:H:i'],
+        'end_time' => ['required', 'date_format:H:i'],
     ];
+}
 
-    $duration = (int) $validated['duration_days'];
-    $hours = (float) $validated['total_hours'];
+public function checkAvailability(Request $request, RecurringSubscriptionService $scheduler)
+{
+    $validated = $request->validate($this->scheduleRules());
+    $court = Court::findOrFail($validated['court_id']);
+    if ($court->status !== 'approved' || (float) $court->weekday_price <= 0) {
+        throw \Illuminate\Validation\ValidationException::withMessages([
+            'court_id' => 'This court is not currently available for subscriptions.',
+        ]);
+    }
 
-    $discount = $discounts[$duration];
+    return response()->json($scheduler->quotation($court, $validated));
+}
 
-    // Subscription pricing uses the court's base hourly price.
-    $hourlyPrice = (float) $court->weekday_price;
-
-    $originalAmount = $hourlyPrice * $hours;
-    $finalAmount = round(
-        $originalAmount * (1 - $discount / 100),
-        2
+public function store(Request $request, RecurringSubscriptionService $scheduler)
+{
+    $validated = $request->validate($this->scheduleRules());
+    $subscription = $scheduler->subscribe(
+        (int) $request->user()->id,
+        (int) $validated['court_id'],
+        $validated
     );
 
-    $subscription = DB::transaction(function () use (
-        $request,
-        $court,
-        $duration,
-        $hours,
-        $discount,
-        $finalAmount
-    ) {
-        return Subscription::create([
-            'user_id' => $request->user()->id,
-            'admin_id' => $court->admin_id,
-            'court_id' => $court->id,
-            'package_name' => $duration . '-Day Package',
-            'total_hours' => $hours,
-            'carried_over_hours' => 0,
-            'used_hours' => 0,
-            'amount' => $finalAmount,
-            'discount_percentage' => $discount,
-            'duration_days' => $duration,
-            'start_date' => now()->toDateString(),
-            'end_date' => now()->addDays($duration),
-            'status' => 'pending',
-        ]);
-    });
+    if ($request->expectsJson()) {
+        return response()->json([
+            'message' => 'The selected appointments are reserved pending payment confirmation.',
+            'subscription' => $subscription,
+        ], 201);
+    }
 
-    return response()->json([
-        'message' => 'Subscription created. Payment is pending.',
-        'subscription' => $subscription,
-    ], 201);
+    return redirect()->route('subscriptions.invoice', $subscription);
 }
 
 
@@ -127,7 +127,7 @@ public function update(Request $request, string $id)
         ],
         'duration_days' => [
             'required', 'integer',
-            Rule::in([7, 14, 21, 28]),
+            Rule::in([7, 14, 21, 30]),
         ],
     ]);
 
@@ -136,6 +136,12 @@ public function update(Request $request, string $id)
         $old = Subscription::where('user_id', $request->user()->id)
             ->lockForUpdate()
             ->findOrFail($id);
+
+        if ($old->is_fixed_schedule) {
+            return response()->json([
+                'message' => 'Fixed-schedule subscriptions cannot be renewed through the flexible-hours endpoint. Please create a new scheduled subscription.',
+            ], 409);
+        }
 
         if ($old->status !== 'active' || now()->gte($old->end_date)) {
             return response()->json([
@@ -160,7 +166,7 @@ public function update(Request $request, string $id)
             7 => 5,
             14 => 10,
             21 => 15,
-            28 => 25,
+            30=> 25,
         ];
 
         $duration = (int) $validated['duration_days'];
@@ -203,16 +209,22 @@ public function update(Request $request, string $id)
 
     // Cancel a subscription rather than deleting its history.
     
-public function destroy(string $id)
+public function destroy(Request $request, string $id)
 {
-    return DB::transaction(function () use ($id) {
+    return DB::transaction(function () use ($request, $id) {
+        $target = Subscription::where('user_id', Auth::id())->findOrFail($id);
+
+        // Always lock the court first, just like booking creation.
+        if ($target->is_fixed_schedule) {
+            Court::whereKey($target->court_id)->lockForUpdate()->firstOrFail();
+        }
+
         $subscription = Subscription::where('user_id', Auth::id())
             ->lockForUpdate()->findOrFail($id);
 
         if ($subscription->status === 'cancelled') {
-            return response()->json(['message' => 'Subscription is already cancelled.'], 409);
+            return response()->json(['message' => 'Subscription already cancelled.'], 409);
         }
-
         if ($subscription->paid_at !== null) {
             return response()->json([
                 'message' => 'Paid subscriptions require a separate refund/cancellation process.',
@@ -225,21 +237,34 @@ public function destroy(string $id)
             return response()->json(['message' => 'A paid renewal already exists.'], 409);
         }
 
-        $hasUpcomingBookings = $subscription->bookings()
+        $hasUpcomingConfirmed = $subscription->bookings()
             ->where('booking_status', 'confirmed')
             ->where('booking_date', '>=', today()->toDateString())
             ->exists();
-        if ($hasUpcomingBookings) {
+        if ($hasUpcomingConfirmed) {
             return response()->json([
-                'message' => 'Cancel upcoming bookings before cancelling this subscription.',
+                'message' => 'Cancel upcoming confirmed bookings before cancelling this subscription.',
             ], 409);
         }
 
+        // Release pending fixed slots atomically with cancelling the subscription.
+        if ($subscription->is_fixed_schedule) {
+            $subscription->bookings()
+                ->where('booking_status', 'pending')
+                ->update(['booking_status' => 'cancelled']);
+        }
+
         $subscription->update(['status' => 'cancelled']);
-        return response()->json([
-            'message' => 'Subscription cancelled successfully.',
-            'subscription' => $subscription,
-        ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Subscription cancelled successfully.',
+                'subscription' => $subscription->refresh(),
+            ]);
+        }
+
+        return redirect()->route('courtbook.my-subscriptions')
+            ->with('success', 'تم إلغاء طلب الاشتراك وتحرير المواعيد المحجوزة.');
     });
 }
 

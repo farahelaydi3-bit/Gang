@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Subscription;
+use App\Models\Court;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -13,6 +15,47 @@ class SubscriptionActivationService
     {
         return DB::transaction(function () use ($subscriptionId) {
             $target = Subscription::findOrFail($subscriptionId);
+
+            if ($target->is_fixed_schedule) {
+                // Fixed slots were reserved in bookings at purchase request time.
+                // Preserve their dates; never reset start/end to the payment date.
+                Court::whereKey($target->court_id)->lockForUpdate()->firstOrFail();
+                $fixed = Subscription::whereKey($subscriptionId)->lockForUpdate()->firstOrFail();
+
+                if ($fixed->paid_at !== null) {
+                    return $fixed;
+                }
+                if ($fixed->status !== 'pending') {
+                    throw ValidationException::withMessages([
+                        'subscription' => 'Subscription is not pending.',
+                    ]);
+                }
+
+                $slots = $fixed->bookings()->lockForUpdate()->get();
+                if ($slots->isEmpty() || $slots->contains(fn ($b) => $b->booking_status !== 'pending')) {
+                    throw ValidationException::withMessages([
+                        'subscription' => 'Reserved appointments are missing or no longer pending.',
+                    ]);
+                }
+                if ($slots->contains(fn ($b) => Carbon::parse(
+                    $b->booking_date->toDateString().' '.$b->start_time
+                )->lte(now()))) {
+                    throw ValidationException::withMessages([
+                        'subscription' => 'One or more reserved appointments have already started. Cancel and create a new subscription.',
+                    ]);
+                }
+
+                $fixed->update([
+                    'paid_at' => now(),
+                    'activated_at' => now(),
+                    'status' => 'active',
+                ]);
+                $fixed->bookings()->where('booking_status', 'pending')
+                    ->update(['booking_status' => 'confirmed']);
+
+                return $fixed->refresh();
+            }
+
             $previous = $target->previous_subscription_id
                 ? Subscription::whereKey($target->previous_subscription_id)->lockForUpdate()->firstOrFail()
                 : null;

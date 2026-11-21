@@ -78,8 +78,7 @@ class GroupGameController extends Controller
     /**
      * Show edit form.
      */
-  
-public function edit($id)
+    public function edit($id)
 {
     $game = GroupGame::where('admin_id', auth('admin')->id())
         ->findOrFail($id);
@@ -101,8 +100,7 @@ public function edit($id)
     /**
      * Update group game.
      */
-   
-public function update(Request $request, $id)
+    public function update(Request $request, $id)
 {
     $game = GroupGame::where('admin_id', auth('admin')->id())
         ->findOrFail($id);

@@ -12,6 +12,7 @@ use App\Models\Subscription;
 use App\Events\BookingCancelled;
 use App\Services\WaitingListOfferService;
 use App\Services\BookingPricingService;
+use App\Services\CourtSlotAvailabilityService;
 class BookingController extends Controller
 {
     public function create(Request $request)
@@ -132,67 +133,101 @@ public function store(Request $request)
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            $this->checkAvailability($court, $validated);
+            if (
+                (int) $subscription->user_id !== (int) $request->user()->id ||
+                (int) $subscription->court_id !== (int) $court->id
+            ) {
+                throw ValidationException::withMessages([
+                    'subscription_id' => 'This subscription does not belong to this user and court.',
+                ]);
+            }
 
-            $bookingDate = Carbon::parse($validated['booking_date']);
-            $startHour = (int) substr($validated['start_time'], 0, 2);
-            $isWeekend = in_array($bookingDate->dayOfWeek, [Carbon::FRIDAY, Carbon::SATURDAY], true);
-            $hourlyPrice = $isWeekend
-                ? (float) $court->weekend_price
-                : ($startHour >= 18
-                    ? (float) $court->evening_price
-                    : (float) $court->weekday_price);
-            $totalPrice = round($hourlyPrice * (int) $validated['duration_minutes'] / 60, 2);
-            $depositAmount = (float) $court->deposit_amount > 0
-                ? min((float) $court->deposit_amount, $totalPrice)
-                : $totalPrice;
+            if ($subscription->carryover_finalized_at !== null) {
+                throw ValidationException::withMessages([
+                    'subscription_id' => 'This subscription has been renewed and cannot be used for new bookings.',
+                ]);
+            }
 
-            return Booking::create([
-                'court_id' => $court->id,
-                'user_id' => $request->user()->id,
-                'subscription_id' => $subscription?->id,
-                'booking_type' => $validated['booking_type'],
-                'booking_date' => $validated['booking_date'],
-                'start_time' => $validated['start_time'],
-                'end_time' => $validated['end_time'],
-                'duration_minutes' => $validated['duration_minutes'],
-                'total_price' => $totalPrice,
-                'deposit_amount' => $depositAmount,
-                'booking_status' => 'pending',
-            ]);
+            if ($subscription->is_fixed_schedule) {
+                throw ValidationException::withMessages([
+                    'subscription_id' => 'This subscription already reserves its fixed appointments. Additional bookings are not allowed.',
+                ]);
+            }
+
+            if ($subscription->status !== 'active') {
+                throw ValidationException::withMessages([
+                    'subscription_id' => 'This subscription is not active.',
+                ]);
+            }
+
+            $bookingStart = Carbon::parse(
+                $validated['booking_date'] . ' ' . $validated['start_time']
+            );
+
+            $bookingEnd = Carbon::parse(
+                $validated['booking_date'] . ' ' . $validated['end_time']
+            );
+
+            if (
+                $bookingStart->lt($subscription->start_date->copy()->startOfDay()) ||
+                $bookingEnd->gt($subscription->end_date)
+            ) {
+                throw ValidationException::withMessages([
+                    'booking_date' => 'Booking must be within the subscription period.',
+                ]);
+            }
+
+            if ($bookingStart->lte(now())) {
+                throw ValidationException::withMessages([
+                    'start_time' => 'Booking must start in the future.',
+                ]);
+            }
+
+            $hours = $validated['duration_minutes'] / 60;
+
+            if ($subscription->remaining_hours < $hours) {
+                throw ValidationException::withMessages([
+                    'subscription_id' => 'Insufficient subscription hours.',
+                ]);
+            }
+
+            $subscription->increment('used_hours', $hours);
+
+            $status = 'confirmed';
         }
 
-        $bookingDate = Carbon::parse($validated['booking_date']);
-        $startHour = (int) substr($validated['start_time'], 0, 2);
-        $isWeekend = in_array($bookingDate->dayOfWeek, [Carbon::FRIDAY, Carbon::SATURDAY], true);
-        $hourlyPrice = $isWeekend
-            ? (float) $court->weekend_price
-            : ($startHour >= 18
-                ? (float) $court->evening_price
-                : (float) $court->weekday_price);
-        $totalPrice = round($hourlyPrice * (int) $validated['duration_minutes'] / 60, 2);
-        $depositAmount = (float) $court->deposit_amount > 0
-            ? min((float) $court->deposit_amount, $totalPrice)
-            : $totalPrice;
+        $prices = $subscription
+            ? ['total_price' => '0.00', 'deposit_amount' => '0.00']
+            : app(BookingPricingService::class)->calculate(
+                $court, $validated['booking_date'],
+                $validated['start_time'], $validated['end_time']
+            );
 
         return Booking::create([
             'court_id' => $court->id,
             'user_id' => $request->user()->id,
+            'subscription_id' => $subscription?->id,
             'booking_type' => $validated['booking_type'],
             'booking_date' => $validated['booking_date'],
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
             'duration_minutes' => $validated['duration_minutes'],
-            'total_price' => $totalPrice,
-            'deposit_amount' => $depositAmount,
-            'booking_status' => 'pending',
+            'total_price' => $prices['total_price'],
+            'deposit_amount' => $prices['deposit_amount'],
+            'booking_status' => $status,
         ]);
     });
-
+ if ($booking->subscription_id !== null) {
+    $booking->subscription->notifyIfLowBalance();
+}
+    if ($booking->booking_type !== 'subscription') {
         return redirect()
             ->route('courtbook.payments.checkout', [$booking, 'deposit'])
             ->with('success', __('Booking details saved. Complete the deposit payment to confirm your booking.'));
     }
+
+    return response()->json($booking, 201);
+}
 
 
     private function checkAvailability(
@@ -200,90 +235,11 @@ public function store(Request $request)
         array $bookingData,
         ?int $ignoreBookingId = null
     ): void {
-        $bookingDate = Carbon::parse($bookingData['booking_date'])->startOfDay();
-        $openingClock = Carbon::parse($court->opening_time)->format('H:i');
-        $closingClock = Carbon::parse($court->closing_time)->format('H:i');
-        $overnight = $closingClock <= $openingClock;
-        $startsAfterMidnight = $overnight && $bookingData['start_time'] < $closingClock;
-
-        $operatingDate = $startsAfterMidnight
-            ? $bookingDate->copy()->subDay()
-            : $bookingDate->copy();
-        $openingTime = Carbon::parse($operatingDate->toDateString() . ' ' . $court->opening_time);
-        $closingTime = Carbon::parse($operatingDate->toDateString() . ' ' . $court->closing_time);
-        if ($closingTime->lte($openingTime)) {
-            $closingTime->addDay();
-        }
-
-        $startTime = Carbon::parse($bookingDate->toDateString() . ' ' . $bookingData['start_time']);
-        $endTime = Carbon::parse($bookingDate->toDateString() . ' ' . $bookingData['end_time']);
-        if ($endTime->lte($startTime)) {
-            $endTime->addDay();
-        }
-
-        if ($startTime->lt(Carbon::now())) {
-            throw ValidationException::withMessages([
-                'start_time' => __('The booking start time must be in the future.'),
-            ]);
-        }
-
-        if ($startTime->lt($openingTime) || $endTime->gt($closingTime) || $endTime->lte($startTime)) {
-            throw ValidationException::withMessages([
-                'start_time' => __('The booking must be within the court opening hours.'),
-            ]);
-        }
-
-        if ((int) $bookingData['duration_minutes'] < $court->min_booking_minutes) {
-            throw ValidationException::withMessages([
-                'duration_minutes' => __('The booking is shorter than the court minimum.'),
-            ]);
-        }
-
-        $actualDuration = (int) $startTime->diffInMinutes($endTime);
-
-        if ($actualDuration !== (int) $bookingData['duration_minutes']) {
-            throw ValidationException::withMessages([
-                'duration_minutes' => __('The duration does not match the selected time range.'),
-            ]);
-        }
-
-        $conflictingBookings = Booking::query()
-    ->where('court_id', $court->id)
-    ->whereIn('booking_status', ['pending', 'confirmed'])
-    ->when(
-        $ignoreBookingId !== null,
-        fn ($query) => $query->where('id', '!=', $ignoreBookingId)
-    )
-    ->lockForUpdate()
-    ->get(['id', 'booking_date', 'start_time', 'end_time']);
-
-foreach ($conflictingBookings as $existingBooking) {
-    $existingDate = Carbon::parse($existingBooking->booking_date)
-        ->format('Y-m-d');
-
-    $existingStart = Carbon::parse(
-        $existingDate . ' ' . $existingBooking->start_time
-    );
-
-    $existingEnd = Carbon::parse(
-        $existingDate . ' ' . $existingBooking->end_time
-    );
-
-    // Support bookings that end after midnight
-    if ($existingEnd->lte($existingStart)) {
-        $existingEnd->addDay();
+        app(CourtSlotAvailabilityService::class)->assertBookable(
+            $court, $bookingData, $ignoreBookingId
+        );
     }
 
-    if (
-        $existingStart->lt($endTime) &&
-        $existingEnd->gt($startTime)
-    ) {
-        throw ValidationException::withMessages([
-            'start_time' => 'This time slot is already booked.',
-        ]);
-    }
-}
-    }
     public function availability(Request $request, Court $court)
     {
         $validated = $request->validate([
@@ -293,7 +249,6 @@ foreach ($conflictingBookings as $existingBooking) {
         $date = $validated['date'];
         $slotMinutes = max(60, (int) (ceil($court->min_booking_minutes / 30) * 30));
         $now = Carbon::now();
-        $today = $now->toDateString();
 
         $openingTime = Carbon::parse($date . ' ' . $court->opening_time);
         $closingTime = Carbon::parse($date . ' ' . $court->closing_time);
@@ -362,11 +317,11 @@ foreach ($conflictingBookings as $existingBooking) {
         return response()->json([
             'court_id' => $court->id,
             'date' => $date,
-            'today' => $today,
+            'today' => $now->toDateString(),
+            'past_slots_skipped' => $pastSlotsSkipped,
             'minimum_duration_minutes' => $slotMinutes,
             'closing_time' => Carbon::parse($court->closing_time)->format('H:i'),
             'overnight' => $overnight,
-            'past_slots_skipped' => $pastSlotsSkipped,
             'available_slots' => $availableSlots,
         ]);
     }
@@ -391,6 +346,12 @@ public function cancel(Request $request, Booking $booking)
             403
         );
         
+
+        if ($booking->subscription_id !== null && $booking->subscription?->is_fixed_schedule) {
+            throw ValidationException::withMessages([
+                'booking' => 'A fixed subscription appointment cannot be cancelled individually.',
+            ]);
+        }
 
         if (! in_array($booking->booking_status, ['pending', 'confirmed'], true)) {
             throw ValidationException::withMessages([
@@ -471,6 +432,12 @@ public function update(Request $request, Booking $booking)
             403
         );
 
+        if ($currentBooking->subscription_id !== null && $currentBooking->subscription?->is_fixed_schedule) {
+            throw ValidationException::withMessages([
+                'booking' => 'A fixed subscription appointment cannot be edited individually.',
+            ]);
+        }
+
         if (! in_array($currentBooking->booking_status, ['pending', 'confirmed'], true)) {
             throw ValidationException::withMessages([
                 'booking' => 'This booking cannot be updated.',
@@ -503,6 +470,7 @@ public function update(Request $request, Booking $booking)
         $newStart = Carbon::parse(
             $bookingData['booking_date'] . ' ' . $bookingData['start_time']
         );
+
         $newEnd = Carbon::parse(
             $bookingData['booking_date'] . ' ' . $bookingData['end_time']
         );
