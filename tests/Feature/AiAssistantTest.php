@@ -42,18 +42,28 @@ class AiAssistantTest extends TestCase
         ]);
     }
 
-    private function fakeIntent(string $intent, ?int $courtId = null, ?string $date = null): void
-    {
-        $mock = Mockery::mock(GeminiAssistantService::class);
-        $mock->shouldReceive('interpret')->once()->andReturn([
-            'intent' => $intent, 'court_id' => $courtId,
-            'sport' => null, 'court_name' => null, 'area' => null,
-            'date' => $date, 'start_time' => '10:00', 'end_time' => '11:00',
-            'duration_minutes' => 60, 'max_hourly_price' => null,
-            'question' => 'Book football court',
+   private function fakeIntent(string $intent, ?int $courtId = null, ?string $date = null): void
+{
+    $mock = Mockery::mock(GeminiAssistantService::class);
+
+    $mock->shouldReceive('plan')
+        ->once()
+        ->andReturn([
+            'filters' => [
+                'intent' => $intent,
+                'court_id' => $courtId,
+                'date' => $date,
+            ],
+            'contents' => [],
+            'model_content' => [],
+            'model' => 'gemini-3.5-flash',
         ]);
-        app()->instance(GeminiAssistantService::class, $mock);
-    }
+
+    $mock->shouldReceive('answer')
+        ->andReturn('هاي الملاعب المتاحة عندنا.');
+
+    app()->instance(GeminiAssistantService::class, $mock);
+}
 
     public function test_assistant_page_exists_for_guests(): void
     {
@@ -71,36 +81,40 @@ class AiAssistantTest extends TestCase
         $this->assertDatabaseCount('bookings', 0);
     }
 
-    public function test_booking_is_only_created_after_explicit_confirmation(): void
-    {
-        $user = User::factory()->create();
-        $courtId = $this->court();
-        $date = now()->addDays(7)->toDateString();
-        $this->fakeIntent('booking', $courtId, $date);
-        $chat = $this->actingAs($user)->postJson('/assistant/message', ['message' => 'Book this court']);
-        $chat->assertOk()->assertJsonPath('draft.court', 'AI Test Court');
-        $token = $chat->json('draft.token');
-        $this->assertDatabaseCount('bookings', 0);
-        $this->assertDatabaseCount('ai_conversations', 1);
-        $this->assertDatabaseCount('ai_messages', 2);
+    public function test_ai_does_not_create_bookings(): void
+{
+    $user = User::factory()->create();
+    $courtId = $this->court();
+    $date = now()->addDays(7)->toDateString();
 
-        $this->actingAs($user)->postJson('/assistant/booking/confirm', ['token' => $token])
-            ->assertCreated()->assertJsonPath('booking_id', 1);
-        $this->assertDatabaseCount('bookings', 1);
-        $this->assertDatabaseHas('bookings', [
-            'court_id' => $courtId, 'user_id' => $user->id, 'booking_status' => 'pending',
-        ]);
-        $this->actingAs($user)->postJson('/assistant/booking/confirm', ['token' => $token])
-            ->assertStatus(409);
-        $this->assertDatabaseCount('bookings', 1);
-    }
+    $this->fakeIntent('booking', $courtId, $date);
 
-    public function test_guest_cannot_confirm_booking(): void
-    {
-        $this->postJson('/assistant/booking/confirm', ['token' => str_repeat('a', 40)])
-            ->assertUnauthorized();
-    }
+    $response = $this->actingAs($user)->postJson('/assistant/message', [
+        'message' => 'Book this court',
+    ]);
 
+    $response->assertOk()
+        ->assertJsonPath('courts.0.id', $courtId)
+        ->assertJsonMissingPath('draft')
+        ->assertJsonMissingPath('booking_id');
+
+    $this->assertDatabaseCount('bookings', 0);
+    $this->assertDatabaseCount('ai_conversations', 1);
+    $this->assertDatabaseCount('ai_messages', 2);
+}
+
+   public function test_ai_booking_confirmation_endpoint_is_disabled(): void
+{
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->postJson('/assistant/booking/confirm', [
+            'token' => str_repeat('a', 40),
+        ])
+        ->assertNotFound();
+
+    $this->assertDatabaseCount('bookings', 0);
+}
     public function test_user_cannot_read_or_delete_another_users_conversation(): void
     {
         $first = User::factory()->create();
@@ -116,23 +130,19 @@ class AiAssistantTest extends TestCase
         $this->court();
         config()->set('services.gemini.key', '');
         $response = $this->postJson('/assistant/message', ['message' => 'Hello']);
-        $response->assertStatus(503)->assertJsonPath('message', 'خدمة Gemini غير متاحة حاليًا. جرّب بعد قليل.');
+        $response->assertStatus(503)->assertJsonPath('message', 'تعذّر إكمال رد Gemini. جرّب مرة ثانية.');
         $this->assertDatabaseCount('ai_messages', 0);
     }
 
-    public function test_service_uses_the_configured_3_5_flash_model(): void
-    {
-        config()->set('services.gemini.key', 'test-key');
-        config()->set('services.gemini.model', 'gemini-3.5-flash');
-        Http::fake(['*' => Http::response([
-            'candidates' => [[
-                'finishReason' => 'STOP',
-                'content' => ['parts' => [['text' => json_encode(['intent' => 'browse'])]]],
-            ]],
-        ], 200)]);
-        $result = app(GeminiAssistantService::class)->interpret('Courts?', [], []);
-        $this->assertSame('browse', $result['intent']);
-        Http::assertSent(fn ($request) => str_contains($request->url(), 'models/gemini-3.5-flash:generateContent')
-            && $request->hasHeader('x-goog-api-key', 'test-key'));
-    }
+    public function test_service_prioritizes_configured_gemini_model(): void
+{
+    config()->set('services.gemini.model', 'gemini-3.5-flash');
+
+    $service = app(GeminiAssistantService::class);
+
+    $models = $service->modelOrder();
+
+    $this->assertSame('gemini-3.5-flash', $models[0]);
+    $this->assertContains('gemini-3.5-flash-lite', $models);
+}
 }
