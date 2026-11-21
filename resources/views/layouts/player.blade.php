@@ -13,7 +13,7 @@
 
     <title>@yield('title', 'Home') · Gang</title>
 
-    <link rel="icon" href="{{ asset('courtbook-assets/icon.svg') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('courtbook-assets/icon.svg') }}?v=2">
 
     <link rel="stylesheet"
         href="{{ asset('courtbook-assets/styles.css') }}">

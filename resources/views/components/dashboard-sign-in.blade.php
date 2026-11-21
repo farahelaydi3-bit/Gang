@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $copy['title'] }} | Gang</title>
-    <link rel="icon" href="{{ asset('courtbook-assets/icon.svg') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('courtbook-assets/icon.svg') }}?v=2">
     <link rel="stylesheet" href="{{ asset('assets/css/superadmin.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/super-admin-login.css') }}">
 </head>
