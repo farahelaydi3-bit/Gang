@@ -119,7 +119,15 @@
             <div class="courts-grid">
                 @forelse ($MyCourts as $court)
                     <article class="court-card">
-                        <div class="court-image"><img src="{{ asset('courtbook-assets/images/' . $court->image) }}" alt="{{ $court->name }}"></div>
+                       <div class="court-image">
+    <img
+        src="{{ $court->image
+            ? (\Illuminate\Support\Str::startsWith($court->image, 'images/')
+                ? asset($court->image)
+                : asset('storage/' . $court->image))
+            : asset('courtbook-assets/images/hero-football.png') }}"
+        alt="{{ $court->name }}">
+</div>
                         <div class="court-info">
                             <h3>{{ $court->name }}</h3>
                             <p class="court-sport">{{ $court->sports->name ?? 'Unknown Sport' }}</p>

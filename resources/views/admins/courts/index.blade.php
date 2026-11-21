@@ -39,18 +39,22 @@
                 <div class="court-card">
 
                     {{-- Court Image --}}
-                    <div class="court-image">
+                   {{-- Court Image --}}
+<div class="court-image">
 
-                        @if ($court->image)
-                            <img src="{{ asset('courtbook-assets/images/' . $court->image) }}" alt="{{ $court->name }}"
-                                onerror="this.onerror=null;this.src='{{ asset('storage/' . $court->image) }}';">
-                        @else
-                            <div class="court-no-image">
-                                🏟️
-                            </div>
-                        @endif
+    @if ($court->image)
+        <img
+            src="{{ \Illuminate\Support\Str::startsWith($court->image, 'images/')
+                ? asset($court->image)
+                : asset('storage/' . $court->image) }}"
+            alt="{{ $court->name }}">
+    @else
+        <div class="court-no-image">
+            🏟️
+        </div>
+    @endif
 
-                    </div>
+</div>
 
 
                     {{-- Court Details --}}

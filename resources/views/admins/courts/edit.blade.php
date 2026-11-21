@@ -114,8 +114,12 @@
                 @if ($court->image)
                 <div class="court-image" style="max-width: 300px; margin-bottom: 15px;">
                     
-                    <img src="{{ asset('courtbook-assets/images/' . $court->image) }}" alt="{{ $court->name }}"
-                        onerror="this.onerror=null;this.src='{{ asset('storage/' . $court->image) }}';">
+                    <img
+    src="{{ \Illuminate\Support\Str::startsWith($court->image, 'images/')
+        ? asset($court->image)
+        : asset('storage/' . $court->image) }}"
+    alt="{{ $court->name }}"
+    style="max-width: 200px; border-radius: 8px;">
                 </div>
                 @else
                 <p>No image uploaded.</p>

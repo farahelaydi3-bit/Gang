@@ -487,12 +487,13 @@ return $court->latitude !== null
                         && is_numeric($court->latitude) && is_numeric($court->longitude)
                         && (float) $court->latitude >= -90 && (float) $court->latitude <= 90
                             && (float) $court->longitude >= -180 && (float) $court->longitude <= 180;
-                                $imageUrl=$court->image
-                                ? asset('courtbook-assets/images/' . $court->image)
-                                : asset('courtbook-assets/images/hero-football.png');
-                                $fallbackUrl = $court->image
-                                ? asset('storage/' . $court->image)
-                                : asset('courtbook-assets/images/hero-football.png');
+                                $imageUrl = $court->image
+    ? (\Illuminate\Support\Str::startsWith($court->image, 'images/')
+        ? asset($court->image)
+        : asset('storage/' . $court->image))
+    : asset('courtbook-assets/images/hero-football.png');
+
+$fallbackUrl = asset('courtbook-assets/images/hero-football.png');
                                 @endphp
                                 <article class="cb-court-card" data-court-id="{{ $court->id }}" data-has-location="{{ $hasLocation ? '1' : '0' }}" tabindex="0" aria-label="{{ $court->name }}">
                                     <img class="cb-court-thumb" src="{{ $imageUrl }}" data-fallback="{{ $fallbackUrl }}" alt="{{ $court->name }}" loading="lazy">

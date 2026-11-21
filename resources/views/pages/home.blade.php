@@ -122,7 +122,11 @@
                 @forelse ($courts as $court)
                     <article class="card home-court-card">
                         <a class="card-photo home-court-photo" href="{{ route('courtbook.court', $court->id) }}">
-                            <img src="{{ $court->image ? asset('courtbook-assets/images/' . $court->image) : asset('courtbook-assets/images/hero-football.png') }}"
+                       <img
+    src="{{ $court->image ? asset($court->image) : asset('courtbook-assets/images/hero-football.png') }}"
+    alt="{{ $court->name }}"
+    loading="lazy"
+>
                                 alt="{{ $court->name }}" loading="lazy">
                             <span class="home-court-sport">{{ $court->sports?->name ?? __('Court') }}</span>
                             <span class="home-court-open" aria-hidden="true">↗</span>
