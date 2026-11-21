@@ -407,7 +407,13 @@ public function cancel(Request $request, Booking $booking)
 
     BookingCancelled::dispatch($cancelledBooking);
 
-    return response()->json($cancelledBooking);
+    if ($request->expectsJson()) {
+        return response()->json($cancelledBooking);
+    }
+
+    return redirect()
+        ->route('courtbook.bookings')
+        ->with('success', __('Booking cancelled. The time is available again.'));
 }
 
 

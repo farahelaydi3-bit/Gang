@@ -60,7 +60,9 @@
                     <option value="{{ $sport->id }}">{{ $sport->name }}</option>
                 @endforeach
             </select>
-            <input type="search" name="area" placeholder="{{ __('Area') }}" aria-label="{{ __('Area') }}">
+            <select name="area" aria-label="{{ __('Area') }}">
+                @include('pages.amman-area-options')
+            </select>
             <button type="submit">{{ __('Search courts') }}</button>
         </form>
         <aside class="home-sport-ribbon" aria-label="{{ __('Sports on your schedule') }}">

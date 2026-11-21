@@ -15,7 +15,9 @@ return new class extends Migration
             ->where('constraint_name', 'payments_exactly_one_target_chk')
             ->exists()) {
             // The original check knew only about bookings and subscriptions, so it rejected game payments.
-            DB::statement('ALTER TABLE payments DROP CHECK payments_exactly_one_target_chk');
+            // DROP CONSTRAINT is accepted by both MySQL and MariaDB; MariaDB does not
+            // support MySQL's `DROP CHECK` syntax for this operation.
+            DB::statement('ALTER TABLE payments DROP CONSTRAINT payments_exactly_one_target_chk');
         }
 
         if (Schema::hasColumn('group_games', 'position_slots')) {
