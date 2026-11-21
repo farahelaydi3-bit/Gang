@@ -127,13 +127,6 @@ Route::get('/games', [GroupGameController::class, 'index'])
 Route::get('/courtbook/games', [GroupGameController::class, 'index'])
 	->name('courtbook.games');
 
-// Create game
-Route::get('/games/create', [GroupGameController::class, 'create'])
-	->name('games.create');
-
-Route::post('/games', [GroupGameController::class, 'store'])
-    ->middleware('auth')->name('games.store');
-
 // Show game
 Route::get('/games/{game}', [GroupGameController::class, 'show'])
 	->name('games.show');
@@ -141,17 +134,6 @@ Route::get('/games/{game}', [GroupGameController::class, 'show'])
 // Compatibility with old Blade links
 Route::get('/courtbook/games/{game}', [GroupGameController::class, 'show'])
 	->name('courtbook.game');
-
-// Edit game
-Route::get('/games/{game}/edit', [GroupGameController::class, 'edit'])
-	->name('games.edit');
-
-Route::put('/games/{game}', [GroupGameController::class, 'update'])
-    ->middleware('auth')->name('games.update');
-
-// Delete game
-Route::delete('/games/{game}', [GroupGameController::class, 'destroy'])
-    ->middleware('auth')->name('games.destroy');
 
 // Join / Leave
 Route::post('/games/{game}/join', [GroupGameController::class, 'join'])
