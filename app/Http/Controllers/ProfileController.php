@@ -61,7 +61,7 @@ class ProfileController extends Controller
 
         if ($hasUnfinishedBookings || $hasActiveSubscriptions) {
             $message = app()->isLocale('ar')
-                ? 'لحذف حسابك، ألغِ حجوزاتك القادمة أو أكملها أولًا، وأنهِ أي اشتراك نشط.'
+                ? 'عشان تحذف حسابك، لازم تلغي حجوزاتك الجاية أو تخلّصها، وتنهي أي اشتراك فعّال.'
                 : 'To delete your account, cancel or complete your upcoming bookings first, and end any active subscriptions.';
 
             return Redirect::route('profile.edit')->withErrors([

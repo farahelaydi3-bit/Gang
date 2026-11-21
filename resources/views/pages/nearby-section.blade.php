@@ -103,6 +103,7 @@ return $court->latitude !== null
                 grid-template-columns: minmax(130px, .85fr) minmax(160px, 1.2fr) minmax(130px, .8fr) auto;
                 gap: .55rem;
                 padding: .65rem;
+                align-items: end;
                 background: #fff;
                 border: 1px solid var(--cb-line);
                 border-radius: 18px;
@@ -110,11 +111,18 @@ return $court->latitude !== null
                 box-shadow: 0 8px 32px rgba(18, 59, 42, .05);
             }
 
+            .cb-nearby .cb-nearby-filters > label {
+                display: flex;
+                min-width: 0;
+                flex-direction: column;
+                justify-content: flex-end;
+            }
+
             .cb-nearby .cb-nearby-filters select,
             .cb-nearby .cb-nearby-filters input {
                 width: 100%;
                 min-width: 0;
-                min-height: 45px;
+                height: 54px;
                 padding: .55rem .7rem;
                 border: 1px solid var(--cb-line);
                 background: #fbfcf9;
@@ -130,7 +138,8 @@ return $court->latitude !== null
                 background: var(--cb-green);
                 color: white;
                 border-radius: 11px;
-                min-height: 45px;
+                height: 54px;
+                align-self: end;
                 padding: .55rem .9rem;
                 font: inherit;
                 font-weight: 750;
@@ -386,6 +395,29 @@ return $court->latitude !== null
                 border-radius: 14px;
             }
 
+            .cb-nearby .leaflet-control-zoom {
+                overflow: hidden;
+                border: 1px solid rgba(26, 69, 45, .12) !important;
+                border-radius: 13px !important;
+                box-shadow: 0 8px 22px rgba(18, 59, 42, .16) !important;
+            }
+
+            .cb-nearby .leaflet-control-zoom a {
+                color: var(--cb-green) !important;
+                border-color: #e8eee4 !important;
+            }
+
+            .cb-nearby .leaflet-control-zoom a:hover {
+                background: #f1f9e5 !important;
+            }
+
+            .cb-nearby .leaflet-control-attribution {
+                border-radius: 8px 0 0 0;
+                background: rgba(255, 255, 255, .88) !important;
+                color: #49624f;
+                backdrop-filter: blur(8px);
+            }
+
             @media (max-width: 920px) {
                 .cb-nearby .cb-nearby-layout {
                     grid-template-columns: minmax(260px, 310px) minmax(0, 1fr);
@@ -471,12 +503,15 @@ return $court->latitude !== null
                 </label>
 
 
-                <select id="distance-filter" class="form-control" aria-label="{{ __('Filter by distance') }}">
-                    <option value="all">{{ __('All distances') }}</option>
-                    <option value="5">{{ __('Within 5 km') }}</option>
-                    <option value="10">{{ __('Within 10 km') }}</option>
-                    <option value="20">{{ __('Within 20 km') }}</option>
-                </select>
+                <label>
+                    <span class="sr-only">{{ __('Distance') }}</span>
+                    <select id="distance-filter" class="form-control" aria-label="{{ __('Filter by distance') }}">
+                        <option value="all">{{ __('All distances') }}</option>
+                        <option value="5">{{ __('Within 5 km') }}</option>
+                        <option value="10">{{ __('Within 10 km') }}</option>
+                        <option value="20">{{ __('Within 20 km') }}</option>
+                    </select>
+                </label>
 
                 <button class="cb-nearby-search" type="submit">{{ __('Search courts') }}</button>
 
@@ -581,9 +616,10 @@ $fallbackUrl = asset('courtbook-assets/images/hero-football.png');
                     return;
                 }
                 let tileErrors = 0;
-                L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+                    subdomains: ['a', 'b', 'c'],
                     maxZoom: 19,
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors · Style by <a href="https://www.hotosm.org/">HOT</a>'
                 }).on('tileerror', () => {
                     tileErrors++;
                     if (tileErrors === 1) {
