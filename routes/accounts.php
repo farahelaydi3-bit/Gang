@@ -15,6 +15,7 @@ use App\Http\Controllers\SuperAdmin\SportsController;
 use App\Http\Controllers\SuperAdmin\OwnerApplicationController as SuperOwnerApplicationController;
 use App\Http\Controllers\SuperAdmin\ProfileController as SuperAdminProfileController;
 use App\Http\Controllers\SuperAdmin\GangSiteManagementController;
+use App\Http\Controllers\SuperAdmin\SuperAdminReviewController;
 
 use App\Http\Controllers\Admin\OwnerApplicationController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;

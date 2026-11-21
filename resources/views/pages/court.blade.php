@@ -101,7 +101,8 @@
                     </div>
                 @endif
 
-                <h2>{{ __('Reviews') }}</h2>
+                <section class="court-detail-card court-reviews-card">
+                    <h2>{{ __('Reviews') }}</h2>
                 @forelse ($publicReviews as $review)
                     <article class="panel">
                         <div class="row spread">
@@ -124,13 +125,19 @@
                 <p>{{ number_format($court->weekday_price, 2) }} JOD / {{ __('hour') }}</p>
                 <p>{{ __('Minimum booking') }}: {{ $court->min_booking_minutes }} {{ __('minutes') }}</p>
                 <p>{{ __('Deposit') }}: {{ number_format($court->deposit_amount, 2) }} JOD</p>
-                @auth
-                    <a class="button" href="{{ route('courtbook.booking.create', ['court_id' => $court->id]) }}">
-                        {{ __('Book Now') }}
-                    </a>
-                @else
-                    <a class="button" href="{{ route('login') }}">
-                        {{ __('Log in to book') }}
+                <div class="court-booking-actions">
+                    @auth('web')
+                        <a class="button court-booking-button" href="{{ route('courtbook.booking.create', ['court_id' => $court->id]) }}">
+                            {{ __('Book Now') }}
+                        </a>
+                    @else
+                        <a class="button court-booking-button" href="{{ route('login') }}">
+                            {{ __('Log in to book') }}
+                        </a>
+                    @endauth
+                    <a class="button court-subscribe-button"
+                        href="{{ route('courtbook.subscriptions', ['court_id' => $court->id]) }}">
+                        {{ __('Subscribe') }}
                     </a>
                 </div>
             </aside>
