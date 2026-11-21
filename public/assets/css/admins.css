@@ -2057,3 +2057,304 @@ textarea.form-control {
         min-height: 100px !important;
     }
 }
+
+
+/* ==========================
+   GROUP GAMES INDEX
+========================== */
+
+.group-games-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.group-games-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.group-games-header h1 {
+    margin-bottom: 8px;
+}
+
+.group-games-header p {
+    color: #777;
+    margin: 0;
+}
+
+.group-games-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.group-games-stats .stat-card h3 {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 10px;
+}
+
+.group-games-stats .stat-card p {
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.group-games-table-card {
+    overflow: hidden;
+}
+
+.group-games-table-card .section-header {
+    padding-bottom: 20px;
+}
+
+.game-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.admin-table td small {
+    color: #777;
+    font-size: 12px;
+}
+
+.group-game-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.group-game-actions form {
+    margin: 0;
+}
+
+.group-game-actions a,
+.group-game-actions button {
+    white-space: nowrap;
+}
+
+.group-games-page .table-empty {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.group-games-page .admin-pagination {
+    margin-top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .group-games-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .group-games-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .group-games-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ========================================
+   Edit Group Game Page
+======================================== */
+
+.group-game-edit-page {
+    width: 100%;
+}
+
+.group-game-edit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.group-game-edit-header h1 {
+    margin: 0 0 8px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.group-game-edit-header p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+/* Form Card */
+
+.group-game-edit-card {
+    max-width: 850px;
+    padding: 30px;
+}
+
+/* Two-column form rows */
+
+.group-game-edit-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+/* Form spacing */
+
+.group-game-edit-page .form-group {
+    margin-bottom: 22px;
+}
+
+/* Form Actions */
+
+.group-game-edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    margin-top: 30px;
+    padding-top: 22px;
+    border-top: 1px solid #e5e7eb;
+}
+
+/* Validation Errors */
+
+.group-game-edit-page .form-error {
+    display: block;
+    margin-top: 7px;
+    color: #dc2626;
+    font-size: 13px;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+
+    .group-game-edit-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .group-game-edit-card {
+        padding: 20px;
+    }
+
+    .group-game-edit-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .group-game-edit-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .group-game-edit-actions .admin-button,
+    .group-game-edit-actions .admin-button-outline {
+        width: 100%;
+        text-align: center;
+    }
+}
+/* ========================================
+   Group Games Action Buttons
+======================================== */
+
+.group-game-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.group-game-actions form {
+    margin: 0;
+}
+
+.game-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+    height: 36px;
+    padding: 0 14px;
+
+    border: 1px solid transparent;
+    border-radius: 8px;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+/* Edit */
+.game-edit-btn {
+    color: #2563eb;
+    background: #eff6ff;
+    border-color: #dbeafe;
+}
+
+.game-edit-btn:hover {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+}
+
+/* Cancel */
+.game-cancel-btn {
+    color: #b45309;
+    background: #fffbeb;
+    border-color: #fde68a;
+}
+
+.game-cancel-btn:hover {
+    background: #f59e0b;
+    color: #ffffff;
+    border-color: #f59e0b;
+}
+
+/* Delete */
+.game-delete-btn {
+    color: #dc2626;
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.game-delete-btn:hover {
+    background: #dc2626;
+    color: #ffffff;
+    border-color: #dc2626;
+}
+
+/* Focus */
+.game-action-btn:focus-visible {
+    outline: 3px solid rgba(59, 130, 246, 0.25);
+    outline-offset: 2px;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .group-game-actions {
+        gap: 6px;
+    }
+
+    .game-action-btn {
+        min-width: 65px;
+        height: 34px;
+        padding: 0 10px;
+        font-size: 12px;
+    }
+}

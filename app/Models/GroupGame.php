@@ -4,12 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Court;
+
 
 class GroupGame extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['admin_id', 'booking_id', 'title', 'description', 'max_players', 'status'];
+ protected $fillable = [
+        'admin_id',
+        'court_id',
+        'title',
+        'description',
+        'game_date',
+        'start_time',
+        'end_time',
+        'max_players',
+        'player_price',
+        'status',
+    ];
 
     public function admin()
     {
@@ -31,4 +44,11 @@ class GroupGame extends Model
     {
         return $this->players()->wherePivot('status', 'joined');
     }
+
+       public function court()
+    {
+        return $this->belongsTo(Court::class, 'court_id');
+    }
+
+
 }
