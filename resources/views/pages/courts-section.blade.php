@@ -16,11 +16,11 @@
         $courtsQuery->where('address', 'like', '%' . $searchArea . '%');
     }
 
-    $courts = $courtsQuery->orderBy('name')->get();
+    $courts = $courtsQuery->orderBy('name')->paginate(6)->withQueryString();
 @endphp
 
-<form class="row filters" action="{{ route('courtbook.courts') }}" method="get">
-    <label>
+<form class="row filters courts-filters" action="{{ route('courtbook.courts') }}" method="get">
+    <label class="court-filter-control">
         <span class="sr-only">{{ __('Sport') }}</span>
         <select name="sport_id">
             <option value="">{{ __('All sports') }}</option>
@@ -32,7 +32,7 @@
         </select>
     </label>
 
-    <label>
+    <label class="court-filter-control">
         <span class="sr-only">{{ __('Area') }}</span>
         <input
             type="search"
@@ -43,13 +43,20 @@
     </label>
 
     <button type="submit">{{ __('Search courts') }}</button>
+    @if ($selectedSport || $searchArea !== '')
+        <a class="courts-clear-filters" href="{{ route('courtbook.courts') }}">{{ __('Clear filters') }}</a>
+    @endif
 </form>
 
-<div class="grid">
+<div class="courts-results" aria-live="polite">
+    <span>{{ __('Courts found') }} <strong>{{ $courts->total() }}</strong></span>
+</div>
+
+<div class="grid courts-grid">
     @forelse ($courts as $court)
-        <article class="card">
-            <a class="card-photo" href="{{ route('courtbook.court', $court->id) }}">
-                <img class="gallery"
+        <article class="card court-list-card">
+            <a class="card-photo court-list-photo" href="{{ route('courtbook.court', $court->id) }}">
+                <img
                     src="{{ $court->image ? asset('courtbook-assets/images/' . $court->image) : asset('courtbook-assets/images/hero-football.png') }}"
                     alt="{{ $court->name }}">
                 <span class="tag">{{ $court->sports->name }}</span>
@@ -81,6 +88,12 @@
             </div>
         </article>
     @empty
-        <p class="muted">{{ __('No courts match your search.') }}</p>
+        <p class="courts-empty">{{ __('No courts match your search.') }}</p>
     @endforelse
 </div>
+
+@if ($courts->hasPages())
+    <div class="courts-pagination">
+        {{ $courts->links() }}
+    </div>
+@endif

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Subscription;
@@ -17,7 +17,7 @@ class SubscriptionController extends Controller
     {
         $adminId = auth('admin')->id();
 
-        $query = Subscription::with('user')
+        $query = Subscription::with(['user', 'court', 'bookings' => fn ($q) => $q->orderBy('booking_date')])
             ->where('admin_id', $adminId);
 
         // Search by package name, username, or email
@@ -139,7 +139,6 @@ class SubscriptionController extends Controller
     /**
      * Show the edit form for a pending subscription only.
      */
-    
 public function edit($id)
 {
     $subscription = Subscription::where('admin_id', auth('admin')->id())

@@ -1,10 +1,11 @@
 @extends('layouts.demo')
 
-@section('title', __('Home'))
+@section('title', 'Gang · ' . __('Home'))
+@section('description', __('Find a court or join a game near you in Amman.'))
 @section('page', 'home')
 
 @section('content')
-    <div class="wrap">
+    <div class="wrap home-page">
         @php
             $sportImages = [
                 'Badminton' => 'badminton.png',
@@ -26,18 +27,18 @@
             <div class="home-hero-copy">
                 <span class="home-hero-kicker"><i></i>{{ __('AMMAN PLAYS HERE') }}</span>
                 <h1 id="home-hero-title">{{ __('Find your game.') }}<br><span>{{ __('Feel the game.') }}</span></h1>
-                <p>{{ __('Pick your sport, find a court, and get in the game with CourtBook.') }}</p>
+                <p>{{ __('Pick your game, find a court or join a match nearby.') }}</p>
                 <div class="home-hero-actions">
-                    <a class="button" href="{{ route('courtbook.courts') }}">{{ __('Find a court') }} <span aria-hidden="true">↗</span></a>
-                    <a class="home-join-link" href="{{ route('games.index') }}">{{ __('Join a game') }} <span aria-hidden="true">→</span></a>
+                    <a class="button" href="{{ route('courtbook.courts') }}">{{ __('Book a court') }} <span aria-hidden="true">↗</span></a>
+                    <a class="home-join-link" href="{{ route('games.index') }}">{{ __('Find your people') }} <span aria-hidden="true">→</span></a>
                 </div>
                 <div class="home-hero-caption">
                     <span class="home-avatar-stack" aria-hidden="true"><i>⚽</i><i>🏀</i><i>🎾</i></span>
-                    <span>{{ __('One city. Many ways to play.') }}</span>
+                    <span>{{ __('Your next game is closer than you think.') }}</span>
                 </div>
             </div>
 
-            <div class="home-sports-stage" role="img" aria-label="{{ __('A lively mix of sports available on CourtBook') }}">
+            <div class="home-sports-stage" role="img" aria-label="{{ __('A mix of sports to try on Gang') }}">
                 <div class="home-stage-glow"></div>
                 <img class="home-stage-photo" src="{{ asset('courtbook-assets/images/players.png') }}" alt="" fetchpriority="high">
                 <span class="home-court-outline" aria-hidden="true"></span>
@@ -49,7 +50,6 @@
                         <small>{{ $sport->name }}</small>
                     </span>
                 @endforeach
-                <span class="home-stage-note"><i></i>{{ __('Ready, set, play') }}</span>
             </div>
         </section>
 
@@ -63,13 +63,29 @@
             <input type="search" name="area" placeholder="{{ __('Area') }}" aria-label="{{ __('Area') }}">
             <button type="submit">{{ __('Search courts') }}</button>
         </form>
-
+        <aside class="home-sport-ribbon" aria-label="{{ __('Sports on your schedule') }}">
+            <span class="home-ribbon-label">{{ __('Your next move') }} <i aria-hidden="true">✦</i></span>
+            <div class="home-ribbon-window">
+                <div class="home-ribbon-track">
+                    @foreach ([false, true] as $copy)
+                        <span class="home-ribbon-group" @if ($copy) aria-hidden="true" @endif>
+                            @forelse ($sports as $sport)
+                                <span class="home-ribbon-sport"><i>{{ $sportIcons[$sport->name] ?? '🏆' }}</i>{{ $sport->name }}</span>
+                                <b aria-hidden="true">✳</b>
+                            @empty
+                                <span class="home-ribbon-sport">{{ __('The next game starts here') }}</span>
+                            @endforelse
+                        </span>
+                    @endforeach
+                </div>
+            </div>
+        </aside>
         <section class="section home-sports-section" aria-labelledby="sports-title">
             <div class="home-section-heading">
                 <div>
-                    <span class="home-section-kicker">{{ __('CHOOSE YOUR GAME') }}</span>
-                    <h2 id="sports-title">{{ __('What do you play?') }}</h2>
-                    <p>{{ __('From quick rallies to big matches, your next game starts here.') }}</p>
+                    <span class="home-section-kicker">{{ __('YOUR GAME, YOUR CALL') }}</span>
+                    <h2 id="sports-title">{{ __('What are you in the mood to play?') }}</h2>
+                    <p>{{ __('Padel, football, basketball or a quick rally — pick what feels right today.') }}</p>
                 </div>
                 <a href="{{ route('courtbook.courts') }}">{{ __('All courts') }} <span aria-hidden="true">→</span></a>
             </div>
@@ -96,8 +112,8 @@
             <div class="home-section-heading">
                 <div>
                     <span class="home-section-kicker">{{ __('PLACES TO PLAY') }}</span>
-                    <h2 id="popular-courts-title">{{ __('Courts worth checking out') }}</h2>
-                    <p>{{ __('Find your favorite spot and make it your next game day.') }}</p>
+                    <h2 id="popular-courts-title">{{ __('Find your kind of court') }}</h2>
+                    <p>{{ __('Check the location, price and rating, then book the court that works for you.') }}</p>
                 </div>
                 <a href="{{ route('courtbook.courts') }}">{{ __('View all courts') }} <span aria-hidden="true">→</span></a>
             </div>
@@ -144,10 +160,9 @@
             <div class="home-section-heading">
                 <div>
                     <span class="home-section-kicker">{{ __('PLAY TOGETHER') }}</span>
-                    <h2 id="upcoming-games-title">{{ __('A spot on the team is waiting') }}</h2>
-                    <p>{{ __('Join a local game and meet people who love your sport.') }}</p>
+                    <h2 id="upcoming-games-title">{{ __('Need one more player? Your spot is here.') }}</h2>
+                    <p>{{ __('Join a nearby match and meet people who are into the same game.') }}</p>
                 </div>
-                <a href="{{ route('games.index') }}">{{ __('Find games') }} <span aria-hidden="true">→</span></a>
             </div>
 
             <div class="grid home-games-grid">
@@ -191,15 +206,5 @@
 
         @include('pages.how-it-works')
 
-        <section class="home-final-cta" aria-label="{{ __('Find a court') }}">
-            <span class="home-final-ball home-final-ball-one" aria-hidden="true">⚽</span>
-            <span class="home-final-ball home-final-ball-two" aria-hidden="true">🏀</span>
-            <div>
-                <span class="home-section-kicker">{{ __('YOUR NEXT GAME STARTS HERE') }}</span>
-                <h2>{{ __('Ready to get out and play?') }}</h2>
-                <p>{{ __('Choose your sport. We’ll help with the rest.') }}</p>
-            </div>
-            <a class="button" href="{{ route('courtbook.courts') }}">{{ __('Find your court') }} <span aria-hidden="true">↗</span></a>
-        </section>
     </div>
 @endsection

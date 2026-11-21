@@ -82,8 +82,7 @@ class BookingTest extends TestCase
         $courtId = $this->createCourt();
 
         $response = $this->actingAs($user)
-            ->post('/bookings', $this->bookingData($courtId));
-
+           ->postJson('/bookings', $this->bookingData($courtId));
         $response->assertCreated();
 
         $this->assertDatabaseHas('bookings', [
@@ -101,13 +100,13 @@ class BookingTest extends TestCase
 
     // الحجز الأول ينجح
     $this->actingAs($user)
-        ->post('/bookings', $data)
+        ->postJson('/bookings', $data)
         ->assertCreated();
 
     // الحجز الثاني بنفس الوقت لازم ينرفض
     $this->actingAs($user)
-        ->post('/bookings', $data)
-        ->assertSessionHasErrors('start_time');
+        ->postJson('/bookings', $data)
+        ->assertUnprocessable()->assertJsonValidationErrors('start_time');
 
     $this->assertDatabaseCount('bookings', 1);
 }
@@ -119,14 +118,14 @@ class BookingTest extends TestCase
         $data = $this->bookingData($courtId);
 
         $this->actingAs($user)
-            ->post('/bookings', $data)
+            ->postJson('/bookings', $data)
             ->assertCreated();
 
         $data['start_time'] = '11:00';
         $data['end_time'] = '12:00';
 
         $this->actingAs($user)
-            ->post('/bookings', $data)
+            ->postJson('/bookings', $data)
             ->assertCreated();
 
         $this->assertDatabaseCount('bookings', 2);
@@ -142,8 +141,8 @@ class BookingTest extends TestCase
         $data['end_time'] = '08:00';
 
         $this->actingAs($user)
-            ->post('/bookings', $data)
-            ->assertSessionHasErrors('start_time');
+            ->postJson('/bookings', $data)
+            ->assertUnprocessable()->assertJsonValidationErrors('start_time');
     }
 
     public function test_cannot_book_less_than_minimum_duration(): void
@@ -156,8 +155,8 @@ class BookingTest extends TestCase
         $data['duration_minutes'] = 30;
 
         $this->actingAs($user)
-            ->post('/bookings', $data)
-            ->assertSessionHasErrors('duration_minutes');
+            ->postJson('/bookings', $data)
+            ->	assertUnprocessable()->assertJsonValidationErrors('duration_minutes');
     }
 
     public function test_booking_price_is_calculated_by_server(): void
@@ -170,7 +169,7 @@ class BookingTest extends TestCase
         $data['deposit_amount'] = 0;
 
         $this->actingAs($user)
-            ->post('/bookings', $data)
+            ->postJson('/bookings', $data)
             ->assertCreated();
 
         $booking = DB::table('bookings')->first();
@@ -186,7 +185,7 @@ class BookingTest extends TestCase
         $courtId = $this->createCourt();
 
         $response = $this->actingAs($owner)
-            ->post('/bookings', $this->bookingData($courtId));
+        ->postJson('/bookings', $this->bookingData($courtId));
 
         $response->assertCreated();
 
@@ -204,7 +203,7 @@ class BookingTest extends TestCase
         $courtId = $this->createCourt();
 
         $response = $this->actingAs($owner)
-            ->post('/bookings', $this->bookingData($courtId));
+            ->postJson('/bookings', $this->bookingData($courtId));
 
         $response->assertCreated();
 
@@ -276,7 +275,7 @@ public function test_owner_can_update_booking(): void
     $courtId = $this->createCourt();
 
     $response = $this->actingAs($user)
-        ->post('/bookings', $this->bookingData($courtId));
+        ->postJson('/bookings', $this->bookingData($courtId));
 
     $response->assertCreated();
 
@@ -302,7 +301,7 @@ public function test_owner_can_cancel_booking(): void
     $courtId = $this->createCourt();
 
     $response = $this->actingAs($user)
-        ->post('/bookings', $this->bookingData($courtId));
+        ->postJson('/bookings', $this->bookingData($courtId));
 
     $response->assertCreated();
 
@@ -327,7 +326,7 @@ public function test_cancelled_booking_slot_becomes_available(): void
     $data = $this->bookingData($courtId);
 
     $response = $this->actingAs($owner)
-        ->post('/bookings', $data);
+        ->postJson('/bookings', $data);
 
     $response->assertCreated();
 
@@ -338,7 +337,7 @@ public function test_cancelled_booking_slot_becomes_available(): void
         ->assertOk();
 
     $this->actingAs($otherUser)
-        ->post('/bookings', $data)
+        ->postJson('/bookings', $data)
         ->assertCreated();
 
     $this->assertDatabaseCount('bookings', 2);
@@ -364,7 +363,7 @@ public function test_cancelled_booking_slot_becomes_available(): void
             ->assertJsonPath('available_slots.0.start_time', '08:00');
 
         $response = $this->actingAs($user)
-            ->post(route('courtbook.bookings.store'), [
+            ->postJson(route('courtbook.bookings.store'), [
                 'court_id' => $courtId,
                 'booking_type' => 'individual',
                 'booking_date' => $dateString,

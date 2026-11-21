@@ -1,5 +1,5 @@
 @php
-// Keep the existing CourtBook filters and approved-only visibility.
+// Keep the approved-court filters and visibility rules.
 $sports = \App\Models\Sports::query()->orderBy('name')->get();
 $selectedSport = request('sport_id');
 $searchArea = trim((string) request('area', ''));
@@ -32,7 +32,7 @@ return $court->latitude !== null
         'id' => $court->id,
         'name' => $court->name,
         'address' => $court->address,
-        'sport' => $court->sports?->name ?? 'Sport court',
+        'sport' => $court->sports?->name ?? __('Sport court'),
         'lat' => (float) $court->latitude,
         'lng' => (float) $court->longitude,
         'price' => number_format((float) $court->weekday_price, 2),
@@ -43,12 +43,15 @@ return $court->latitude !== null
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 
         <style>
-            /* Scope all styles to this page component so shared CourtBook styles stay unchanged. */
+            /* Keep nearby map styling scoped to this component. */
             .cb-nearby {
-                --cb-ink: #172b38;
-                --cb-muted: #6c7f8a;
-                --cb-line: #e5eced;
-                --cb-teal: #087d70;
+                --cb-ink: #1f3215;
+                --cb-muted: #718076;
+                --cb-line: #e1eae1;
+                --cb-green: #176b45;
+                --cb-dark: #123b2a;
+                --cb-soft: #f1f7e5;
+                --cb-lime: #c8f36b;
                 color: var(--cb-ink);
             }
 
@@ -86,22 +89,22 @@ return $court->latitude !== null
                 padding: 9px 13px;
                 border: 1px solid var(--cb-line);
                 border-radius: 999px;
-                background: #f2f9f7;
-                color: #136d60;
+                background: var(--cb-soft);
+                color: #557b31;
                 font-size: .86rem;
                 font-weight: 700;
             }
 
             .cb-nearby .cb-nearby-filters {
                 display: grid;
-                grid-template-columns: minmax(140px, 1fr) minmax(170px, 1.2fr) auto;
+                grid-template-columns: minmax(130px, .85fr) minmax(160px, 1.2fr) minmax(130px, .8fr) auto;
                 gap: 10px;
                 padding: 13px;
                 background: #fff;
                 border: 1px solid var(--cb-line);
                 border-radius: 18px;
                 margin-bottom: 16px;
-                box-shadow: 0 8px 32px rgba(18, 44, 54, .035);
+                box-shadow: 0 8px 32px rgba(18, 59, 42, .05);
             }
 
             .cb-nearby .cb-nearby-filters select,
@@ -110,7 +113,7 @@ return $court->latitude !== null
                 min-width: 0;
                 padding: 12px 13px;
                 border: 1px solid var(--cb-line);
-                background: #f9fbfa;
+                background: #fbfcf9;
                 border-radius: 11px;
                 color: var(--cb-ink);
                 font: inherit;
@@ -120,7 +123,7 @@ return $court->latitude !== null
             .cb-nearby .cb-location-btn {
                 cursor: pointer;
                 border: 0;
-                background: var(--cb-teal);
+                background: var(--cb-green);
                 color: white;
                 border-radius: 11px;
                 padding: 12px 18px;
@@ -133,9 +136,34 @@ return $court->latitude !== null
                 align-items: center;
                 gap: 7px;
                 background: #fff;
-                color: var(--cb-teal);
-                border: 1px solid #badbd4;
+                color: var(--cb-green);
+                border: 1px solid #deebc5;
                 white-space: nowrap;
+            }
+
+            .cb-nearby .cb-nearby-search {
+                border: 1px solid var(--cb-lime);
+                background: var(--cb-lime);
+                color: var(--cb-dark);
+                transition: transform .18s ease, background .18s ease;
+            }
+
+            .cb-nearby .cb-nearby-search:hover {
+                transform: translateY(-1px);
+                background: #ddf4a2;
+            }
+
+            .cb-nearby .cb-location-btn:hover {
+                border-color: #c8dda9;
+                background: var(--cb-soft);
+            }
+
+            .cb-nearby .cb-nearby-search:focus-visible,
+            .cb-nearby .cb-location-btn:focus-visible,
+            .cb-nearby .cb-nearby-filters select:focus-visible,
+            .cb-nearby .cb-nearby-filters input:focus-visible {
+                outline: 3px solid #c8f36b80;
+                outline-offset: 2px;
             }
 
             .cb-nearby .cb-nearby-layout {
@@ -151,7 +179,7 @@ return $court->latitude !== null
                 border: 1px solid var(--cb-line);
                 border-radius: 19px;
                 overflow: hidden;
-                box-shadow: 0 12px 36px rgba(18, 44, 54, .045);
+                box-shadow: 0 12px 36px rgba(18, 59, 42, .055);
             }
 
             .cb-nearby .cb-nearby-list-head {
@@ -187,7 +215,7 @@ return $court->latitude !== null
                 gap: 12px;
                 padding: 12px;
                 border: 1px solid transparent;
-                border-bottom-color: #eef2f2;
+                border-bottom-color: #edf1eb;
                 border-radius: 13px;
                 margin-bottom: 5px;
                 cursor: pointer;
@@ -195,13 +223,13 @@ return $court->latitude !== null
             }
 
             .cb-nearby .cb-court-card:hover {
-                background: #f5faf8;
+                background: #f7faef;
             }
 
             .cb-nearby .cb-court-card.is-selected {
-                background: #edf8f4;
-                border-color: #89cbbc;
-                box-shadow: inset 3px 0 0 var(--cb-teal);
+                background: #f1f7e5;
+                border-color: #c8dda9;
+                box-shadow: inset 3px 0 0 var(--cb-green);
             }
 
             .cb-nearby .cb-court-thumb {
@@ -209,7 +237,7 @@ return $court->latitude !== null
                 height: 95px;
                 object-fit: cover;
                 border-radius: 11px;
-                background: #d8e8e3;
+                background: #eaf1e7;
                 flex-shrink: 0;
             }
 
@@ -220,8 +248,8 @@ return $court->latitude !== null
 
             .cb-nearby .cb-court-sport {
                 display: inline-block;
-                background: #e9f6f0;
-                color: #177b68;
+                background: var(--cb-soft);
+                color: #557b31;
                 border-radius: 7px;
                 padding: 3px 8px;
                 font-size: .70rem;
@@ -255,13 +283,13 @@ return $court->latitude !== null
 
             .cb-nearby .cb-court-price {
                 font-weight: 800;
-                color: #126e60;
+                color: var(--cb-green);
             }
 
             .cb-nearby .cb-court-link {
                 font-weight: 800;
                 text-decoration: none;
-                color: var(--cb-teal);
+                color: var(--cb-green);
             }
 
             .cb-nearby .cb-court-distance {
@@ -272,7 +300,7 @@ return $court->latitude !== null
 
             .cb-nearby .cb-court-no-location {
                 font-size: .74rem;
-                color: #9b7328;
+                color: #7d6a2f;
                 margin: 4px 0 0;
             }
 
@@ -283,7 +311,7 @@ return $court->latitude !== null
                 overflow: hidden;
                 border-radius: 19px;
                 border: 1px solid var(--cb-line);
-                background: #e8f0eb;
+                background: #eaf1e7;
             }
 
             .cb-nearby #cb-nearby-map {
@@ -344,7 +372,7 @@ return $court->latitude !== null
             .cb-nearby .cb-popup-link {
                 display: inline-block;
                 margin-top: 8px;
-                color: #087d70;
+                color: #176b45;
                 font-weight: 800;
             }
 
@@ -408,49 +436,49 @@ return $court->latitude !== null
             }
         </style>
 
-        <section class="cb-nearby" aria-label="Explore nearby courts">
+        <section class="cb-nearby" aria-label="{{ __('Explore nearby courts') }}">
             <div class="cb-nearby-toolbar">
                 <div>
-                    <h2 class="cb-nearby-heading">Explore courts around you</h2>
-                    <p class="cb-nearby-subtitle">Select a court card or a pin on the map to see more.</p>
+                    <h2 class="cb-nearby-heading">{{ __('Courts close to you') }}</h2>
+                    <p class="cb-nearby-subtitle">{{ __('Pick a court card or a map pin to see its details.') }}</p>
                 </div>
-                <span class="cb-nearby-pill">📍 {{ $courts->count() }} courts found</span>
+                <span class="cb-nearby-pill">📍 {{ __('Available courts') }} <strong>{{ $courts->count() }}</strong></span>
             </div>
 
             <form class="cb-nearby-filters" action="{{ route('courtbook.nearby') }}" method="GET">
                 <label>
-                    <span class="sr-only">Sport</span>
-                    <select name="sport_id" aria-label="Filter by sport">
-                        <option value="">All sports</option>
+                    <span class="sr-only">{{ __('Sport') }}</span>
+                    <select name="sport_id" aria-label="{{ __('Filter by sport') }}">
+                        <option value="">{{ __('All sports') }}</option>
                         @foreach ($sports as $sport)
                         <option value="{{ $sport->id }}" @selected((string) $selectedSport===(string) $sport->id)>{{ $sport->name }}</option>
                         @endforeach
                     </select>
                 </label>
                 <label>
-                    <span class="sr-only">Area</span>
-                    <input type="search" name="area" value="{{ $searchArea }}" placeholder="Search by area" aria-label="Search by area">
+                    <span class="sr-only">{{ __('Area') }}</span>
+                    <input type="search" name="area" value="{{ $searchArea }}" placeholder="{{ __('Search by area') }}" aria-label="{{ __('Search by area') }}">
                 </label>
 
 
-                <select id="distance-filter" class="form-control">
-                    <option value="all">All Distances</option>
-                    <option value="5">Within 5 km</option>
-                    <option value="10">Within 10 km</option>
-                    <option value="20">Within 20 km</option>
+                <select id="distance-filter" class="form-control" aria-label="{{ __('Filter by distance') }}">
+                    <option value="all">{{ __('All distances') }}</option>
+                    <option value="5">{{ __('Within 5 km') }}</option>
+                    <option value="10">{{ __('Within 10 km') }}</option>
+                    <option value="20">{{ __('Within 20 km') }}</option>
                 </select>
 
-                <button class="cb-nearby-search" type="submit">Search courts</button>
+                <button class="cb-nearby-search" type="submit">{{ __('Search courts') }}</button>
 
 
             </form>
 
             <div class="cb-nearby-layout">
                 {{-- LEFT: courts list --}}
-                <aside class="cb-nearby-list" aria-label="Courts list">
+                <aside class="cb-nearby-list" aria-label="{{ __('Nearby court list') }}">
                     <div class="cb-nearby-list-head">
-                        <h3 class="cb-nearby-list-title">Available courts</h3>
-                        <span class="cb-nearby-count">{{ $courts->count() }} results</span>
+                        <h3 class="cb-nearby-list-title">{{ __('Available courts') }}</h3>
+                        <span class="cb-nearby-count">{{ $courts->count() }} {{ __('results') }}</span>
                     </div>
                     <div class="cb-nearby-cards" id="cb-court-list">
                         @forelse ($courts as $court)
@@ -469,36 +497,51 @@ return $court->latitude !== null
                                 <article class="cb-court-card" data-court-id="{{ $court->id }}" data-has-location="{{ $hasLocation ? '1' : '0' }}" tabindex="0" aria-label="{{ $court->name }}">
                                     <img class="cb-court-thumb" src="{{ $imageUrl }}" data-fallback="{{ $fallbackUrl }}" alt="{{ $court->name }}" loading="lazy">
                                     <div class="cb-court-content">
-                                        <span class="cb-court-sport">{{ $court->sports?->name ?? 'Court' }}</span>
+                                        <span class="cb-court-sport">{{ $court->sports?->name ?? __('Court') }}</span>
                                         <h3 class="cb-court-name">{{ $court->name }}</h3>
                                         <p class="cb-court-address">📍 {{ $court->address }}</p>
                                         <div class="cb-court-meta">
-                                            <span class="cb-court-price">{{ number_format((float) $court->weekday_price, 2) }} JOD <small>/ hr</small></span>
-                                            <a class="cb-court-link" href="{{ route('courtbook.court', $court->id) }}">View court ↗</a>
+                                            <span class="cb-court-price">{{ number_format((float) $court->weekday_price, 2) }} JOD <small>/ {{ __('hour') }}</small></span>
+                                            <a class="cb-court-link" href="{{ route('courtbook.court', $court->id) }}">{{ __('Explore court') }} ↗</a>
                                         </div>
                                         @if ($hasLocation)
-                                        <p class="cb-court-distance" data-distance-for="{{ $court->id }}">Tap to show on map</p>
+                                        <p class="cb-court-distance" data-distance-for="{{ $court->id }}">{{ __('Tap to show on map') }}</p>
                                         @else
-                                        <p class="cb-court-no-location">Map location not added yet</p>
+                                        <p class="cb-court-no-location">{{ __('Court location has not been added yet') }}</p>
                                         @endif
                                     </div>
                                 </article>
                                 @empty
-                                <p class="cb-nearby-empty">No courts match your search. Try another sport or area.</p>
+                                <p class="cb-nearby-empty">{{ __('No nearby courts match your search. Try another sport or area.') }}</p>
                                 @endforelse
                     </div>
                 </aside>
 
                 {{-- RIGHT: interactive map --}}
                 <div class="cb-map-wrap">
-                    <div id="cb-nearby-map" role="region" aria-label="Map of approved courts in Jordan"></div>
+                    <div id="cb-nearby-map" role="region" aria-label="{{ __('Map of approved courts in Jordan') }}"></div>
                     <div class="cb-map-floating">
-                        <span class="cb-map-label">🗺️ Courts map</span>
-                        <button class="cb-location-btn" id="cb-find-me" type="button">◎ My location</button>
+                        <span class="cb-map-label">🗺️ {{ __('Courts map') }}</span>
+                        <button class="cb-location-btn" id="cb-find-me" type="button">◎ {{ __('My location') }}</button>
                     </div>
                 </div>
             </div>
-            <p class="cb-nearby-status" id="cb-map-status" aria-live="polite">Loading interactive map…</p>
+            <p class="cb-nearby-status" id="cb-map-status" aria-live="polite">{{ __('Loading map...') }}</p>
+            <span id="cb-nearby-copy" hidden
+                data-map-library-error="{{ __('Could not load the map. Refresh the page or check your internet connection.') }}"
+                data-map-init-error="{{ __('We could not start the map.') }}"
+                data-map-tiles-error="{{ __('Map details could not load. Check your internet connection.') }}"
+                data-map-ready="{{ __('The map is ready with :count court locations. Tap a marker or court to see details.') }}"
+                data-court-no-location="{{ __('This court does not have a map location yet.') }}"
+                data-no-courts-on-map="{{ __('No approved courts have locations on the map yet. We are showing Amman until locations are added.') }}"
+                data-location-unsupported="{{ __('Your browser does not support location detection.') }}"
+                data-location-request="{{ __('Allow location access to find courts near you...') }}"
+                data-approx-location="{{ __('Your approximate location') }}"
+                data-location-shown="{{ __('Your location is on the map. Distances are approximate.') }}"
+                data-distance-approx="{{ __('About :distance km away') }}"
+                data-location-failed="{{ __('We could not get your location. You can still browse courts and pick one from the map.') }}"
+                data-view-court-details="{{ __('Explore court') }}"
+                data-hour="{{ __('hour') }}"></span>
         </section>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
@@ -506,9 +549,10 @@ return $court->latitude !== null
             document.addEventListener('DOMContentLoaded', () => {
                 const mapElement = document.getElementById('cb-nearby-map');
                 const status = document.getElementById('cb-map-status');
+                const copy = document.getElementById('cb-nearby-copy').dataset;
                 if (!mapElement) return;
                 if (typeof L === 'undefined') {
-                    status.textContent = 'Leaflet did not load. Open DevTools (F12) → Network and check the leaflet.js request. Check internet access or CDN blocking.';
+                    status.textContent = copy.mapLibraryError;
                     return;
                 }
 
@@ -521,8 +565,8 @@ return $court->latitude !== null
                         scrollWheelZoom: false
                     }).setView([31.9539, 35.9106], 12);
                 } catch (error) {
-                    console.error('CourtBook map initialization failed:', error);
-                    status.textContent = 'Map initialization failed. Check the browser Console for details.';
+                    console.error('Gang map initialization failed:', error);
+                    status.textContent = copy.mapInitError;
                     return;
                 }
                 let tileErrors = 0;
@@ -532,10 +576,10 @@ return $court->latitude !== null
                 }).on('tileerror', () => {
                     tileErrors++;
                     if (tileErrors === 1) {
-                        status.textContent = 'Map tiles could not load. Check Network for blocked requests to tile.openstreetmap.org.';
+                        status.textContent = copy.mapTilesError;
                     }
                 }).addTo(map);
-                status.textContent = `${courts.length} court(s) with saved coordinates. Click a marker or card to see details.`;
+                status.textContent = copy.mapReady.replace(':count', courts.length);
 
                 const markers = new Map();
                 const cards = new Map();
@@ -592,7 +636,7 @@ return $court->latitude !== null
                     const marker = markers.get(String(id));
                     selectCard(id);
                     if (!marker) {
-                        status.textContent = 'This court does not have a map location yet.';
+                        status.textContent = copy.courtNoLocation;
                         return;
                     }
                     map.setView(marker.getLatLng(), Math.max(map.getZoom(), 15), {
@@ -609,13 +653,13 @@ return $court->latitude !== null
                     title.className = 'cb-popup-title';
                     title.textContent = court.name;
                     const description = document.createElement('div');
-                    description.textContent = `${court.sport} · ${court.price} JOD / hr`;
+                    description.textContent = `${court.sport} · ${court.price} JOD / ${copy.hour}`;
                     const address = document.createElement('div');
                     address.textContent = court.address || '';
                     const link = document.createElement('a');
                     link.className = 'cb-popup-link';
                     link.href = court.url;
-                    link.textContent = 'View court details →';
+                    link.textContent = `${copy.viewCourtDetails} →`;
                     popup.append(title, description, address, link);
                     marker.bindPopup(popup);
                     marker.on('click', () => selectCard(court.id));
@@ -629,7 +673,7 @@ return $court->latitude !== null
                         maxZoom: 14
                     });
                 } else {
-                    status.textContent = 'No approved courts with saved latitude/longitude. The map is centered on Amman; add locations from Owner → Edit Court.';
+                    status.textContent = copy.noCourtsOnMap;
                 }
 
                 // A newly opened page or flex/grid resize can change the map dimensions.
@@ -639,10 +683,10 @@ return $court->latitude !== null
                 const locationButton = document.getElementById('cb-find-me');
                 locationButton.addEventListener('click', () => {
                     if (!navigator.geolocation) {
-                        status.textContent = 'Your browser does not support location detection.';
+                        status.textContent = copy.locationUnsupported;
                         return;
                     }
-                    status.textContent = 'Requesting your location permission…';
+                    status.textContent = copy.locationRequest;
                     locationButton.disabled = true;
                     navigator.geolocation.getCurrentPosition(position => {
                         locationButton.disabled = false;
@@ -653,11 +697,11 @@ return $court->latitude !== null
                             radius: 9,
                             color: '#ffffff',
                             weight: 3,
-                            fillColor: '#287de2',
+                            fillColor: '#c8f36b',
                             fillOpacity: 1
-                        }).addTo(map).bindPopup('Your approximate location');
+                        }).addTo(map).bindPopup(copy.approxLocation);
                         map.setView([lat, lng], 13);
-                        status.textContent = 'Your location is shown in blue. Distances are approximate straight-line distances.';
+                        status.textContent = copy.locationShown;
 
                         const toRadians = d => d * Math.PI / 180;
 
@@ -674,7 +718,7 @@ return $court->latitude !== null
                         })).sort((a, b) => a.km - b.km);
                         distances.forEach(item => {
                             const el = document.querySelector(`[data-distance-for="${item.id}"]`);
-                            if (el) el.textContent = `${item.km.toFixed(1)} km away (approx.)`;
+                            if (el) el.textContent = copy.distanceApprox.replace(':distance', item.km.toFixed(1));
                         });
                         const list = document.getElementById('cb-court-list');
                         distances.forEach(item => {
@@ -683,7 +727,7 @@ return $court->latitude !== null
                         });
                     }, () => {
                         locationButton.disabled = false;
-                        status.textContent = 'Could not access your location. You can still browse the courts and select them manually.';
+                        status.textContent = copy.locationFailed;
                     }, {
                         enableHighAccuracy: true,
                         timeout: 10000

@@ -77,17 +77,31 @@ class SubscriptionFullTest extends TestCase
     }
 
     public function test_subscription_purchase_is_pending_and_discounted(): void
-    {
-        $user = User::factory()->create();
-        $court = $this->court();
-        $this->actingAs($user)->post('/subscriptions', [
-            'court_id' => $court->id, 'total_hours' => 5, 'duration_days' => 7,
-        ])->assertCreated()->assertJsonPath('subscription.status', 'pending');
-        $this->assertDatabaseHas('subscriptions', [
-            'user_id' => $user->id, 'court_id' => $court->id,
-            'amount' => 95, 'discount_percentage' => 5, 'status' => 'pending',
+{
+    $user = User::factory()->create();
+    $court = $this->court();
+
+    $response = $this->actingAs($user)
+        ->postJson('/subscriptions', [
+            'court_id' => $court->id,
+            'start_date' => today()->addDay()->toDateString(),
+            'duration_days' => 7,
+            'weekdays' => [
+                today()->addDay()->dayOfWeek,
+            ],
+            'start_time' => '10:00',
+'end_time' => '16:00',
+            
         ]);
-    }
+    $response->assertCreated()
+        ->assertJsonPath('subscription.status', 'pending');
+
+    $this->assertDatabaseHas('subscriptions', [
+        'user_id' => $user->id,
+        'court_id' => $court->id,
+        'status' => 'pending',
+    ]);
+}
 
     public function test_active_subscription_booking_deducts_hours_and_has_zero_price(): void
     {

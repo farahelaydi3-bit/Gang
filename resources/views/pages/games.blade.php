@@ -4,9 +4,9 @@
 @section('page', 'games')
 
 @section('content')
-	<div class="wrap page">
+	<div class="wrap page courts-page games-page">
 		@if(session('success'))
-			<div class="panel mb-4">{{ session('success') }}</div>
+			<div class="panel mb-4 games-success">{{ session('success') }}</div>
 		@endif
 		
 		@include('pages.heading', [

@@ -12,11 +12,19 @@ use App\Http\Controllers\CourtsController;
 use App\Http\Controllers\GroupGameController;
 use App\Http\Controllers\WaitingListController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PublicGangSiteController;
+use App\Http\Controllers\Auth\PhoneVerificationController;
+
+// Static HTML + CSS website; Laravel only enforces publication/subscription access.
+Route::get('/sites/{slug}', [PublicGangSiteController::class, 'show'])->name('gang.sites.show');
 
 // CourtBook - Public Pages
 
 Route::get('/', [HomeController::class, 'index'])
     ->name('courtbook.home');
+
+Route::view('/terms-and-conditions', 'pages.terms')
+    ->name('courtbook.terms');
 
 Route::view('/courtbook/profile', 'pages.profile')->name('courtbook.profile');
 Route::view('/courtbook/login', 'pages.login')->name('courtbook.login');
@@ -53,7 +61,21 @@ Route::middleware('auth')->group(function () {
 });
 Route::view('/my-games', 'pages.my-games')->name('courtbook.my-games');
 Route::view('/notifications', 'pages.notifications')->name('courtbook.notifications');
-Route::view('/assistant', 'pages.assistant')->name('courtbook.assistant');
+// Gang AI: the existing assistant page now uses database-backed Gemini results.
+Route::get('/assistant', [\App\Http\Controllers\AiAssistantController::class, 'index'])
+    ->name('courtbook.assistant');
+Route::post('/assistant/stream', [\App\Http\Controllers\AiAssistantController::class, 'sendStream'])
+    ->middleware('throttle:12,1')->name('ai.stream');
+Route::post('/assistant/message', [\App\Http\Controllers\AiAssistantController::class, 'send'])
+    ->middleware('throttle:12,1')->name('ai.chat');
+Route::post('/assistant/new', [\App\Http\Controllers\AiAssistantController::class, 'new'])
+    ->name('ai.new');
+Route::middleware('auth')->group(function () {
+    Route::patch('/assistant/conversations/{conversation}', [\App\Http\Controllers\AiAssistantController::class, 'rename'])
+        ->name('ai.rename');
+    Route::delete('/assistant/conversations/{conversation}', [\App\Http\Controllers\AiAssistantController::class, 'destroy'])
+        ->name('ai.delete');
+});
 Route::view('/modals', 'pages.modals')->name('courtbook.modals');
 
 // Player Dashboard
@@ -75,7 +97,20 @@ Route::middleware('auth')->group(function () {
 Route::get('/subscriptions', [SubscriptionController::class, 'create'])
     ->name('courtbook.subscriptions');
 
+// Stripe sends signed webhooks without browser CSRF; exclude only this route in bootstrap/app.php.
+Route::post('/stripe/subscriptions/webhook', [\App\Http\Controllers\SubscriptionStripeController::class, 'webhook'])
+    ->name('subscriptions.stripe.webhook');
+
 Route::middleware('auth')->group(function () {
+    Route::get('/subscriptions/{subscription}/invoice', [\App\Http\Controllers\SubscriptionStripeController::class, 'invoice'])->name('subscriptions.invoice');
+    Route::post('/subscriptions/{subscription}/stripe-checkout', [\App\Http\Controllers\SubscriptionStripeController::class, 'checkout'])->name('subscriptions.stripe.checkout');
+    Route::get('/subscriptions/{subscription}/stripe-success', [\App\Http\Controllers\SubscriptionStripeController::class, 'success'])->name('subscriptions.stripe.success');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/subscriptions/check-availability' , [SubscriptionController::class, 'checkAvailability'])
+        ->name('subscriptions.check-availability');
+
     Route::get('/my-subscriptions', [SubscriptionController::class, 'index'])
         ->name('courtbook.my-subscriptions');
 
@@ -172,6 +207,18 @@ Route::middleware('auth')->group(function () {
         'update',
     ])->name('bookings.update');
 
+Route::middleware('auth')->group(function () {
+    Route::get('/verify-phone', [PhoneVerificationController::class, 'show'])
+        ->name('phone.verify');
+
+    Route::post('/verify-phone/send', [PhoneVerificationController::class, 'send'])
+        ->middleware('throttle:3,10')
+        ->name('phone.send');
+
+    Route::post('/verify-phone', [PhoneVerificationController::class, 'verify'])
+        ->middleware('throttle:10,10')
+        ->name('phone.confirm');
+});
 
 });
 require __DIR__ . '/auth.php';

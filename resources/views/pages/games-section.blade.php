@@ -6,7 +6,7 @@
     $selectedSkill = request('skill_level');
 
     $gamesQuery = \App\Models\GroupGame::query()
-        ->with('court.sports')
+        ->with(['court.sports', 'joinedPlayers'])
         ->withCount(['joinedPlayers'])
         ->where('status', 'open');
 
@@ -29,7 +29,12 @@
     $games = $gamesQuery->latest()->get();
 @endphp
 
-<form id="game-filters" class="row filters spread" action="{{ route('games.index') }}" method="get">
+<form
+    id="game-filters"
+    class="row filters spread games-filters"
+    action="{{ route('games.index') }}"
+    method="get"
+>
     <label>
         <span class="sr-only">{{ __('Sport') }}</span>
         <select name="sport_id">
@@ -64,32 +69,40 @@
     </label>
 
     <button type="submit">{{ __('Search games') }}</button>
-    <a class="button" href="{{ route('games.create') }}">{{ __('Create a game') }}</a>
+    @if ($selectedSport || $searchArea !== '' || $searchDate || $selectedSkill)
+        <a class="games-clear-filters" href="{{ route('games.index') }}">{{ __('Clear filters') }}</a>
+    @endif
+    <a class="button games-create-button" href="{{ route('games.create') }}">
+        {{ __('Create a game') }}
+    </a>
 </form>
 
-<div class="grid">
+<div class="games-results" aria-live="polite">
+    <span>{{ __('Open games') }} <strong>{{ $games->count() }}</strong></span>
+</div>
+
+<div class="grid games-grid">
     @forelse ($games as $game)
-        <article class="card card-body">
-            <p class="eyebrow">
-                {{ $game->court->sports->name }}
-                @if($game->skill_level)
-                    · {{ ucfirst($game->skill_level) }}
+        <article class="card open-game-card">
+            <div class="open-game-topline">
+                <span class="open-game-sport">{{ $game->court->sports->name }}</span>
+                @if ($game->skill_level)
+                    <span>{{ ucfirst($game->skill_level) }}</span>
                 @endif
-            </p>
-            <h2>
+                <span class="open-game-capacity">{{ $game->joined_players_count }} / {{ $game->max_players }} {{ __('players') }}</span>
+            </div>
+            <h2 class="open-game-title">
                 <a href="{{ route('games.show', $game->id) }}">{{ $game->title }}</a>
             </h2>
-            <p class="muted">{{ $game->court->name }}</p>
-            <p class="muted">{{ $game->court->address }}</p>
-            <p>
-                {{ $game->game_date->format('M j, Y') }} ·
-                {{ $game->start_time }}–{{ $game->end_time }}
-            </p>
-            <p>{{ $game->joined_players_count }} / {{ $game->max_players }} {{ __('players') }}</p>
-
-            @if($game->position_slots)
-                <ul style="font-size: 0.9em; padding-left: 1rem;">
-                    @foreach($game->position_slots as $position => $count)
+            <p class="open-game-court">{{ $game->court->name }}</p>
+            <p class="open-game-address"><span aria-hidden="true">⌖</span>{{ $game->court->address }}</p>
+            <div class="open-game-schedule">
+                <div><small>{{ __('Date') }}</small><strong>{{ $game->game_date->translatedFormat('D, M j, Y') }}</strong></div>
+                <div><small>{{ __('Time') }}</small><strong>{{ $game->start_time }} – {{ $game->end_time }}</strong></div>
+            </div>
+            @if ($game->position_slots)
+                <ul class="open-game-positions">
+                    @foreach ($game->position_slots as $position => $count)
                         @php
                             $taken = $game->joinedPlayers->where('pivot.position', $position)->count();
                         @endphp
@@ -97,12 +110,16 @@
                     @endforeach
                 </ul>
             @endif
-
-            <a class="button outline" href="{{ route('games.show', $game->id) }}">
+            <a class="button outline open-game-details" href="{{ route('games.show', $game->id) }}">
                 {{ __('Game details') }}
+                <span aria-hidden="true">↗</span>
             </a>
         </article>
     @empty
-        <p class="muted">{{ __('No games match your search.') }}</p>
+        <div class="games-empty">
+            <span aria-hidden="true">🏸</span>
+            <p>{{ __('No games match your search.') }}</p>
+            <a href="{{ route('games.create') }}">{{ __('Create a game') }} <span aria-hidden="true">↗</span></a>
+        </div>
     @endforelse
 </div>

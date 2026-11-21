@@ -1,66 +1,23 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Review Details - CourtBook</title>
-</head>
-<body>
-
-    <h1>Review Details</h1>
-
-    @if (session('success'))
-        <p style="color: green;">
-            {{ session('success') }}
-        </p>
-    @endif
-
-    <p>Review ID: {{ $review->id }}</p>
-
-    <p>
-        User: {{ $review->user->name ?? 'Unknown User' }}
-    </p>
-
-    <p>
-        Court: {{ $review->court->name ?? 'Unknown Court' }}
-    </p>
-
-    <p>
-        Rating: {{ $review->rating }} / 5
-    </p>
-
-    <p>
-        Comment: {{ $review->comment ?? 'No comment' }}
-    </p>
-
-    @auth
-        @if ($review->user_id === auth()->id())
-
-            <a href="{{ route('reviews.edit', $review) }}">
-                Edit Review
-            </a>
-
-            <br><br>
-
-            <form action="{{ route('reviews.destroy', $review) }}"
-                  method="POST">
-                @csrf
-                @method('DELETE')
-
-                <button type="submit">
-                    Delete Review
-                </button>
-            </form>
-
-        @endif
-    @endauth
-
-    <br>
-
-    <a href="{{ route('reviews.index') }}">
-        Back to Reviews
-    </a>
-
-</body>
-</html>
+@extends('layouts.demo')
+@section('title', __('Review Details'))
+@section('page', 'reviews')
+@push('styles')
+@include('pages.reviews._styles')
+@endpush
+@section('content')
+<div class="wrap page review-page">
+  <header class="review-hero"><span class="review-eyebrow">GANG · COMMUNITY FEEDBACK</span><h1>{{ __('Review Details') }}</h1><p>{{ __('See what players are saying about their court experience.') }}</p></header>
+  <div class="review-detail">
+    <a class="review-link review-back" href="{{ route('reviews.index') }}">← {{ __('Back to Reviews') }}</a>
+    @if(session('success'))<div class="review-alert" role="status">{{ session('success') }}</div>@endif
+    <div class="review-card-top"><div class="review-author"><span class="review-avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr($review->user->name ?? 'U', 0, 1)) }}</span><div><strong>{{ $review->user->name ?? __('Unknown User') }}</strong><small>{{ __('Review') }} #{{ $review->id }}</small></div></div><span class="review-rating">{{ $review->rating }}/5</span></div>
+    <div class="review-divider"></div>
+    <div class="review-stars" aria-label="{{ $review->rating }} out of 5 stars">{{ str_repeat('★', (int)$review->rating) }}<span style="color:#d5ded7">{{ str_repeat('☆', max(0,5-(int)$review->rating)) }}</span></div>
+    <p class="review-court">⌖ {{ $review->court->name ?? __('Unknown Court') }}</p>
+    <p class="review-comment">{{ $review->comment ?: __('No comment provided.') }}</p>
+    @auth @if($review->user_id === auth()->id())
+      <div class="review-divider"></div><div class="review-actions"><a class="review-submit" style="text-decoration:none" href="{{ route('reviews.edit', $review) }}">{{ __('Edit Review') }}</a><form method="POST" action="{{ route('reviews.destroy', $review) }}" onsubmit="return confirm('Delete this review?')">@csrf @method('DELETE')<button type="submit" class="review-danger">{{ __('Delete Review') }}</button></form></div>
+    @endif @endauth
+  </div>
+</div>
+@endsection
