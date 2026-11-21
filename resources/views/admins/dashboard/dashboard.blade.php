@@ -85,22 +85,65 @@
                 <div><h3>My courts</h3></div>
                 <a class="overview-view-all" href="{{ route('admin.courts.index') }}">View all <span aria-hidden="true">→</span></a>
             </div>
-            <div class="overview-table-wrap">
-                <table class="overview-table admin-table">
-                    <thead><tr><th scope="col">Court</th><th scope="col">Sport</th><th scope="col">Address</th><th scope="col">Status</th></tr></thead>
-                    <tbody>
-                        @forelse ($MyCourts as $court)
-                            <tr>
-                                <td><a class="super-admin-record-link" href="{{ route('admin.courts.show', $court) }}" dir="auto">{{ $court->name }}</a></td>
-                                <td>{{ $court->sports?->name ?? '—' }}</td>
-                                <td dir="auto">{{ $court->address }}</td>
-                                <td><x-dashboard-status :state="$court->status" /></td>
-                            </tr>
-                        @empty
-                            <tr><td colspan="4" class="overview-table-empty">You haven’t added any courts yet.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
+
+<div class="overview-table-wrap">
+    <table class="overview-table admin-table">
+        <thead>
+            <tr>
+                <th scope="col">Image</th>
+                <th scope="col">Court</th>
+                <th scope="col">Sport</th>
+                <th scope="col">Address</th>
+                <th scope="col">Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @forelse ($MyCourts as $court)
+                @php
+                    $imageUrl = $court->image
+                        ? (\Illuminate\Support\Str::startsWith($court->image, 'images/')
+                            ? asset($court->image)
+                            : asset('storage/' . $court->image))
+                        : asset('courtbook-assets/images/hero-football.png');
+                @endphp
+
+                <tr>
+                    <td>
+                        <img
+                            src="{{ $imageUrl }}"
+                            alt="{{ $court->name }}"
+                            style="width: 85px; height: 60px; object-fit: cover; border-radius: 8px;">
+                    </td>
+
+                    <td>
+                        <a class="super-admin-record-link"
+                           href="{{ route('admin.courts.show', $court) }}"
+                           dir="auto">
+                            {{ $court->name }}
+                        </a>
+                    </td>
+
+                    <td>{{ $court->sports?->name ?? '—' }}</td>
+
+                    <td dir="auto">{{ $court->address }}</td>
+
+                    <td>
+                        <x-dashboard-status :state="$court->status" />
+                    </td>
+                </tr>
+
+            @empty
+                <tr>
+                    <td colspan="5" class="overview-table-empty">
+                        You haven’t added any courts yet.
+                    </td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
+
             </div>
         </section>
 

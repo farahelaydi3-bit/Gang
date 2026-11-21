@@ -106,10 +106,18 @@
             <div class="form-group">
                 <label class="form-label">Current Image</label>
 
-                @if ($courtPhoto)
-                    <div class="super-admin-court-photo owner-court-photo-preview">
-                        <img src="{{ $courtPhoto }}" alt="{{ $court->name }}">
-                    </div>
+@if ($courtPhoto ?? false)
+    <div class="super-admin-court-photo owner-court-photo-preview">
+        <img src="{{ $courtPhoto }}" alt="{{ $court->name }}">
+    </div>
+@elseif ($court->image)
+    <div class="super-admin-court-photo owner-court-photo-preview">
+        <img
+            src="{{ \Illuminate\Support\Str::startsWith($court->image, 'images/')
+                ? asset($court->image)
+                : asset('storage/' . $court->image) }}"
+            alt="{{ $court->name }}">
+    </div>
                 @else
                 <p>No image uploaded.</p>
                 @endif

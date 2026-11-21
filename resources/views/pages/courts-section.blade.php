@@ -54,7 +54,7 @@
         <article class="card court-list-card">
             <a class="card-photo court-list-photo" href="{{ route('courtbook.court', $court->id) }}">
                 <img
-                    src="{{ $court->image ? asset('courtbook-assets/images/' . $court->image) : asset('courtbook-assets/images/hero-football.png') }}"
+                 src="{{ $court->image ? asset($court->image) : asset('courtbook-assets/images/hero-football.png') }}"
                     alt="{{ $court->name }}">
                 <span class="tag">{{ $court->sports->name }}</span>
             </a>

@@ -141,7 +141,7 @@ class SubscriptionFullTest extends TestCase
         $sub = $this->subscription($user, $court);
         $response = $this->actingAs($user)->post('/bookings', $this->booking($court, $sub));
         $response->assertCreated();
-        $this->actingAs($user)->post('/bookings/'.$response->json('id').'/cancel')->assertOk();
+        $this->actingAs($user)->postJson('/bookings/'.$response->json('id').'/cancel')->assertOk();
         $this->assertEquals(0, (float) $sub->fresh()->used_hours);
         $this->assertEquals(5, $sub->fresh()->remaining_hours);
     }
