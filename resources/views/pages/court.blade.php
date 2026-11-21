@@ -1,8 +1,8 @@
 @extends('layouts.demo')
 
 @php
-    $court = \App\Models\Courts::query()
-        ->with(['sports', 'reviews.users'])
+    $court = \App\Models\Court::query()
+        ->with(['sports', 'reviews.user'])
         ->withAvg('reviews', 'rating')
         ->findOrFail(request()->route('court'));
 @endphp
@@ -54,7 +54,7 @@
                 @forelse ($court->reviews as $review)
                     <article class="panel">
                         <div class="row spread">
-                            <strong>{{ $review->users->name }}</strong>
+                            <strong>{{ $review->user->name }}</strong>
                             <span class="rating">★ {{ $review->rating }} / 5</span>
                         </div>
                         @if ($review->comment)
@@ -74,9 +74,15 @@
                 </p>
                 <p>{{ __('Minimum booking') }}: {{ $court->min_booking_minutes }} {{ __('minutes') }}</p>
                 <p>{{ __('Deposit') }}: {{ number_format($court->deposit_amount, 2) }} JOD</p>
-                <a class="button" href="{{ route('login') }}">
-                    {{ __('Log in to book') }}
-                </a>
+                @auth
+                    <a class="button" href="{{ route('courtbook.booking.create', ['court_id' => $court->id]) }}">
+                        {{ __('Book Now') }}
+                    </a>
+                @else
+                    <a class="button" href="{{ route('login') }}">
+                        {{ __('Log in to book') }}
+                    </a>
+                @endauth
             </aside>
         </div>
     </div>

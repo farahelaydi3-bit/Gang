@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Booking;
+use App\Models\Subscription;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -48,9 +51,28 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        Auth::logout();
+        $hasUnfinishedBookings = Booking::where('user_id', $user->id)
+            ->whereIn('booking_status', ['pending', 'confirmed'])
+            ->exists();
+        $hasActiveSubscriptions = Subscription::where('user_id', $user->id)
+            ->whereIn('status', ['pending', 'active'])
+            ->exists();
 
-        $user->delete();
+        if ($hasUnfinishedBookings || $hasActiveSubscriptions) {
+            $message = app()->isLocale('ar')
+                ? 'لحذف حسابك، ألغِ حجوزاتك القادمة أو أكملها أولًا، وأنهِ أي اشتراك نشط.'
+                : 'To delete your account, cancel or complete your upcoming bookings first, and end any active subscriptions.';
+
+            return Redirect::route('profile.edit')->withErrors([
+                'account' => $message,
+            ], 'userDeletion');
+        }
+
+        DB::transaction(function () use ($user) {
+            $user->delete();
+        });
+
+        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

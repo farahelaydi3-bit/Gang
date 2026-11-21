@@ -1,3 +1,4 @@
+
 <section class="assistant-chat" aria-labelledby="assistant-page-title">
     <header class="assistant-chat-header">
         <span class="assistant-icon" aria-hidden="true">✦</span>
@@ -19,7 +20,8 @@
             <a class="button" href="{{ route('courtbook.courts') }}">
                 {{ __('Browse courts') }}
             </a>
-            <a class="button outline" href="{{ route('courtbook.games') }}">
+
+            <a class="button outline" href="{{ route('games.index') }}">
                 {{ __('Browse games') }}
             </a>
         </div>

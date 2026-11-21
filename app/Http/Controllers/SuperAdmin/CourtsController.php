@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Courts;
+use App\Models\Court;
 use App\Models\Sports;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -12,7 +12,7 @@ class CourtsController extends Controller
 {
     public function index(Request $request)
     {
-        $courts = Courts::with(['admin', 'sports'])
+        $courts = Court::with(['admin', 'sports'])
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
 
@@ -48,7 +48,7 @@ class CourtsController extends Controller
         return view('super-admins.courts', compact('courts', 'sports'));
     }
 
-    public function show(Courts $court)
+    public function show(Court $court)
     {
         $court->load(['admin', 'sports']);
 
@@ -66,7 +66,7 @@ class CourtsController extends Controller
         ));
     }
 
-    public function updateStatus(Request $request, Courts $court)
+    public function updateStatus(Request $request, Court $court)
     {
         $validated = $request->validate([
             'status' => [

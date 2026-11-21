@@ -20,7 +20,7 @@ class Booking extends Model
         'duration_minutes',
         'total_price',
         'deposit_amount',
-        'booking_status'
+        'booking_status',
     ];
     protected function casts(): array
     {
@@ -33,9 +33,9 @@ class Booking extends Model
     }
 
     public function court(): BelongsTo
-    {
-        return $this->belongsTo(Courts::class);
-    }
+{
+    return $this->belongsTo(Court::class);
+}
 
     public function user(): BelongsTo
     {
@@ -55,4 +55,9 @@ class Booking extends Model
      return $this->hasOne(Review::class);
 
     }
+    
+    public function groupGame()
+{
+    return $this->hasOne(\App\Models\GroupGame::class);
+}
 }

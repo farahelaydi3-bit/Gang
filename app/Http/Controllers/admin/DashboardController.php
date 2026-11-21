@@ -4,7 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Courts;
+use App\Models\Court;
 use App\Models\Sports;
 use App\Models\Booking;
 use App\Models\Payment;
@@ -19,7 +19,7 @@ class DashboardController extends Controller
         $adminId = auth('admin')->id();
 
         // Total Courts
-        $TotalCourts = Courts::where('admin_id', $adminId)->count();
+        $TotalCourts = Court::where('admin_id', $adminId)->count();
 
         // Total Reservations
         $TotalReservations = Booking::whereIn('court_id', function ($query) use ($adminId) {
@@ -29,7 +29,7 @@ class DashboardController extends Controller
         })->count();
 
         // Total Sports
-        $TotalSports = Courts::where('admin_id', $adminId)
+        $TotalSports = Court::where('admin_id', $adminId)
             ->distinct('sport_id')
             ->count('sport_id');
 
@@ -56,7 +56,7 @@ class DashboardController extends Controller
             ->get();
 
         // Get Admin Courts
-        $MyCourts = Courts::with('sports')
+        $MyCourts = Court::with('sports')
             ->where('admin_id', $adminId)
             ->get();
 
