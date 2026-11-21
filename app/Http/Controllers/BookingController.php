@@ -217,18 +217,22 @@ public function store(Request $request)
             'booking_status' => $status,
         ]);
     });
- if ($booking->subscription_id !== null) {
-    $booking->subscription->notifyIfLowBalance();
-}
-    if ($booking->booking_type !== 'subscription') {
-        return redirect()
-            ->route('courtbook.payments.checkout', [$booking, 'deposit'])
-            ->with('success', __('Booking details saved. Complete the deposit payment to confirm your booking.'));
+         if ($booking->subscription_id !== null) {
+            $booking->subscription->notifyIfLowBalance();
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json($booking, 201);
+        }
+
+        if ($booking->booking_type !== 'subscription') {
+            return redirect()
+                ->route('courtbook.payments.checkout', [$booking, 'deposit'])
+                ->with('success', __('Booking details saved. Complete the deposit payment to confirm your booking.'));
+        }
+
+        return response()->json($booking, 201);
     }
-
-    return response()->json($booking, 201);
-}
-
 
     private function checkAvailability(
         Court $court,

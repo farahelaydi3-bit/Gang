@@ -64,6 +64,8 @@ class ProfileTest extends TestCase
     public function test_user_can_delete_their_account(): void
     {
         $user = User::factory()->create();
+        $this->assertDatabaseMissing('bookings', ['user_id' => $user->id]);
+$this->assertDatabaseMissing('subscriptions', ['user_id' => $user->id]);
 
         $response = $this
             ->actingAs($user)
