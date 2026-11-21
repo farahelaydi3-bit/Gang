@@ -7,7 +7,7 @@
 
     $gamesQuery = \App\Models\GroupGame::query()
         ->with(['court.sports', 'joinedPlayers'])
-        ->withCount(['joinedPlayers'])
+        ->withCount(['joinedPlayers', 'reservedPlayers'])
         ->where('status', 'open');
 
     if ($selectedSport) {
@@ -72,9 +72,6 @@
     @if ($selectedSport || $searchArea !== '' || $searchDate || $selectedSkill)
         <a class="games-clear-filters" href="{{ route('games.index') }}">{{ __('Clear filters') }}</a>
     @endif
-    <a class="button games-create-button" href="{{ route('games.create') }}">
-        {{ __('Create a game') }}
-    </a>
 </form>
 
 <div class="games-results" aria-live="polite">
@@ -89,7 +86,7 @@
                 @if ($game->skill_level)
                     <span>{{ ucfirst($game->skill_level) }}</span>
                 @endif
-                <span class="open-game-capacity">{{ $game->joined_players_count }} / {{ $game->max_players }} {{ __('players') }}</span>
+                <span class="open-game-capacity">{{ $game->reserved_players_count }} / {{ $game->max_players }} {{ __('players') }}</span>
             </div>
             <h2 class="open-game-title">
                 <a href="{{ route('games.show', $game->id) }}">{{ $game->title }}</a>
@@ -100,16 +97,6 @@
                 <div><small>{{ __('Date') }}</small><strong>{{ $game->game_date->translatedFormat('D, M j, Y') }}</strong></div>
                 <div><small>{{ __('Time') }}</small><strong>{{ $game->start_time }} – {{ $game->end_time }}</strong></div>
             </div>
-            @if ($game->position_slots)
-                <ul class="open-game-positions">
-                    @foreach ($game->position_slots as $position => $count)
-                        @php
-                            $taken = $game->joinedPlayers->where('pivot.position', $position)->count();
-                        @endphp
-                        <li>{{ ucfirst($position) }}: {{ $taken }}/{{ $count }}</li>
-                    @endforeach
-                </ul>
-            @endif
             <a class="button outline open-game-details" href="{{ route('games.show', $game->id) }}">
                 {{ __('Game details') }}
                 <span aria-hidden="true">↗</span>
@@ -119,7 +106,6 @@
         <div class="games-empty">
             <span aria-hidden="true">🏸</span>
             <p>{{ __('No games match your search.') }}</p>
-            <a href="{{ route('games.create') }}">{{ __('Create a game') }} <span aria-hidden="true">↗</span></a>
         </div>
     @endforelse
 </div>

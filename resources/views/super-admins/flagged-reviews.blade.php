@@ -70,13 +70,18 @@
                     @if ($report->review)
                         <div class="super-admin-record-section"><h3>Review comment</h3><p dir="auto">{{ $report->review->comment ?: '—' }}</p></div>
                     @endif
-                    <div class="super-admin-record-section"><h3>AI reason</h3><p dir="auto">{{ $report->ai_reason ?? '—' }}</p></div>
-                    @if ($report->notes)
-                        <div class="super-admin-record-section"><h3>Notes</h3><p dir="auto">{{ $report->notes }}</p></div>
-                    @endif
-                    @if ($report->action === 'auto_banned' && $report->admin)
-                        <form class="super-admin-record-section" action="{{ route('super_admin.admins.unban', $report->admin) }}"
-                            method="POST" onsubmit="return confirm('Reactivate this owner?');">
+
+                    <p>
+                        <strong>AI Decision:</strong> {{ ucfirst($report->ai_decision ?? '—') }}<br>
+                        <strong>AI Reason:</strong> {{ $report->ai_reason ?? '—' }}
+                    </p>
+
+                    <p><em>{{ $report->notes }}</em></p>
+
+                    @if($report->action === 'auto_banned' && $report->admin && $report->resolutions->isEmpty())
+                        <form action="{{ route('super_admin.admins.unban', $report->admin) }}"
+                            method="POST"
+                            onsubmit="return confirm('Reactivate this owner?');">
                             @csrf
                             <input type="hidden" name="review_id" value="{{ $report->review_id }}">
                             <input type="hidden" name="court_id" value="{{ $report->court_id }}">
@@ -89,6 +94,4 @@
             @endforelse
         @endif
     </div>
-
-    {{ ($showSummaries ? $summaries : $reports)->withQueryString()->links('components.super-admin.pagination') }}
 @endsection

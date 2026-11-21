@@ -7,7 +7,7 @@ use RuntimeException;
 
 class TextBeeService
 {
-    public function send(string $phone, string $message): void
+    public function send(string $phone, string $message): ?string
     {
         $apiKey = config('services.textbee.api_key');
         $deviceId = config('services.textbee.device_id');
@@ -30,5 +30,15 @@ class TextBeeService
             );
 
         $response->throw();
+
+        $payload = $response->json();
+        $messageId = data_get($payload, 'data.smsBatchId')
+            ?? data_get($payload, 'data.messageId')
+            ?? data_get($payload, 'data.id')
+            ?? data_get($payload, 'smsBatchId')
+            ?? data_get($payload, 'messageId')
+            ?? data_get($payload, 'id');
+
+        return is_scalar($messageId) ? (string) $messageId : null;
     }
 }

@@ -24,44 +24,76 @@ class ModerateReview implements ShouldQueue
         $review = Review::with('court.admin')->find($this->reviewId);
         if (! $review || ! $review->comment) return;
 
-        $result = $service->analyze($review->comment);
+        $comment = $review->comment;
+        $result = $service->analyze($comment);
         $decision = $result['decision'];
         $reason   = $result['reason'];
 
-        DB::transaction(function () use ($review, $decision, $reason) {
-            $review->update([
+        if ($decision === 'pending' && $this->attempts() < 3) {
+            $this->release(60);
+            return;
+        }
+
+        DB::transaction(function () use ($review, $comment, $decision, $reason) {
+            $lockedReview = Review::whereKey($review->id)->lockForUpdate()->first();
+            if (! $lockedReview || $lockedReview->comment !== $comment) {
+                return;
+            }
+            $lockedReview->load('court.admin');
+            $lockedReview->update([
                 'ai_decision'   => $decision,
                 'ai_reason'     => $reason,
                 'ai_checked_at' => now(),
             ]);
 
-            // Only act on non-safe reviews
-            if ($decision === 'safe') {
+            // An AI outage or malformed response must never trigger an account action.
+            if (! in_array($decision, ['spam', 'abusive'], true)) {
                 return;
             }
 
-            $owner = $review->court?->admin;
+            $owner = $lockedReview->court?->admin;
             if (! $owner) {
-                Log::warning("AI flagged review {$review->id} as {$decision} but court has no owner.");
+                Log::warning("AI flagged review {$lockedReview->id} as {$decision} but court has no owner.");
+                ModerationReport::create([
+                    'review_id' => $lockedReview->id,
+                    'court_id' => $lockedReview->court_id,
+                    'action' => 'flagged',
+                    'ai_decision' => $decision,
+                    'ai_reason' => $reason,
+                    'notes' => 'AI flagged this review, but no court owner account was available to suspend.',
+                ]);
                 return;
             }
 
-            $owner->update(['status' => 'suspended']);
-
-            \App\Models\Court::where('admin_id', $owner->id)
-                ->update(['status' => 'inactive']);
+            $action = 'flagged';
+            $previousState = null;
+            if ($owner->status === 'active') {
+                $courts = \App\Models\Court::where('admin_id', $owner->id)->get();
+                $previousState = [
+                    'owner_status' => $owner->status,
+                    'court_statuses' => $courts->mapWithKeys(fn ($court) => [(string) $court->id => $court->status])->all(),
+                ];
+                $owner->update(['status' => 'suspended']);
+                $courts->each->update(['status' => 'inactive']);
+                $action = 'auto_banned';
+            }
 
             ModerationReport::create([
-                'review_id'   => $review->id,
-                'court_id'    => $review->court_id,
+                'review_id'   => $lockedReview->id,
+                'court_id'    => $lockedReview->court_id,
                 'admin_id'    => $owner->id,
-                'action'      => 'auto_banned',
+                'action'      => $action,
                 'ai_decision' => $decision,
                 'ai_reason'   => $reason,
-                'notes'       => "Owner {$owner->name} was automatically suspended because review #{$review->id} was flagged as {$decision}.",
+                'pre_ban_state' => $previousState,
+                'notes'       => $action === 'auto_banned'
+                    ? "Owner {$owner->name} was automatically suspended because review #{$lockedReview->id} was flagged as {$decision}."
+                    : "Review #{$lockedReview->id} was flagged as {$decision}; the owner was already unavailable, so no account status was changed.",
             ]);
 
-            Log::warning("AI auto-banned owner {$owner->id} due to review {$review->id}: {$reason}");
+            if ($action === 'auto_banned') {
+                Log::warning("AI auto-banned owner {$owner->id} due to review {$lockedReview->id}: {$reason}");
+            }
         });
     }
 }

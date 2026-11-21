@@ -4,7 +4,10 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Payment;
+use App\Events\BookingCancelled;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReservationsController extends Controller
 {
@@ -91,6 +94,15 @@ class ReservationsController extends Controller
             return redirect()->back()->with('error', 'Only pending reservations can be confirmed.');
         }
 
+        if ($reservation->groupGame) {
+            $playerIds = DB::table('game_players')->where('group_game_id', $reservation->groupGame->id)->select('id');
+            $paidDeposits = (float) Payment::whereIn('game_player_id', $playerIds)
+                ->where('payment_stage', 'deposit')->where('status', 'successful')->sum('amount');
+            if ($paidDeposits + 0.01 < (float) $reservation->deposit_amount) {
+                return redirect()->back()->with('error', 'Players must pay the group deposit before this booking can be confirmed.');
+            }
+        }
+
         $reservation->update([
             'booking_status' => 'confirmed'
         ]);
@@ -115,9 +127,25 @@ class ReservationsController extends Controller
             return redirect()->back()->with('error', 'This reservation cannot be cancelled.');
         }
 
-        $reservation->update([
-            'booking_status' => 'cancelled'
-        ]);
+        $cancelled = DB::transaction(function () use ($reservation) {
+            $locked = Booking::whereKey($reservation->id)->lockForUpdate()->firstOrFail();
+            if (in_array($locked->booking_status, ['cancelled', 'completed'], true)) {
+                return null;
+            }
+            $locked->update(['booking_status' => 'cancelled']);
+            $game = $locked->groupGame;
+            if ($game) {
+                $game->update(['status' => 'cancelled']);
+                $game->waitingListEntries()->whereIn('status', ['waiting', 'offered', 'accepted'])
+                    ->update(['status' => 'cancelled', 'offer_expires_at' => null]);
+            }
+            return $locked->refresh();
+        });
+
+        if (! $cancelled) {
+            return redirect()->back()->with('error', 'This reservation cannot be cancelled.');
+        }
+        BookingCancelled::dispatch($cancelled);
 
         return redirect()->back()->with('success', 'Reservation cancelled successfully.');
     }
@@ -139,9 +167,11 @@ class ReservationsController extends Controller
             return redirect()->back()->with('error', 'Only confirmed reservations can be completed.');
         }
 
-        $reservation->update([
-            'booking_status' => 'completed'
-        ]);
+        DB::transaction(function () use ($reservation): void {
+            $locked = Booking::whereKey($reservation->id)->lockForUpdate()->firstOrFail();
+            $locked->update(['booking_status' => 'completed']);
+            $locked->groupGame?->update(['status' => 'completed']);
+        });
 
         return redirect()->back()->with('success', 'Reservation marked as completed.');
     }
