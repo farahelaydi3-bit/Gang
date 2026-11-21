@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="ltr">
+<html lang="ar" dir="rtl">
 
 <head>
     <meta charset="UTF-8">
@@ -64,11 +64,11 @@
                     <section class="overview-welcome terms-hero">
 
                         <div class="overview-welcome-copy terms-dashboard-copy">
-                            <span class="overview-eyebrow"><i></i>GANG OWNER CENTER</span>
+                            <span class="overview-eyebrow"><i></i>مركز ملاك الملاعب</span>
                             <h2>شروط انضمام منشأتك إلى Gang</h2>
                             <p>راجع الاتفاقية ونسبة العمولة قبل إرسال طلبك للانضمام إلى مجتمعنا الرياضي.</p>
                         </div>
-                        <div class="overview-welcome-side"><span class="overview-live"><i></i>OWNER ONBOARDING</span><time>STEP 01 / 02</time></div>
+                        <div class="overview-welcome-side" dir="rtl"><span class="overview-live"><i></i>انضمام ملاك الملاعب</span></div>
                         <span class="overview-orbit overview-orbit-one" aria-hidden="true"></span>
                         <span class="overview-orbit overview-orbit-two" aria-hidden="true"></span>
                         <span class="overview-ball overview-ball-one" aria-hidden="true">⚽</span>

@@ -44,6 +44,6 @@ class AdminRegisteredController extends Controller
         $request->session()->regenerate();
 
         return redirect()->route('admin.pending')
-            ->with('success', 'Your owner account has been created. Complete your application below.');
+            ->with('success', 'تم إنشاء حسابك. أكمل طلب انضمام منشأتك أدناه.');
     }
 }
