@@ -34,12 +34,9 @@
 
     <label class="court-filter-control">
         <span class="sr-only">{{ __('Area') }}</span>
-        <input
-            type="search"
-            name="area"
-            value="{{ $searchArea }}"
-            placeholder="{{ __('Search by area') }}"
-        >
+        <select name="area" aria-label="{{ __('Area') }}">
+            @include('pages.amman-area-options', ['selectedArea' => $searchArea])
+        </select>
     </label>
 
     <button type="submit">{{ __('Search courts') }}</button>

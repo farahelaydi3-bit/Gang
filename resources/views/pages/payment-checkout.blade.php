@@ -114,7 +114,7 @@
 
                 <div class="visa-trust-panel">
                     <span aria-hidden="true">✓</span>
-                    <div><strong>{{ __('Your card stays private') }}</strong><p>{{ __('Card details stay in your browser; only the simulated result is sent to this app.') }}</p></div>
+                    <div><strong>{{ __('Your card stays private') }}</strong><p>{{ __('Your card details stay on your device.') }}</p></div>
                 </div>
 
                 @if ($stage === 'deposit')
