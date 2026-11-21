@@ -43,5 +43,9 @@ return [
         'key' => env('GEMINI_API_KEY'),
         'model' => env('GEMINI_MODEL', 'gemini-3.5-flash'),
     ],
-
+'textbee' => [
+    'api_key' => env('TEXTBEE_API_KEY'),
+    'device_id' => env('TEXTBEE_DEVICE_ID'),
+    'base_url' => env('TEXTBEE_BASE_URL', 'https://api.textbee.dev/api/v1'),
+],
 ];

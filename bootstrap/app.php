@@ -17,6 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
 
+    
+        $middleware->alias([
+    'phone.verified' => \App\Http\Middleware\EnsurePhoneVerified::class,
+]);
+
         // Language middleware
         $middleware->web(append: [
             \App\Http\Middleware\SetLocale::class,
