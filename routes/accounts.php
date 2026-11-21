@@ -14,6 +14,7 @@ use App\Http\Controllers\SuperAdmin\UserController;
 use App\Http\Controllers\SuperAdmin\CourtsController ;
 use App\Http\Controllers\SuperAdmin\SportsController;
 use App\Http\Controllers\SuperAdmin\OwnerApplicationController as SuperOwnerApplicationController;
+use App\Http\Controllers\SuperAdmin\ProfileController as SuperAdminProfileController;
 
 use App\Http\Controllers\Admin\OwnerApplicationController;
 use App\Http\Controllers\admin\DashboardController as AdminDashboardController;
@@ -37,6 +38,13 @@ Route::prefix('super-admin')->name('super_admin.')->group(function () {
     Route::middleware('auth:super_admin')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('dashboard');
+
+        Route::get('/profile', [SuperAdminProfileController::class, 'edit'])
+            ->name('profile.edit');
+        Route::patch('/profile', [SuperAdminProfileController::class, 'update'])
+            ->name('profile.update');
+        Route::put('/profile/password', [SuperAdminProfileController::class, 'updatePassword'])
+            ->name('profile.password');
 
         Route::get('/admins', [AdminController::class, 'index'])
             ->name('admins.index');
