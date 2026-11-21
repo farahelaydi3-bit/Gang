@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Court;
 use App\Models\GroupGame;
 use App\Models\Payment;
 use App\Models\Booking;
@@ -28,18 +27,6 @@ class GroupGameController extends Controller
         return view('pages.games', compact('games'));
     }
 
-    public function create()
-    {
-        abort_unless(Auth::guard('admin')->check(), 403);
-        return redirect()->route('admin.group-games.create');
-    }
-
-    public function store(Request $request)
-    {
-        abort_unless(Auth::guard('admin')->check(), 403);
-        return redirect()->route('admin.group-games.create');
-    }
-
     public function show(GroupGame $game)
     {
         $game->load(['court.sports', 'joinedPlayers', 'reservedPlayers']);
@@ -50,77 +37,6 @@ class GroupGameController extends Controller
             ->whereIn('status', ['offered', 'accepted'])
             ->where('offer_expires_at', '>', now())->exists();
         return view('pages.game', compact('game', 'participation', 'offerInProgress'));
-    }
-
-    public function edit(GroupGame $game)
-    {
-        $this->authorizeAdmin($game);
-
-        if (DB::table('game_players')->where('group_game_id', $game->id)
-            ->whereIn('status', ['pending', 'joined', 'attended'])->exists()) {
-            return redirect()->route('games.show', $game)
-                ->with('error', 'Cannot edit a game with joined players.');
-        }
-
-        return view('pages.edit-game', compact('game'));
-    }
-
-    public function update(Request $request, GroupGame $game)
-    {
-        $this->authorizeAdmin($game);
-
-        $data = $request->validate([
-            'title'         => ['required', 'string', 'max:255'],
-            'description'   => ['nullable', 'string'],
-            'skill_level'   => ['nullable', 'string', 'in:beginner,intermediate,advanced,professional'],
-            'max_players'   => ['required', 'integer', 'min:2', 'max:65535'],
-            'player_price'  => ['nullable', 'numeric', 'min:0'],
-            'game_date'     => ['required', 'date', 'after_or_equal:today'],
-            'start_time'    => ['required', 'date_format:H:i'],
-            'end_time'      => ['required', 'date_format:H:i', 'after:start_time'],
-        ]);
-
-        DB::transaction(function () use ($game, $data) {
-            $locked = GroupGame::whereKey($game->id)->lockForUpdate()->firstOrFail();
-
-            if ($locked->status !== 'open' || DB::table('game_players')->where('group_game_id', $locked->id)
-                ->whereIn('status', ['pending', 'joined', 'attended'])->exists()) {
-                throw ValidationException::withMessages(['game' => 'Game cannot be edited now.']);
-            }
-
-            $court = Court::whereKey($locked->court_id)->lockForUpdate()->firstOrFail();
-            $this->assertCourtSchedule($court, $data, $locked->id, $locked->booking_id);
-
-            $locked->update([
-                'title'          => $data['title'],
-                'description'    => $data['description'] ?? null,
-                'skill_level'    => $data['skill_level'] ?? null,
-                'max_players'    => $data['max_players'],
-                'player_price'   => $data['player_price'] ?? 0,
-                'game_date'      => $data['game_date'],
-                'start_time'     => $data['start_time'],
-                'end_time'       => $data['end_time'],
-            ]);
-        });
-
-        return redirect()->route('games.index')->with('success', 'Game updated.');
-    }
-
-    public function destroy(GroupGame $game)
-    {
-        $this->authorizeAdmin($game);
-
-        DB::transaction(function () use ($game) {
-            $locked = GroupGame::whereKey($game->id)->lockForUpdate()->firstOrFail();
-
-            if ($locked->status === 'completed') {
-                throw ValidationException::withMessages(['game' => 'Completed games cannot be cancelled.']);
-            }
-
-            $locked->update(['status' => 'cancelled']);
-        });
-
-        return redirect()->route('games.index')->with('success', 'Game cancelled.');
     }
 
     public function join(Request $request, GroupGame $game)
@@ -586,56 +502,4 @@ class GroupGameController extends Controller
         return min($fullPrice, $deposit);
     }
 
-    private function authorizeAdmin(GroupGame $game): void
-    {
-        abort_unless(
-            Auth::guard('admin')->check() &&
-            (int) $game->admin_id === (int) Auth::guard('admin')->id(),
-            403
-        );
-    }
-
-    private function assertCourtSchedule(Court $court, array $data, int $ignoreGameId, ?int $ignoreBookingId = null): void
-    {
-        if ($data['start_time'] < Carbon::parse($court->opening_time)->format('H:i')
-            || $data['end_time'] > Carbon::parse($court->closing_time)->format('H:i')) {
-            throw ValidationException::withMessages(['start_time' => 'Game time must be within court opening hours.']);
-        }
-
-        $minutes = Carbon::parse($data['game_date'].' '.$data['start_time'])
-            ->diffInMinutes(Carbon::parse($data['game_date'].' '.$data['end_time']));
-        $minimumMinutes = (int) ($court->min_booking_minutes ?: 30);
-        if ($minutes < $minimumMinutes) {
-            throw ValidationException::withMessages(['end_time' => "Game must last at least {$minimumMinutes} minutes."]);
-        }
-        if ($minutes % 30 !== 0) {
-            throw ValidationException::withMessages(['end_time' => 'Game duration must be in 30-minute increments.']);
-        }
-
-        $overlap = GroupGame::where('court_id', $court->id)
-            ->where('id', '!=', $ignoreGameId)
-            ->whereDate('game_date', $data['game_date'])
-            ->whereIn('status', ['open', 'full'])
-            ->where('start_time', '<', $data['end_time'])
-            ->where('end_time', '>', $data['start_time'])
-            ->exists();
-        if ($overlap) {
-            throw ValidationException::withMessages(['start_time' => 'Another group game already exists on this court at that time.']);
-        }
-
-        $bookingOverlap = Booking::where('court_id', $court->id)
-            ->whereDate('booking_date', $data['game_date'])
-            ->whereIn('booking_status', ['pending', 'confirmed'])
-            ->where('start_time', '<', $data['end_time'])
-            ->where('end_time', '>', $data['start_time'])
-            ->when($ignoreBookingId, fn ($query) => $query->where('id', '!=', $ignoreBookingId))
-            ->exists();
-        if ($bookingOverlap) {
-            throw ValidationException::withMessages(['start_time' => 'This court is already booked at that time.']);
-        }
-
-        if (! empty($data['player_price']) && (float) $data['player_price'] > (float) $court->weekday_price) {
-            throw ValidationException::withMessages(['player_price' => "Player price cannot exceed the court's hourly price of {$court->weekday_price} JOD."]);
-        }
-    }
 }
