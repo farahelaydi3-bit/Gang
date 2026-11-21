@@ -57,6 +57,8 @@ class OwnerApplicationController extends Controller
             'courts_count' => 'required|integer|min:1|max:1000',
             'facility_description' => 'required|string|max:3000',
             'application_message' => 'required|string|max:5000',
+            'terms_accepted' => 'accepted',
+            'terms_version' => ['required', 'string', 'in:' . config('owner.terms_version')],
 
             'sports' => 'required|array|min:1',
             'sports.*' => 'required|integer|distinct|exists:sports,id',
@@ -75,6 +77,8 @@ class OwnerApplicationController extends Controller
                 'courts_count' => $validated['courts_count'],
                 'facility_description' => $validated['facility_description'],
                 'application_message' => $validated['application_message'],
+                'terms_accepted_at' => now(),
+                'terms_version' => config('owner.terms_version'),
                 'status' => 'submitted',
                 'submitted_at' => now(),
             ]);

@@ -11,7 +11,7 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Home') · CourtBook</title>
+    <title>@yield('title', 'Home') · Gang</title>
 
     <link rel="icon" href="{{ asset('courtbook-assets/icon.svg') }}">
 
@@ -34,6 +34,24 @@
 
     @include('pages.footer')
     {{-- @include('pages.overlays') --}}
+    <script>
+        (() => {
+            const marks = document.querySelectorAll('.brand-sports-mark');
+            if (!marks.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+            marks.forEach((mark) => {
+                const balls = Array.from(mark.querySelectorAll('[data-sport-ball]'));
+                if (balls.length < 2) return;
+
+                let activeIndex = 0;
+                window.setInterval(() => {
+                    balls[activeIndex].classList.remove('is-active');
+                    activeIndex = (activeIndex + 1) % balls.length;
+                    balls[activeIndex].classList.add('is-active');
+                }, 2000);
+            });
+        })();
+    </script>
 </body>
 
 </html>

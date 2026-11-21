@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>@yield('title', 'Super Admin') | CourtBook</title>
+    <title>@yield('title', 'Super Admin') | Gang</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,10 +35,10 @@
             <a href="{{ route('super_admin.dashboard') }}"
                 class="sidebar-brand">
 
-                <div class="brand-icon">C</div>
+                <img class="brand-logo" src="{{ asset('courtbook-assets/images/gang-logo.png') }}" alt="Gang logo">
 
                 <div class="brand-text">
-                    <h2>CourtBook</h2>
+                    <h2>Gang</h2>
                     <span>Super Admin Panel</span>
                 </div>
             </a>
@@ -252,55 +252,14 @@
         <!-- Main Content -->
         <main class="owner-main">
 
-            <!-- Topbar -->
-            <header class="owner-topbar">
-
-                <div class="topbar-left">
-
-                    <button class="topbar-button sidebar-toggle"
-                        type="button"
-                        aria-label="Toggle menu"
-                        aria-controls="superSidebar"
-                        aria-expanded="false"
-                        onclick="toggleSuperSidebar()"
-                        id="superSidebarButton">
-
-                        <svg viewBox="0 0 24 24"
-                            width="20"
-                            height="20"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round">
-
-                            <path d="M4 7h16M4 12h16M4 17h16" />
-                        </svg>
-
-                    </button>
-
-                    <div class="topbar-title">
-
-                        <h1>
-                            @yield('page-title', 'Overview')
-                        </h1>
-
-                        <p>Manage your CourtBook platform</p>
-
-                    </div>
-
-                </div>
-
-                <div class="topbar-actions">
-
-                    <span style="font-weight:700;color:var(--admin-muted)">
-                        Super Admin
-                    </span>
-
-                </div>
-
-            </header>
-
             <!-- Page Content -->
+                        <button class="owner-mobile-menu" type="button" aria-label="Open navigation menu"
+                aria-controls="superSidebar" aria-expanded="false" onclick="toggleSuperSidebar()"
+                id="superSidebarButton">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                    <path d="M4 7h16M4 12h16M4 17h16" />
+                </svg>
+            </button>
             <section class="owner-content">
                 @yield('content')
             </section>

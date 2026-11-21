@@ -32,7 +32,7 @@
 
 <form
     id="game-filters"
-    class="row filters spread"
+    class="row filters spread games-filters"
     action="{{ route('games.index') }}"
     method="get"
 >
@@ -64,32 +64,46 @@
     </label>
 
     <button type="submit">{{ __('Search games') }}</button>
-    <a class="button" href="{{ route('games.create') }}">
+    @if ($selectedSport || $searchArea !== '' || $searchDate)
+        <a class="games-clear-filters" href="{{ route('games.index') }}">{{ __('Clear filters') }}</a>
+    @endif
+    <a class="button games-create-button" href="{{ route('games.create') }}">
         {{ __('Create a game') }}
     </a>
 </form>
 
-<div class="grid">
+<div class="games-results" aria-live="polite">
+    <span>{{ __('Open games') }} <strong>{{ $games->count() }}</strong></span>
+</div>
+
+<div class="grid games-grid">
     @forelse ($games as $game)
-        <article class="card card-body">
-            <p class="eyebrow">{{ $game->booking->court->sports->name }}</p>
-            <h2>
+        <article class="card open-game-card">
+            <div class="open-game-topline">
+                <span class="open-game-sport">{{ $game->booking->court->sports->name }}</span>
+                <span class="open-game-capacity">{{ $game->players_count }} / {{ $game->max_players }} {{ __('players') }}</span>
+            </div>
+            <h2 class="open-game-title">
                 <a href="{{ route('games.show', $game->id) }}">
                     {{ $game->title }}
                 </a>
             </h2>
-            <p class="muted">{{ $game->booking->court->name }}</p>
-            <p class="muted">{{ $game->booking->court->address }}</p>
-            <p>
-                {{ $game->booking->booking_date->format('M j, Y') }} ·
-                {{ $game->booking->start_time }}–{{ $game->booking->end_time }}
-            </p>
-            <p>{{ $game->players_count }} / {{ $game->max_players }} {{ __('players') }}</p>
-            <a class="button outline" href="{{ route('courtbook.game', $game->id) }}">
+            <p class="open-game-court">{{ $game->booking->court->name }}</p>
+            <p class="open-game-address"><span aria-hidden="true">⌖</span>{{ $game->booking->court->address }}</p>
+            <div class="open-game-schedule">
+                <div><small>{{ __('Date') }}</small><strong>{{ $game->booking->booking_date->translatedFormat('D, M j, Y') }}</strong></div>
+                <div><small>{{ __('Time') }}</small><strong>{{ $game->booking->start_time }} – {{ $game->booking->end_time }}</strong></div>
+            </div>
+            <a class="button outline open-game-details" href="{{ route('courtbook.game', $game->id) }}">
                 {{ __('Game details') }}
+                <span aria-hidden="true">↗</span>
             </a>
         </article>
     @empty
-        <p class="muted">{{ __('No games match your search.') }}</p>
+        <div class="games-empty">
+            <span aria-hidden="true">🏸</span>
+            <p>{{ __('No games match your search.') }}</p>
+            <a href="{{ route('games.create') }}">{{ __('Create a game') }} <span aria-hidden="true">↗</span></a>
+        </div>
     @endforelse
 </div>

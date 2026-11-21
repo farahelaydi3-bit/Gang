@@ -137,6 +137,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/pending', [OwnerApplicationController::class, 'index'])
             ->name('pending');
 
+        Route::view('/terms', 'admins.owner-terms')->name('terms');
+
         Route::post('/application', [OwnerApplicationController::class, 'store'])
             ->name('application.store');
 
