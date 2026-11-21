@@ -21,6 +21,7 @@ use App\Http\Controllers\admin\MyCourtsController;
 use App\Http\Controllers\admin\ReservationsController;
 use App\Http\Controllers\admin\MyProfileController;
 use App\Http\Controllers\admin\SubscriptionController;
+use App\Http\Controllers\admin\GroupGameController;
 // =========================
 // Super Admin Routes
 // =========================
@@ -177,8 +178,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/profile', [MyProfileController::class, 'update'])
             ->name('profile.update');
 
-            // Subscriptions Management
+        // Subscriptions Management
         Route::resource('subscriptions', SubscriptionController::class);
+
+        // Group Games Management
+        Route::resource('group-games', GroupGameController::class)
+            ->except(['show']);
+
+        Route::patch('group-games/{id}/cancel', [GroupGameController::class, 'cancel'])
+            ->name('group-games.cancel');
 
         Route::middleware('admin.active')->group(function () {
             Route::get('/dashboard', [AdminDashboardController::class, 'index'])
