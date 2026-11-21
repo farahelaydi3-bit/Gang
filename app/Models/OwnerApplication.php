@@ -18,6 +18,8 @@ class OwnerApplication extends Model
         'reviewed_by',
         'submitted_at',
         'reviewed_at',
+        'terms_accepted_at',
+        'terms_version',
     ];
 
     protected function casts(): array
@@ -25,6 +27,7 @@ class OwnerApplication extends Model
         return [
             'submitted_at' => 'datetime',
             'reviewed_at' => 'datetime',
+            'terms_accepted_at' => 'datetime',
         ];
     }
 

@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -18,6 +17,9 @@ use App\Http\Controllers\HomeController;
 
 Route::get('/', [HomeController::class, 'index'])
     ->name('courtbook.home');
+
+Route::view('/terms-and-conditions', 'pages.terms')
+    ->name('courtbook.terms');
 
 Route::view('/courtbook/profile', 'pages.profile')->name('courtbook.profile');
 Route::view('/courtbook/login', 'pages.login')->name('courtbook.login');

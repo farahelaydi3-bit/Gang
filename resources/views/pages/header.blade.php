@@ -35,7 +35,7 @@ request()->route()?->getName() ?? '',
 <header class="site-header">
     <div class="wrap header-row">
 
-        @include('pages.brand')
+        @include('pages.animated-brand')
 
         <nav class="desktop-nav" aria-label="Main navigation">
             @include('pages.nav-links', ['links' => $desktopLinks])

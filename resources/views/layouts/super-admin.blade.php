@@ -252,57 +252,14 @@
         <!-- Main Content -->
         <main class="owner-main">
 
-            <!-- Topbar -->
-            @unless (request()->routeIs('super_admin.dashboard'))
-            <header class="owner-topbar">
-
-                <div class="topbar-left">
-
-                    <button class="topbar-button sidebar-toggle"
-                        type="button"
-                        aria-label="Toggle menu"
-                        aria-controls="superSidebar"
-                        aria-expanded="false"
-                        onclick="toggleSuperSidebar()"
-                        id="superSidebarButton">
-
-                        <svg viewBox="0 0 24 24"
-                            width="20"
-                            height="20"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round">
-
-                            <path d="M4 7h16M4 12h16M4 17h16" />
-                        </svg>
-
-                    </button>
-
-                    <div class="topbar-title">
-
-                        <h1>
-                            @yield('page-title', 'Overview')
-                        </h1>
-
-                        <p>Manage your Gang platform</p>
-
-                    </div>
-
-                </div>
-
-                <div class="topbar-actions">
-
-                    <span style="font-weight:700;color:var(--admin-muted)">
-                        Super Admin
-                    </span>
-
-                </div>
-
-            </header>
-            @endunless
-
             <!-- Page Content -->
+                        <button class="owner-mobile-menu" type="button" aria-label="Open navigation menu"
+                aria-controls="superSidebar" aria-expanded="false" onclick="toggleSuperSidebar()"
+                id="superSidebarButton">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                    <path d="M4 7h16M4 12h16M4 17h16" />
+                </svg>
+            </button>
             <section class="owner-content">
                 @yield('content')
             </section>

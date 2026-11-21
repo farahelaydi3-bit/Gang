@@ -15,7 +15,6 @@
                     ? __('Pay the deposit now to confirm your booking. The rest is due after the booking.')
                     : __('Your booking has ended. Pay the remaining amount to settle the booking.') }}</p>
             </div>
-            <div class="visa-demo-badge"><span aria-hidden="true">✓</span>{{ __('TEST SIMULATION') }}</div>
         </header>
 
         @if (session('payment_error'))
@@ -34,7 +33,7 @@
                     </div>
 
                     <div class="visa-card-preview" aria-label="{{ __('Card preview') }}">
-                        <div class="visa-card-top"><span>COURTBOOK</span><span class="visa-card-type">{{ __('CREDIT') }}</span></div>
+                        <div class="visa-card-top"><span>GANG</span><span class="visa-card-type">{{ __('CREDIT') }}</span></div>
                         <div class="visa-card-chip" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
                         <span class="visa-card-number" id="preview-card-number">•••• &nbsp;•••• &nbsp;•••• &nbsp;••••</span>
                         <div class="visa-card-bottom">
@@ -68,7 +67,7 @@
                                 <input id="card_expiry" type="text" inputmode="numeric" autocomplete="off" maxlength="5" placeholder="MM/YY" required>
                             </div>
                             <div class="visa-field">
-                                <label for="card_cvc">CVC</label>
+                            <label for="card_cvc">{{ __('Security code') }}</label>
                                 <div class="visa-input-wrap">
                                     <input id="card_cvc" type="password" inputmode="numeric" autocomplete="off" maxlength="3" placeholder="•••" required>
                                     <span class="visa-cvc-hint" aria-hidden="true">?</span>
@@ -92,7 +91,7 @@
                             <small>{{ __('Use any future expiry date and any 3-digit CVC.') }}</small>
                         </div>
                     </details>
-                    <p class="visa-simulation-note"><span aria-hidden="true">ⓘ</span>{{ __('This is a local Visa simulation. No real payment is processed.') }}</p>
+                    <p class="visa-balance-note"><span aria-hidden="true">✓</span>{{ __('Your deposit locks in your booking. The rest is paid in cash at the court after your game.') }}</p>
                 </section>
             </main>
 
@@ -122,10 +121,9 @@
                     <p class="visa-refund-note">{{ __('The deposit is refundable only when you cancel within 24 hours after confirming the booking.') }}</p>
                     <form method="POST" action="{{ route('courtbook.bookings.cancel', $booking) }}" class="visa-cancel-form">
                         @csrf
-                        <button type="submit">{{ __('Cancel booking and release this time') }}</button>
+                        <button class="visa-cancel-button" type="submit"><span aria-hidden="true">×</span>{{ __('Cancel booking and release this time') }}</button>
                     </form>
                 @endif
-                <a class="visa-back-bookings" href="{{ route('courtbook.bookings') }}">← {{ __('Back to my bookings') }}</a>
             </aside>
         </div>
     </div>

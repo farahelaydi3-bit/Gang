@@ -25,13 +25,6 @@
 
     <div class="overview-page">
         <section class="overview-welcome">
-            <button class="topbar-button sidebar-toggle overview-sidebar-toggle" type="button"
-                aria-label="Toggle menu" aria-controls="superSidebar" aria-expanded="false"
-                onclick="toggleSuperSidebar()" id="superSidebarButton">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-                    <path d="M4 7h16M4 12h16M4 17h16" />
-                </svg>
-            </button>
             <div class="overview-welcome-copy">
                 <span class="overview-eyebrow"><i></i>GANG CONTROL CENTER</span>
                 <h2>Good to see you, {{ auth('super_admin')->user()?->name ?? 'Super Admin' }}.</h2>

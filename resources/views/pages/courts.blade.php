@@ -4,11 +4,11 @@
 @section('page', 'courts')
 
 @section('content')
-    <div class="wrap page">
+    <div class="wrap page courts-page">
         @include('pages.heading', [
             'eyebrow' => 'Explore courts',
             'heading' => 'Book a court in Amman',
-            'description' => 'Every listing is an approved CourtBook facility. Prices are per hour in JOD.',
+            'description' => 'Every listing is an approved Gang facility. Prices are per hour in JOD.',
         ])
         @include('pages.courts-section')
     </div>

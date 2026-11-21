@@ -1,0 +1,18 @@
+*   [33m03971f0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmeshal[m[33m, [m[1;31morigin/meshal[m[33m)[m Merge branch 'main' of https://github.com/farahelaydi3-bit/Gang into meshal
+[31m|[m[32m\[m  
+[31m|[m *   [33m4a20b9c[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #28 from farahelaydi3-bit/farah
+[31m|[m [33m|[m[34m\[m  
+[31m|[m [33m|[m * [33m206acba[m[33m ([m[1;31morigin/farah[m[33m)[m create a super-admin profile
+[31m|[m * [34m|[m   [33made481f[m Merge pull request #26 from farahelaydi3-bit/kayyali
+[31m|[m [35m|[m[36m\[m [34m\[m  
+[31m|[m [35m|[m * [34m|[m [33me9f4946[m[33m ([m[1;31morigin/kayyali[m[33m)[m finish admin dashboard
+[31m|[m * [36m|[m [34m|[m   [33md8635e3[m Merge pull request #27 from farahelaydi3-bit/farah
+[31m|[m [36m|[m[34m\[m [36m\[m [34m\[m  
+[31m|[m [36m|[m [34m|[m[36m/[m [34m/[m  
+[31m|[m [36m|[m[36m/[m[34m|[m [34m/[m   
+[31m|[m [36m|[m [34m|[m[34m/[m    
+[31m|[m [36m|[m * [33m4f81acd[m complete stripe
+[31m|[m * [1;32m|[m [33m0d89a36[m Merge pull request #25 from farahelaydi3-bit/farah
+[31m|[m [1;33m|[m[1;32m\[m[1;32m|[m 
+[31m|[m [1;33m|[m * [33m3987065[m update profile front-end
+[31m|[m [1;33m|[m * [33m3d9aa2b[m test all functions

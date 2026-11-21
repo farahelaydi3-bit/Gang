@@ -38,6 +38,11 @@
             </div>
         @endif
 
+        <span id="booking-validation-copy" hidden
+            data-required-fields="{{ __('Please choose a court, date, start time, and end time before continuing.') }}"
+            data-incomplete-fields="{{ __('Choose a court, date, start time, and end time before continuing.') }}"
+            data-booking-duration="{{ __('Booking duration') }}"></span>
+
         <div class="booking-create-layout">
             <main class="booking-form-card">
                 <div class="booking-form-intro">
@@ -125,7 +130,7 @@
                         src="{{ $selectedCourt?->image ? asset('courtbook-assets/images/' . $selectedCourt->image) : asset('courtbook-assets/images/players.png') }}"
                         alt="" loading="eager">
                     <span class="booking-preview-shade"></span>
-                    <span class="booking-preview-label"><i></i>{{ __('COURTBOOK PICK') }}</span>
+                    <span class="booking-preview-label"><i></i>{{ __('GANG PICK') }}</span>
                     <div class="booking-preview-copy">
                         <span id="booking-preview-sport">{{ $selectedCourt?->sports?->name ?? __('Choose your sport') }}</span>
                         <strong id="booking-preview-court">{{ $selectedCourt?->name ?? __('Your court goes here') }}</strong>
@@ -200,6 +205,7 @@
             const confirmBooking = document.getElementById('confirm-booking');
             const reviewBooking = document.getElementById('review-booking');
             const bookingForm = document.getElementById('booking-form');
+            const bookingCopy = document.getElementById('booking-validation-copy').dataset;
             let availabilityRequest = 0;
             let confirmedForPayment = false;
 
@@ -288,7 +294,7 @@
                 const deposit = listedDeposit > 0 ? Math.min(listedDeposit, total) : total;
                 const balance = Math.max(0, total - deposit);
 
-                durationMessage.textContent = `مدة الحجز: ${formatDuration(selectedDuration)}`;
+                durationMessage.textContent = `${bookingCopy.bookingDuration}: ${formatDuration(selectedDuration)}`;
                 previewTotal.textContent = formatJod(total);
                 updateLivePreview();
                 totalPrice.textContent = formatJod(total);
@@ -408,13 +414,13 @@
             reviewBooking.addEventListener('click', () => {
                 const formIsValid = bookingForm.reportValidity();
                 if (!formIsValid) {
-                    message.textContent = 'Please choose a court, date, start time, and end time before continuing.';
+                    message.textContent = bookingCopy.requiredFields;
                     bookingForm.querySelector(':invalid')?.focus();
                     return;
                 }
 
                 if (!showPriceSummary()) {
-                    message.textContent = 'Choose a court, date, start time, and end time before continuing.';
+                    message.textContent = bookingCopy.incompleteFields;
                     start.focus();
                 }
             });

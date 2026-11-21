@@ -23,6 +23,8 @@ class Court extends Model
         'evening_price',
         'deposit_amount',
         'status',
+        'latitude',
+        'longitude',
     ];
 
     public function sports()
@@ -50,7 +52,7 @@ class Court extends Model
         return $this->hasMany(WaitingList::class, 'court_id');
     }
     public function subscriptions()
-{
-    return $this->hasMany(Subscription::class);
-}
+    {
+        return $this->hasMany(Subscription::class);
+    }
 }
