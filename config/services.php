@@ -18,6 +18,11 @@ return [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI'),
+        // Use Windows' trusted roots when PHP has no explicit CA bundle configured.
+        'guzzle' => PHP_OS_FAMILY === 'Windows' && defined('CURLSSLOPT_NATIVE_CA')
+            && ! ini_get('curl.cainfo') && ! ini_get('openssl.cafile')
+            ? ['curl' => [CURLOPT_SSL_OPTIONS => CURLSSLOPT_NATIVE_CA]]
+            : [],
     ],
     
     'postmark' => [

@@ -84,6 +84,6 @@ class GoogleAuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended('/');
+        return redirect()->intended(route('courtbook.bookings'));
     }
 }
