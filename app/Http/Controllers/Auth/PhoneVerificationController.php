@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\PhoneOtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class PhoneVerificationController extends Controller
 {
@@ -24,6 +25,18 @@ class PhoneVerificationController extends Controller
 
         if ($user->phone_verified_at) {
             return redirect('/');
+        }
+
+        if ($user->phone === null) {
+            $data = $request->validate([
+                'phone' => ['required', 'regex:/^07[0-9]{8}$/', Rule::unique('users', 'phone')],
+            ], [
+                'phone.regex' => __('Enter a valid Jordanian mobile number.'),
+            ]);
+
+            // Keep the number fixed once it has been set so a code only verifies that number.
+            $user->newQuery()->whereKey($user->id)->whereNull('phone')->update(['phone' => $data['phone']]);
+            $user->refresh();
         }
 
         try {
