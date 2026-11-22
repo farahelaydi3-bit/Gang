@@ -5,6 +5,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\DashboardList;
 use Illuminate\Http\Request;
 use App\Models\Court;
 use App\Models\Sports;
@@ -14,15 +15,23 @@ use Illuminate\Support\Facades\Storage;
 class MyCourtsController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
+        $adminId = auth('admin')->id();
+        $search = DashboardList::search($request);
+        $statuses = DashboardList::labels(DashboardList::COURT_STATUSES);
+        $status = DashboardList::choice($request, 'status', DashboardList::COURT_STATUSES);
+        $sportId = DashboardList::id($request, 'sport_id');
 
-        $courts = Court::with('sports')
-            ->where('admin_id', auth('admin')->id())
-            ->latest()
-            ->paginate(15);
+        $ownerCourts = Court::where('admin_id', $adminId);
+        $sportOptions = Sports::whereIn('id', (clone $ownerCourts)->select('sport_id'))->orderBy('name')->pluck('name', 'id');
+        $courts = $ownerCourts->with('sports')
+            ->when($search, fn ($query) => $query->whereAny(['name', 'address'], 'like', $search))
+            ->when($status, fn ($query) => $query->where('status', $status))
+            ->when($sportId, fn ($query) => $query->where('sport_id', $sportId))
+            ->latest('id')->paginate(DashboardList::PER_PAGE)->withQueryString();
 
-        return view('admins.courts.index', compact('courts'));
+        return view('admins.courts.index', compact('courts', 'statuses', 'sportOptions'));
     }
 
     public function create()

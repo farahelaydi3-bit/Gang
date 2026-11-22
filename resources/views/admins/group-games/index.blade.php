@@ -18,26 +18,30 @@
 
             <div class="stat-card">
                 <h3>{{ __('Total Games') }}</h3>
-                <p>{{ $games->total() }}</p>
+                <p>{{ $gameStats->sum() }}</p>
             </div>
 
             <div class="stat-card">
                 <h3>{{ __('Open Games') }}</h3>
-                <p>{{ $games->where('status', 'open')->count() }}</p>
+                <p>{{ $gameStats->get('open', 0) }}</p>
             </div>
 
             <div class="stat-card">
                 <h3>{{ __('Full Games') }}</h3>
-                <p>{{ $games->where('status', 'full')->count() }}</p>
+                <p>{{ $gameStats->get('full', 0) }}</p>
             </div>
 
             <div class="stat-card">
                 <h3>{{ __('Cancelled Games') }}</h3>
-                <p>{{ $games->where('status', 'cancelled')->count() }}</p>
+                <p>{{ $gameStats->get('cancelled', 0) }}</p>
             </div>
 
         </div>
 
+        <x-super-admin.list-filters :action="route('admin.group-games.index')"
+            placeholder="Game title or description"
+            :selects="['status' => ['Status', 'All statuses', $statuses], 'court_id' => ['Court', 'All courts', $courtOptions]]"
+            :dates="true" />
         {{-- Games Table --}}
         <div class="admin-card group-games-table-card">
 
@@ -149,11 +153,14 @@
                                 <td colspan="6">
                                     <div class="table-empty">
                                         <h3>{{ __('No Group Games Found') }}</h3>
-                                        <p>{{ __('You haven\'t created any group games yet.') }}</p>
-
-                                        <a href="{{ route('admin.group-games.create') }}" class="admin-button">
-                                            {{ __('Create Your First Game') }}
-                                        </a>
+                                        @if (\App\Support\DashboardList::hasFilters(request()))
+                                            <p>{{ __('No results match your filters.') }}</p>
+                                        @elseif ($gameStats->isEmpty())
+                                            <p>{{ __('You haven\'t created any group games yet.') }}</p>
+                                            <a href="{{ route('admin.group-games.create') }}" class="admin-button">
+                                                {{ __('Create Your First Game') }}
+                                            </a>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

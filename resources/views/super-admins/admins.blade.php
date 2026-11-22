@@ -9,11 +9,15 @@
 
 <x-super-admin.form-errors />
 
+<x-super-admin.list-filters :action="route('super_admin.admins.index')"
+    placeholder="Name, business, email or phone"
+    :selects="['status' => ['Status', 'All statuses', $statuses]]" />
+
 {{-- Owners Table --}}
 <div class="admin-card super-admin-table-card">
 
     <div class="admin-card-header">
-        <h3>{{ __('All Court Owners (') }}{{ $admins->count() }})</h3>
+        <h3>{{ __('All Court Owners (') }}{{ $admins->total() }})</h3>
     </div>
 
     <div class="admin-table-wrap">
@@ -133,7 +137,7 @@
 
                 <tr>
                     <td colspan="8" class="super-admin-empty">
-                        {{ __('No court owners registered yet.') }}
+                        {{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'No court owners registered yet.') }}
                     </td>
                 </tr>
 
@@ -144,6 +148,7 @@
 
     </div>
 
+    {{ $admins->links('components.super-admin.pagination') }}
 </div>
 
 @endsection

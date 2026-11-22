@@ -12,6 +12,10 @@
 
 <x-super-admin.form-errors />
 
+<x-super-admin.list-filters :action="route('super_admin.sports.index')"
+    placeholder="Sport name"
+    :selects="['usage' => ['Court usage', 'All sports', $usageOptions]]" />
+
 <dialog class="super-admin-dialog" id="add-sport-dialog" aria-labelledby="add-sport-title"
     @if (request()->boolean('add') || $errors->addSport->any()) open @endif>
     <form class="super-admin-dialog-content" action="{{ route('super_admin.sports.store') }}" method="POST">
@@ -33,7 +37,7 @@
 
 <div class="admin-card super-admin-table-card">
     <div class="admin-card-header">
-        <h3>{{ __('All Sports (') }}{{ $sports->count() }})</h3>
+        <h3>{{ __('All Sports (') }}{{ $sports->total() }})</h3>
     </div>
     <div class="admin-table-wrap">
         <table class="admin-table">
@@ -64,11 +68,12 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="4" class="super-admin-empty">{{ __('No sports added yet.') }}</td></tr>
+                    <tr><td colspan="4" class="super-admin-empty">{{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'No sports added yet.') }}</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
+    {{ $sports->links('components.super-admin.pagination') }}
 </div>
 @endsection
 

@@ -4,7 +4,7 @@
 
 @section('content')
 
-<div class="subscriptions-page" lang="en" dir="ltr">
+<div class="subscriptions-page">
 
     <x-super-admin.page-header title="{{ __('Create Subscription') }}" description="{{ __('Create a subscription plan that remains pending until payment.') }}">
         <x-slot:actions>
@@ -38,11 +38,26 @@
 
                 {{-- User --}}
                 <div class="form-group">
+                    <div class="subscription-player-search" id="subscriptionPlayerSearch"
+                        data-url="{{ route('admin.subscriptions.players') }}"
+                        data-next="{{ $users->nextPageUrl() }}" data-previous="{{ $users->previousPageUrl() }}">
+                        <label for="playerLookup" class="form-label">{{ __('Search players') }}</label>
+                        <div class="dashboard-filter-actions">
+                            <input id="playerLookup" type="search" class="form-control" maxlength="120" dir="auto"
+                                value="{{ \App\Support\DashboardList::value(request(), 'search') }}" placeholder="{{ __('Name, email or phone') }}">
+                            <button type="button" class="admin-button admin-button-outline" data-search-players>{{ __('Search') }}</button>
+                        </div>
+                        <p role="status" class="super-admin-muted" data-player-search-status hidden></p>
+                    </div>
+
                     <label for="user_id" class="form-label">{{ __('Select User') }}</label>
 
                     <select name="user_id" id="user_id" class="form-control" required>
                         <option value="">{{ __('Choose a user') }}</option>
 
+                        @if ($previousPlayer && ! $users->getCollection()->contains('id', $previousPlayer->id))
+                            <option value="{{ $previousPlayer->id }}" selected>{{ $previousPlayer->name }} — {{ $previousPlayer->email }}</option>
+                        @endif
                         @foreach($users as $user)
                             <option value="{{ $user->id }}"
                                 {{ old('user_id') == $user->id ? 'selected' : '' }}>
@@ -50,6 +65,11 @@
                             </option>
                         @endforeach
                     </select>
+                    <div class="dashboard-filter-actions subscription-player-pages">
+                        <button type="button" class="admin-button admin-button-outline" data-player-page="previous" @disabled(! $users->previousPageUrl())>{{ __('Previous') }}</button>
+                        <button type="button" class="admin-button admin-button-outline" data-player-page="next" @disabled(! $users->nextPageUrl())>{{ __('Next') }}</button>
+                    </div>
+                    @error('user_id')<small class="super-admin-field-error">{{ $message }}</small>@enderror
                 </div>
 
                 {{-- Court --}}
@@ -225,6 +245,67 @@
     </div>
 
 </div>
+
+<script>
+    (() => {
+        const lookup = document.getElementById('subscriptionPlayerSearch');
+        const input = document.getElementById('playerLookup');
+        const select = document.getElementById('user_id');
+        const status = lookup.querySelector('[data-player-search-status]');
+        const pageButtons = [...document.querySelectorAll('[data-player-page]')];
+        let request;
+
+        const load = async (url) => {
+            if (!url) return;
+            request?.abort();
+            const controller = new AbortController();
+            request = controller;
+            status.hidden = false;
+            status.textContent = @js(__('Searching for players…'));
+            select.setAttribute('aria-busy', 'true');
+            try {
+                const response = await fetch(url, { headers: { Accept: 'application/json' }, signal: controller.signal });
+                if (!response.ok) throw new Error('Player search failed');
+                const results = await response.json();
+                if (controller.signal.aborted) return;
+
+                const selected = select.selectedOptions[0];
+                const selectedId = selected.value;
+                const options = [select.options[0]];
+                if (selectedId && !results.data.some(player => String(player.id) === selectedId)) options.push(selected);
+                options.push(...results.data.map(player => new Option(`${player.name} — ${player.email}`, player.id)));
+                select.replaceChildren(...options);
+                select.value = selectedId;
+
+                lookup.dataset.previous = results.prev_page_url ?? '';
+                lookup.dataset.next = results.next_page_url ?? '';
+                pageButtons.forEach(button => { button.disabled = !lookup.dataset[button.dataset.playerPage]; });
+                status.textContent = results.data.length
+                    ? @js(__('Players found on this page: :count')).replace(':count', results.data.length)
+                    : @js(__('No matching players.'));
+            } catch (error) {
+                if (error.name !== 'AbortError') status.textContent = @js(__('Player search failed. Please try again.'));
+            } finally {
+                if (request === controller) select.removeAttribute('aria-busy');
+            }
+        };
+
+        const search = () => {
+            const url = new URL(lookup.dataset.url);
+            const searchText = input.value.trim();
+            if (searchText) url.searchParams.set('search', searchText);
+            load(url);
+        };
+
+        lookup.querySelector('[data-search-players]').addEventListener('click', search);
+        input.addEventListener('keydown', event => {
+            if (event.key !== 'Enter' || event.isComposing) return;
+            event.preventDefault();
+            search();
+        });
+        pageButtons.forEach(button => button.addEventListener('click', () => load(lookup.dataset[button.dataset.playerPage])));
+    })();
+</script>
 
 
 {{-- Live Price Preview --}}

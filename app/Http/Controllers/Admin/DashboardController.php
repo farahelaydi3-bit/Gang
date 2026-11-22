@@ -58,6 +58,8 @@ class DashboardController extends Controller
         // Get Admin Courts
         $MyCourts = Court::with('sports')
             ->where('admin_id', $adminId)
+            ->latest('id')
+            ->limit(5)
             ->get();
 
 

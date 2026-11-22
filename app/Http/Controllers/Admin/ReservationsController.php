@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Court;
 use App\Models\Payment;
 use App\Events\BookingCancelled;
+use App\Support\DashboardList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,65 +18,37 @@ class ReservationsController extends Controller
      */
     public function index(Request $request)
     {
-        // Get the currently logged-in admin ID
         $adminId = auth('admin')->id();
+        $search = DashboardList::search($request);
+        $statuses = DashboardList::labels(['pending', 'confirmed', 'cancelled', 'completed']);
+        $types = DashboardList::labels(['individual', 'group', 'subscription']);
+        $status = DashboardList::choice($request, 'status', array_keys($statuses));
+        $type = DashboardList::choice($request, 'type', array_keys($types));
+        $courtId = DashboardList::id($request, 'court_id');
+        $courtOptions = Court::where('admin_id', $adminId)->orderBy('name')->pluck('name', 'id');
 
-        // Get reservation statistics for this admin's courts
-        $reservationStats = Booking::whereHas('court', function ($query) use ($adminId) {
-            $query->where('admin_id', $adminId);
-        })
-            ->selectRaw("
-                COUNT(CASE WHEN booking_status = 'pending' THEN 1 END) as pending,
-                COUNT(CASE WHEN booking_status = 'confirmed' THEN 1 END) as confirmed,
-                COUNT(CASE WHEN booking_status = 'cancelled' THEN 1 END) as cancelled,
-                COUNT(CASE WHEN booking_status = 'completed' THEN 1 END) as completed
-            ")
-            ->first();
+        $ownerBookings = Booking::whereHas('court', fn ($court) => $court->where('admin_id', $adminId));
+        $reservationStats = (clone $ownerBookings)->selectRaw("
+            COUNT(CASE WHEN booking_status = 'pending' THEN 1 END) as pending,
+            COUNT(CASE WHEN booking_status = 'confirmed' THEN 1 END) as confirmed,
+            COUNT(CASE WHEN booking_status = 'cancelled' THEN 1 END) as cancelled,
+            COUNT(CASE WHEN booking_status = 'completed' THEN 1 END) as completed
+        ")->first();
 
-        // Get reservations for this admin's courts
-        $reservationsQuery = Booking::with(['court', 'user'])
-            ->whereHas('court', function ($query) use ($adminId) {
-                $query->where('admin_id', $adminId);
-            });
+        $query = $ownerBookings->with(['court', 'user'])
+            ->when($search, fn ($query) => $query->where(function ($matching) use ($search) {
+                $matching->whereHas('user', fn ($user) => $user->whereAny(['name', 'email', 'phone'], 'like', $search))
+                    ->orWhereHas('court', fn ($court) => $court->where('name', 'like', $search));
+            }))
+            ->when($status, fn ($query) => $query->where('booking_status', $status))
+            ->when($type, fn ($query) => $query->where('booking_type', $type))
+            ->when($courtId, fn ($query) => $query->where('court_id', $courtId));
 
-        // Search by customer name
-        if ($request->filled('search')) {
-            $reservationsQuery->whereHas('user', function ($query) use ($request) {
-                $query->where('name', 'like', '%' . $request->search . '%');
-            });
-        }
+        $reservations = DashboardList::dates($query, $request, 'booking_date')
+            ->latest('booking_date')->latest('start_time')->latest('id')
+            ->paginate(DashboardList::PER_PAGE)->withQueryString();
 
-        // Filter by booking status
-        if ($request->filled('status') && in_array($request->status, [
-            'pending',
-            'confirmed',
-            'cancelled',
-            'completed'
-        ])) {
-            $reservationsQuery->where('booking_status', $request->status);
-        }
-
-        // Filter by booking type
-        if ($request->filled('type') && in_array($request->type, [
-            'individual',
-            'group',
-            'subscription'
-        ])) {
-            $reservationsQuery->where('booking_type', $request->type);
-        }
-
-        // Get reservations with pagination
-        $reservations = $reservationsQuery
-            ->latest('booking_date')
-            ->latest('start_time')
-            ->paginate(10)
-            ->withQueryString();
-
-        // Return the reservations view
-        return view('admins.reservations.index', compact(
-            'reservationStats',
-            'reservations'
-        ));
+        return view('admins.reservations.index', compact('reservationStats', 'reservations', 'statuses', 'types', 'courtOptions'));
     }
 
     /**

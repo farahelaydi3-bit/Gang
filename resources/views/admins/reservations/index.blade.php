@@ -15,34 +15,14 @@
             @endforeach
         </div>
 
-        <section class="admin-card super-admin-filter" aria-label="{{ __('Filter reservations') }}">
-            <form action="{{ route('admin.reservations.index') }}" method="GET" class="super-admin-filter-form">
-                <div class="super-admin-filter-field super-admin-filter-field--search">
-                    <label class="form-label" for="reservation-search">{{ __('Search') }}</label>
-                    <input class="form-control" id="reservation-search" name="search" type="search" placeholder="{{ __('Customer name') }}" value="{{ request('search') }}">
-                </div>
-                <div class="super-admin-filter-field">
-                    <label class="form-label" for="reservation-status">{{ __('Status') }}</label>
-                    <select id="reservation-status" name="status" class="form-control">
-                        <option value="">{{ __('All statuses') }}</option>
-                        @foreach (['pending', 'confirmed', 'cancelled', 'completed'] as $status)
-                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ __(ucfirst($status)) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="super-admin-filter-field">
-                    <label class="form-label" for="reservation-type">{{ __('Booking type') }}</label>
-                    <select id="reservation-type" name="type" class="form-control">
-                        <option value="">{{ __('All types') }}</option>
-                        @foreach (['individual', 'group', 'subscription'] as $type)
-                            <option value="{{ $type }}" @selected(request('type') === $type)>{{ __(ucfirst($type)) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <button type="submit" class="admin-button">{{ __('Filter') }}</button>
-                <a href="{{ route('admin.reservations.index') }}" class="admin-button admin-button-outline">{{ __('Reset') }}</a>
-            </form>
-        </section>
+        <x-super-admin.list-filters :action="route('admin.reservations.index')"
+            placeholder="Customer, email, phone or court"
+            :selects="[
+            'status' => ['Status', 'All statuses', $statuses],
+            'type' => ['Type', 'All types', $types],
+            'court_id' => ['Court', 'All courts', $courtOptions],
+        ]"
+            :dates="true" />
 
         <div class="admin-card super-admin-table-card">
             <div class="admin-card-header"><h2>{{ __('All reservations') }}</h2></div>

@@ -7,6 +7,7 @@ use App\Models\GroupGame;
 use App\Models\Court;
 use App\Models\Booking;
 use App\Services\BookingPricingService;
+use App\Support\DashboardList;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,15 +18,26 @@ class GroupGameController extends Controller
     /**
      * Display admin's group games.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $games = GroupGame::with(['court', 'booking', 'joinedPlayers'])
-            ->where('admin_id', auth('admin')->id())
-            ->withCount('joinedPlayers')
-            ->latest()
-            ->paginate(10);
+        $adminId = auth('admin')->id();
+        $search = DashboardList::search($request);
+        $statuses = DashboardList::labels(['open', 'full', 'cancelled', 'completed']);
+        $status = DashboardList::choice($request, 'status', array_keys($statuses));
+        $courtId = DashboardList::id($request, 'court_id');
+        $courtOptions = Court::where('admin_id', $adminId)->orderBy('name')->pluck('name', 'id');
 
-        return view('admins.group-games.index', compact('games'));
+        $ownerGames = GroupGame::where('admin_id', $adminId);
+        $gameStats = (clone $ownerGames)->selectRaw('status, COUNT(*) as total')->groupBy('status')->pluck('total', 'status');
+        $query = $ownerGames->with('court')->withCount('joinedPlayers')
+            ->when($search, fn ($query) => $query->whereAny(['title', 'description'], 'like', $search))
+            ->when($status, fn ($query) => $query->where('status', $status))
+            ->when($courtId, fn ($query) => $query->where('court_id', $courtId));
+
+        $games = DashboardList::dates($query, $request, 'game_date')
+            ->latest('id')->paginate(DashboardList::PER_PAGE)->withQueryString();
+
+        return view('admins.group-games.index', compact('games', 'gameStats', 'statuses', 'courtOptions'));
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\OwnerApplication;
+use App\Support\DashboardList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -13,22 +14,20 @@ class OwnerApplicationController extends Controller
 {
     public function index(Request $request)
     {
-        $request->validate([
-            'status' => 'nullable|in:submitted,approved,rejected',
-        ]);
+        $search = DashboardList::search($request);
+        $statuses = ['submitted' => 'Under review', 'approved' => 'Approved', 'rejected' => 'Rejected'];
+        $status = DashboardList::choice($request, 'status', array_keys($statuses));
+        $query = OwnerApplication::with('admin')
+            ->when($search, fn ($query) => $query->where(function ($matching) use ($search) {
+                $matching->whereAny(['facility_name', 'address'], 'like', $search)
+                    ->orWhereHas('admin', fn ($owner) => $owner->whereAny(['name', 'email', 'business_name'], 'like', $search));
+            }))
+            ->when($status, fn ($query) => $query->where('status', $status));
 
-        $applications = OwnerApplication::with('admin');
+        $applications = DashboardList::dates($query, $request, 'submitted_at')
+            ->latest('id')->paginate(DashboardList::PER_PAGE)->withQueryString();
 
-        if ($request->filled('status')) {
-            $applications->where('status', $request->status);
-        }
-
-        $applications = $applications
-            ->orderByDesc('id')
-            ->paginate(10)
-            ->withQueryString();
-
-        return view('super-admins.owner-applications', compact('applications'));
+        return view('super-admins.owner-applications', compact('applications', 'statuses'));
     }
 
     public function show(OwnerApplication $application)

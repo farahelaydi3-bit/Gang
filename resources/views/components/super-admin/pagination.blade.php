@@ -1,8 +1,9 @@
-@if ($paginator->hasPages())
+@if ($paginator->firstItem() || $paginator->hasPages())
     <nav class="super-admin-pagination" aria-label="{{ __('Pagination Navigation') }}">
         @if ($paginator->firstItem())
             <span>{{ __('Showing :first–:last of :total', ['first' => $paginator->firstItem(), 'last' => $paginator->lastItem(), 'total' => $paginator->total()]) }}</span>
         @endif
+        @if ($paginator->hasPages())
         <div class="super-admin-pagination-links">
             @if ($paginator->previousPageUrl())
                 <a class="admin-button admin-button-outline" rel="prev" href="{{ $paginator->previousPageUrl() }}">{{ __('Previous') }}</a>
@@ -24,5 +25,6 @@
                 <a class="admin-button admin-button-outline" rel="next" href="{{ $paginator->nextPageUrl() }}">{{ __('Next') }}</a>
             @endif
         </div>
+        @endif
     </nav>
 @endif

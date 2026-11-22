@@ -9,83 +9,9 @@
 
 <x-super-admin.form-errors />
 
-{{-- Search and Filters --}}
-<div class="admin-card super-admin-filter">
-
-    <div class="admin-card-header">
-        <h3>{{ __('Search & Filter Courts') }}</h3>
-    </div>
-
-    <form method="GET"
-        action="{{ route('super_admin.courts.index') }}"
-        class="super-admin-filter-form">
-
-        <div class="super-admin-filter-field super-admin-filter-field--search">
-            <label class="form-label" for="search">
-                {{ __('Search') }}
-            </label>
-
-            <input
-                id="search"
-                class="form-control"
-                type="text"
-                name="search"
-                placeholder="{{ __('Court, owner or business name') }}"
-                value="{{ request('search') }}">
-        </div>
-
-        <div class="super-admin-filter-field">
-            <label class="form-label" for="status">
-                {{ __('Status') }}
-            </label>
-
-            <select id="status"
-                name="status"
-                class="form-control">
-
-                <option value="">{{ __('All Statuses') }}</option>
-
-                @foreach (['pending', 'approved', 'rejected', 'inactive'] as $status)
-                <option value="{{ $status }}"
-                    @selected(request('status')===$status)>
-                    {{ __(ucfirst($status)) }}
-                </option>
-                @endforeach
-
-            </select>
-        </div>
-
-        <div class="super-admin-filter-field">
-            <label class="form-label" for="sport_id">
-                {{ __('Sport') }}
-            </label>
-
-            <select id="sport_id"
-                name="sport_id"
-                class="form-control">
-
-                <option value="">{{ __('All Sports') }}</option>
-
-                @foreach ($sports as $sport)
-                <option value="{{ $sport->id }}"
-                    @selected(request('sport_id')==$sport->id)>
-                    {{ __($sport->name) }}
-                </option>
-                @endforeach
-
-            </select>
-        </div>
-
-        <button type="submit" class="admin-button">
-            {{ __('Search') }}
-        </button>
-
-        <a href="{{ route('super_admin.courts.index') }}"
-            class="admin-button admin-button-outline">
-            {{ __('Clear') }}
-        </a>
-    </form>
-</div>
+<x-super-admin.list-filters :action="route('super_admin.courts.index')"
+    placeholder="Court, address, owner or business"
+    :selects="['status' => ['Status', 'All statuses', $statuses], 'sport_id' => ['Sport', 'All Sports', $sportOptions]]" />
 
 {{-- Courts Table --}}
 <div class="admin-card super-admin-table-card">
@@ -197,7 +123,7 @@
                 @empty
                 <tr>
                     <td colspan="8" class="super-admin-empty">
-                        {{ __('No courts found.') }}
+                        {{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'No courts found.') }}
                     </td>
                 </tr>
                 @endforelse

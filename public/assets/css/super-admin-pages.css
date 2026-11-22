@@ -257,6 +257,18 @@
     max-width: 420px;
 }
 
+.dashboard-list-filters .form-control { inline-size: 100%; min-inline-size: 0; }
+.dashboard-list-filters .dashboard-date-filter { flex-basis: 155px; max-inline-size: 190px; }
+.dashboard-filter-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.subscription-player-search, .subscription-player-pages { margin-block: 0 10px; }
+.subscription-player-pages { margin-block: 8px 0; }
+.subscription-player-search .form-control { flex: 1 1 10rem; min-inline-size: 0; }
+
+@media (max-width: 560px) {
+    .dashboard-list-filters .super-admin-filter-field { max-inline-size: none; }
+    .dashboard-list-filters .super-admin-filter-field--search { flex-basis: 100%; }
+}
+
 .super-admin-pagination,
 .super-admin-pagination-links {
     display: flex;

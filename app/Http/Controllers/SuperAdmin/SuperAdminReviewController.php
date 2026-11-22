@@ -8,6 +8,7 @@ use App\Models\Court;
 use App\Models\CourtReviewSummary;
 use App\Models\ModerationReport;
 use App\Models\Review;
+use App\Support\DashboardList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -17,17 +18,42 @@ class SuperAdminReviewController extends Controller
     /**
      * AI Moderation dashboard: moderation reports + court summaries.
      */
-    public function flagged()
+    public function flagged(Request $request)
     {
-        $reports = ModerationReport::with(['review.user', 'court', 'admin', 'resolutions'])
-            ->latest()
-            ->paginate(20, ['*'], 'reports_page');
+        $showSummaries = $request->query('tab') === 'summaries';
+        $search = DashboardList::search($request);
+        $decisions = DashboardList::labels(['safe', 'spam', 'abusive']);
+        $actions = [
+            'flagged' => 'Flagged',
+            'auto_banned' => 'Auto banned',
+            'unbanned' => 'Unbanned',
+            'dismissed' => 'Dismissed',
+        ];
 
-        $summaries = CourtReviewSummary::with('court')
-            ->latest('generated_at')
-            ->paginate(20, ['*'], 'summaries_page');
+        if ($showSummaries) {
+            $query = CourtReviewSummary::with('court')
+                ->when($search, fn ($query) => $query->whereHas('court', fn ($court) => $court->where('name', 'like', $search)));
+            $summaries = DashboardList::dates($query, $request, 'generated_at')
+                ->latest('generated_at')->latest('id')->paginate(DashboardList::PER_PAGE, ['*'], 'summaries_page')->withQueryString();
 
-        return view('super-admins.flagged-reviews', compact('reports', 'summaries'));
+            return view('super-admins.flagged-reviews', compact('showSummaries', 'summaries'));
+        }
+
+        $decision = DashboardList::choice($request, 'decision', array_keys($decisions));
+        $action = DashboardList::choice($request, 'action', array_keys($actions));
+        $query = ModerationReport::with(['review.user', 'court', 'admin'])->withCount('resolutions')
+            ->when($search, fn ($query) => $query->where(function ($matching) use ($search) {
+                $matching->whereHas('court', fn ($court) => $court->where('name', 'like', $search))
+                    ->orWhereHas('admin', fn ($owner) => $owner->where('name', 'like', $search))
+                    ->orWhereHas('review', fn ($review) => $review->where('comment', 'like', $search));
+            }))
+            ->when($decision, fn ($query) => $query->where('ai_decision', $decision))
+            ->when($action, fn ($query) => $query->where('action', $action));
+
+        $reports = DashboardList::dates($query, $request, 'created_at')
+            ->latest('id')->paginate(DashboardList::PER_PAGE, ['*'], 'reports_page')->withQueryString();
+
+        return view('super-admins.flagged-reviews', compact('showSummaries', 'reports', 'decisions', 'actions'));
     }
 
     /**

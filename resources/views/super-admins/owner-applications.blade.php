@@ -6,23 +6,10 @@
     <x-super-admin.page-header title="{{ __('Owner Applications') }}" description="{{ __('Review applications from sports facility owners.') }}" />
     <x-super-admin.form-errors />
 
-    <section class="admin-card super-admin-filter" aria-label="{{ __('Filter applications') }}">
-        <form class="super-admin-filter-form" method="GET" action="{{ route('super_admin.applications.index') }}">
-            <div class="super-admin-filter-field">
-                <label class="form-label" for="status">{{ __('Status') }}</label>
-                <select class="form-control" name="status" id="status">
-                    <option value="">{{ __('All statuses') }}</option>
-                    <option value="submitted" @selected(request('status') === 'submitted')>{{ __('Under review') }}</option>
-                    <option value="approved" @selected(request('status') === 'approved')>{{ __('Approved') }}</option>
-                    <option value="rejected" @selected(request('status') === 'rejected')>{{ __('Rejected') }}</option>
-                </select>
-            </div>
-            <button type="submit" class="admin-button">{{ __('Filter') }}</button>
-            @if (request()->filled('status'))
-                <a href="{{ route('super_admin.applications.index') }}" class="admin-button admin-button-outline">{{ __('Clear') }}</a>
-            @endif
-        </form>
-    </section>
+    <x-super-admin.list-filters :action="route('super_admin.applications.index')"
+        placeholder="Facility, address, owner or email"
+        :selects="['status' => ['Status', 'All statuses', $statuses]]"
+        :dates="true" />
 
     <section class="admin-card super-admin-table-card" aria-labelledby="owner-applications-results">
         <div class="admin-card-header"><h2 id="owner-applications-results">{{ __('Applications (') }}{{ $applications->total() }})</h2></div>
@@ -60,7 +47,7 @@
                             <td><a href="{{ route('super_admin.applications.show', $application) }}" class="admin-button">{{ __('Review') }}</a></td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="super-admin-empty">{{ __('No applications found.') }}</td></tr>
+                        <tr><td colspan="6" class="super-admin-empty">{{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'No applications found.') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>

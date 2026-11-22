@@ -36,22 +36,26 @@
 
         <section class="admin-card super-admin-table-card" aria-labelledby="subscription-bookings">
             <div class="admin-card-header"><h2 id="subscription-bookings">{{ __('Bookings') }}</h2></div>
+            <x-super-admin.list-filters :action="route('admin.subscriptions.show', $subscription)"
+                :selects="['status' => ['Status', 'All statuses', $bookingStatuses]]"
+                :dates="true" />
             <div class="admin-table-wrap">
                 <table class="admin-table">
                     <thead><tr><th scope="col">{{ __('Date') }}</th><th scope="col">{{ __('Time') }}</th><th scope="col">{{ __('Status') }}</th></tr></thead>
                     <tbody>
-                        @forelse ($subscription->bookings as $booking)
+                        @forelse ($bookings as $booking)
                             <tr>
                                 <td>{{ $booking->booking_date->format('M j, Y') }}</td>
                                 <td>{{ substr($booking->start_time, 0, 5) }}–{{ substr($booking->end_time, 0, 5) }}</td>
                                 <td>{{ __(ucfirst($booking->booking_status)) }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="3" class="super-admin-empty">{{ __('No bookings yet.') }}</td></tr>
+                            <tr><td colspan="3" class="super-admin-empty">{{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'No bookings yet.') }}</td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+            {{ $bookings->links('components.super-admin.pagination') }}
         </section>
     </div>
 @endsection

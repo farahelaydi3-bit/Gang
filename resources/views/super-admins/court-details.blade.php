@@ -34,6 +34,9 @@
 
         <section class="admin-card" aria-labelledby="court-recent-reviews">
             <div class="admin-card-header"><h2 id="court-recent-reviews">{{ __('Recent reviews (') }}{{ $court->reviews_count }})</h2></div>
+            <x-super-admin.list-filters :action="route('super_admin.courts.show', $court)"
+                placeholder="Reviewer or comment"
+                :selects="['rating' => ['Rating', 'All ratings', $ratingOptions]]" />
             @forelse ($reviews as $review)
                 <div class="super-admin-record-section">
                     <h3>{{ $review->rating }}/5</h3>
@@ -41,8 +44,9 @@
                     <small class="super-admin-muted">{{ $review->created_at?->format('Y-m-d') }}</small>
                 </div>
             @empty
-                <p class="super-admin-muted">{{ __('No reviews for this court yet.') }}</p>
+                <p class="super-admin-muted">{{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'No reviews for this court yet.') }}</p>
             @endforelse
+            {{ $reviews->links('components.super-admin.pagination') }}
         </section>
     </div>
 @endsection

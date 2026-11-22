@@ -14,6 +14,10 @@
 
     <x-super-admin.form-errors />
 
+    <x-super-admin.list-filters :action="route('admin.courts.index')"
+        placeholder="Court name or address"
+        :selects="['status' => ['Status', 'All statuses', $statuses], 'sport_id' => ['Sport', 'All Sports', $sportOptions]]" />
+
     <section class="admin-card super-admin-table-card" aria-labelledby="owner-court-list">
         <div class="admin-card-header">
             <h2 id="owner-court-list">{{ __('Courts (') }}{{ $courts->total() }})</h2>
@@ -98,7 +102,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="super-admin-empty">
-                                {{ __('You haven’t added any courts yet.') }}
+                                {{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'You haven’t added any courts yet.') }}
                             </td>
                         </tr>
                     @endforelse

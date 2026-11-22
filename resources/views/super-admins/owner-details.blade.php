@@ -46,6 +46,9 @@
 
         <section class="admin-card super-admin-table-card" aria-labelledby="owner-courts">
             <div class="admin-card-header"><h2 id="owner-courts">{{ __('Courts (') }}{{ $courts->total() }})</h2></div>
+            <x-super-admin.list-filters :action="route('super_admin.admins.show', $admin)"
+                placeholder="Court name or address"
+                :selects="['status' => ['Status', 'All statuses', $statuses]]" />
             <div class="admin-table-wrap">
                 <table class="admin-table">
                     <thead>
@@ -73,7 +76,7 @@
                                 <td><span class="badge {{ $statusClass }}">{{ __(ucfirst($court->status)) }}</span></td>
                             </tr>
                         @empty
-                            <tr><td colspan="4" class="super-admin-empty">{{ __('This owner has no courts yet.') }}</td></tr>
+                            <tr><td colspan="4" class="super-admin-empty">{{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'This owner has no courts yet.') }}</td></tr>
                         @endforelse
                     </tbody>
                 </table>

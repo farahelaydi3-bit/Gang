@@ -9,11 +9,15 @@
 
 <x-super-admin.form-errors />
 
+<x-super-admin.list-filters :action="route('super_admin.users.index')"
+    placeholder="Name, email or phone"
+    :selects="['status' => ['Status', 'All statuses', $statuses], 'verification' => ['Phone verification', 'Any verification status', $verificationOptions]]" />
+
 {{-- Players Table --}}
 <div class="admin-card super-admin-table-card">
 
     <div class="admin-card-header">
-        <h3>{{ __('All Players (') }}{{ $users->count() }})</h3>
+        <h3>{{ __('All Players (') }}{{ $users->total() }})</h3>
     </div>
 
     <div class="admin-table-wrap">
@@ -26,6 +30,7 @@
                     <th>{{ __('Player Name') }}</th>
                     <th>{{ __('Email') }}</th>
                     <th>{{ __('Phone') }}</th>
+                    <th>{{ __('Phone verification') }}</th>
                     <th>{{ __('Status') }}</th>
                     <th>{{ __('Registered') }}</th>
                     <th>{{ __('Actions') }}</th>
@@ -45,6 +50,7 @@
                     <td>{{ $user->email }}</td>
 
                     <td>{{ $user->phone ?? '—' }}</td>
+                    <td>{{ $user->phone_verified_at ? __('Verified phone') : __('Unverified phone') }}</td>
 
                     <td>
                         @if ($user->status === 'active')
@@ -104,8 +110,8 @@
                 @empty
 
                 <tr>
-                    <td colspan="7" class="super-admin-empty">
-                        {{ __('No players registered yet.') }}
+                    <td colspan="8" class="super-admin-empty">
+                        {{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'No players registered yet.') }}
                     </td>
                 </tr>
 
@@ -116,6 +122,7 @@
 
     </div>
 
+    {{ $users->links('components.super-admin.pagination') }}
 </div>
 
 @endsection

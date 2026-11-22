@@ -4,7 +4,7 @@
 @section('page-title', __('My Subscriptions'))
 
 @section('content')
-<div class="subscriptions-page" lang="en" dir="ltr">
+<div class="subscriptions-page">
     <x-super-admin.page-header title="{{ __('My Subscriptions') }}" description="{{ __('Track your court packages, playing hours, schedules, and payment status.') }}">
         <x-slot:actions>
             <a href="{{ route('admin.subscriptions.create') }}" class="admin-button">{{ __('+ Create Subscription') }}</a>
@@ -25,25 +25,13 @@
         </div>
     @endif
 
-    <section class="admin-card super-admin-filter" aria-label="{{ __('Subscription filters') }}">
-        <form method="GET" action="{{ route('admin.subscriptions.index') }}" class="super-admin-filter-form">
-            <label class="super-admin-filter-field super-admin-filter-field--search">
-                <span class="form-label">{{ __('Search subscriptions') }}</span>
-                <input type="search" name="search" value="{{ request('search') }}" placeholder="{{ __('Package, player, or email') }}" class="form-control">
-            </label>
-            <label class="super-admin-filter-field">
-                <span class="form-label">{{ __('Status') }}</span>
-                <select name="status" class="form-control">
-                    <option value="">{{ __('All statuses') }}</option>
-                    @foreach (['pending' => 'Pending payment', 'active' => 'Active', 'expired' => 'Expired', 'cancelled' => 'Cancelled'] as $value => $label)
-                        <option value="{{ $value }}" @selected(request('status') === $value)>{{ __($label) }}</option>
-                    @endforeach
-                </select>
-            </label>
-            <button type="submit" class="admin-button">{{ __('Search') }}</button>
-            <a href="{{ route('admin.subscriptions.index') }}" class="admin-button admin-button-outline">{{ __('Clear filters') }}</a>
-        </form>
-    </section>
+    <x-super-admin.list-filters :action="route('admin.subscriptions.index')"
+        placeholder="Package, player, email, phone or court"
+        :selects="[
+        'status' => ['Status', 'All statuses', $statuses],
+        'schedule' => ['Schedule', 'All schedules', $scheduleOptions],
+        'court_id' => ['Court', 'All courts', $courtOptions],
+    ]" />
 
     <section class="admin-card super-admin-table-card">
         <div class="admin-table-wrap">
@@ -51,7 +39,7 @@
                 <thead>
                     <tr>
                         @foreach (['Player', 'Court', 'Package', 'Duration', 'Hours', 'Schedule', 'Amount', 'Status', 'Actions'] as $header)
-                            <th scope="col">{{ $header }}</th>
+                            <th scope="col">{{ __($header) }}</th>
                         @endforeach
                     </tr>
                 </thead>
@@ -78,7 +66,7 @@
                                 @if ($subscription->is_fixed_schedule)
                                     <div>{{ substr((string) $subscription->scheduled_start_time, 0, 5) }}–{{ substr((string) $subscription->scheduled_end_time, 0, 5) }}</div>
                                     <details>
-                                        <summary>{{ $subscription->bookings->count() }} {{ __('sessions') }}</summary>
+                                        <summary>{{ $subscription->bookings_count }} {{ __('sessions') }}</summary>
                                         <ul class="subscription-session-list">
                                             @foreach ($subscription->bookings as $booking)
                                                 <li>
@@ -87,6 +75,9 @@
                                                 </li>
                                             @endforeach
                                         </ul>
+                                        @if ($subscription->bookings_count > $subscription->bookings->count())
+                                            <a href="{{ route('admin.subscriptions.show', $subscription) }}">{{ __('View all sessions') }}</a>
+                                        @endif
                                     </details>
                                 @else
                                     {{ __('Flexible') }}
@@ -109,7 +100,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="9" class="super-admin-empty">{{ __('No subscriptions found. Create one to get started.') }}</td></tr>
+                        <tr><td colspan="9" class="super-admin-empty">{{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'No subscriptions found. Create one to get started.') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -123,7 +114,6 @@
 @push('styles')
 <style>
     .subscriptions-page .subscription-session-list{max-height:160px;overflow:auto;padding-left:17px}
-    .subscriptions-page .super-admin-filter-form{direction:ltr}
     .subscriptions-page .super-admin-inline-actions{justify-content:flex-start}
 </style>
 @endpush

@@ -7,6 +7,10 @@
         description="{{ __('Manage court owner websites. The trial lasts six months from first publication, then costs 5 JOD per month.') }}" />
     <x-super-admin.form-errors />
 
+    <x-super-admin.list-filters :action="route('super_admin.site-studio.index')"
+        placeholder="Website name, slug or owner"
+        :selects="['publication' => ['Publication', 'All publication states', $publicationOptions], 'state' => ['Status', 'All statuses', $stateOptions]]" />
+
     <div class="super-admin-records">
         @forelse ($websites as $website)
             @php
@@ -67,7 +71,7 @@
                 </div>
             </article>
         @empty
-            <div class="admin-card super-admin-muted">{{ __('No owner websites yet.') }}</div>
+            <div class="admin-card super-admin-muted">{{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'No owner websites yet.') }}</div>
         @endforelse
     </div>
 

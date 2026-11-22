@@ -6,6 +6,10 @@
     <div class="group-games-page">
         <x-super-admin.page-header title="{{ __('SMS History') }}" description="{{ __('Review waiting-list message attempts for your courts.') }}" />
 
+        <x-super-admin.list-filters :action="route('admin.sms-logs.index')"
+            placeholder="Recipient name, phone or message"
+            :selects="['status' => ['Status', 'All statuses', $statuses]]"
+            :dates="true" />
         <div class="admin-card group-games-table-card">
             <div class="admin-table-wrap">
                 <table class="admin-table">
@@ -28,7 +32,7 @@
                                 <td>{{ ($log->sent_at ?? $log->created_at)->format('M j, Y H:i') }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="5">{{ __('No SMS attempts have been logged yet.') }}</td></tr>
+                            <tr><td colspan="5">{{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'No SMS attempts have been logged yet.') }}</td></tr>
                         @endforelse
                     </tbody>
                 </table>

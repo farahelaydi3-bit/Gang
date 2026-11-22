@@ -3,10 +3,6 @@
 @section('title', __('AI Moderation'))
 
 @section('content')
-    @php
-        $showSummaries = request('tab') === 'summaries';
-    @endphp
-
     <x-super-admin.page-header title="{{ __('AI Moderation') }}" description="{{ __('Review moderation activity and court review summaries.') }}" />
     <x-super-admin.form-errors />
 
@@ -16,6 +12,19 @@
         <a href="{{ route('super_admin.reviews.flagged', ['tab' => 'summaries']) }}"
             class="admin-button {{ $showSummaries ? '' : 'admin-button-outline' }}" @if ($showSummaries) aria-current="page" @endif>{{ __('Court summaries') }}</a>
     </nav>
+
+    @if ($showSummaries)
+        <x-super-admin.list-filters :action="route('super_admin.reviews.flagged')"
+            placeholder="Court name"
+            :dates="true"
+            :context="['tab' => 'summaries']" />
+    @else
+        <x-super-admin.list-filters :action="route('super_admin.reviews.flagged')"
+            placeholder="Court, owner or review comment"
+            :selects="['decision' => ['AI decision', 'All decisions', $decisions], 'action' => ['Action', 'All actions', $actions]]"
+            :dates="true"
+            :context="['tab' => 'reports']" />
+    @endif
 
     <div class="super-admin-records">
         @if ($showSummaries)
@@ -41,7 +50,7 @@
                     <div class="super-admin-record-section"><h3>{{ __('Top praise') }}</h3><p dir="auto">{{ $summary->top_praises ?? '—' }}</p></div>
                 </article>
             @empty
-                <div class="admin-card super-admin-muted">{{ __('No court summaries yet.') }}</div>
+                <div class="admin-card super-admin-muted">{{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'No court summaries yet.') }}</div>
             @endforelse
         @else
             @forelse ($reports as $report)
@@ -78,7 +87,7 @@
 
                     <p><em>{{ $report->notes }}</em></p>
 
-                    @if($report->action === 'auto_banned' && $report->admin && $report->resolutions->isEmpty())
+                    @if($report->action === 'auto_banned' && $report->admin && (int) $report->resolutions_count === 0)
                         <form action="{{ route('super_admin.admins.unban', $report->admin) }}"
                             method="POST"
                             onsubmit="return confirm(@js(__('Reactivate this owner?')));">
@@ -90,8 +99,9 @@
                     @endif
                 </article>
             @empty
-                <div class="admin-card super-admin-muted">{{ __('No moderation reports yet.') }}</div>
+                <div class="admin-card super-admin-muted">{{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'No moderation reports yet.') }}</div>
             @endforelse
         @endif
+        {{ ($showSummaries ? $summaries : $reports)->links('components.super-admin.pagination') }}
     </div>
 @endsection
