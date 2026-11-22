@@ -1,15 +1,15 @@
 @extends('admins.layout.app')
 
-@section('title', 'Group Games')
+@section('title', __('Group Games'))
 
 @section('content')
 
     <div class="group-games-page">
 
         {{-- Page Header --}}
-        <x-super-admin.page-header title="Group Games" description="Manage group games and player reservations.">
+        <x-super-admin.page-header title="{{ __('Group Games') }}" description="{{ __('Manage group games and player reservations.') }}">
             <x-slot:actions>
-                <a class="admin-button" href="{{ route('admin.group-games.create') }}">+ Create group game</a>
+                <a class="admin-button" href="{{ route('admin.group-games.create') }}">{{ __('+ Create group game') }}</a>
             </x-slot:actions>
         </x-super-admin.page-header>
 
@@ -17,32 +17,36 @@
         <div class="group-games-stats">
 
             <div class="stat-card">
-                <h3>Total Games</h3>
-                <p>{{ $games->total() }}</p>
+                <h3>{{ __('Total Games') }}</h3>
+                <p>{{ $gameStats->sum() }}</p>
             </div>
 
             <div class="stat-card">
-                <h3>Open Games</h3>
-                <p>{{ $games->where('status', 'open')->count() }}</p>
+                <h3>{{ __('Open Games') }}</h3>
+                <p>{{ $gameStats->get('open', 0) }}</p>
             </div>
 
             <div class="stat-card">
-                <h3>Full Games</h3>
-                <p>{{ $games->where('status', 'full')->count() }}</p>
+                <h3>{{ __('Full Games') }}</h3>
+                <p>{{ $gameStats->get('full', 0) }}</p>
             </div>
 
             <div class="stat-card">
-                <h3>Cancelled Games</h3>
-                <p>{{ $games->where('status', 'cancelled')->count() }}</p>
+                <h3>{{ __('Cancelled Games') }}</h3>
+                <p>{{ $gameStats->get('cancelled', 0) }}</p>
             </div>
 
         </div>
 
+        <x-super-admin.list-filters :action="route('admin.group-games.index')"
+            placeholder="Game title or description"
+            :selects="['status' => ['Status', 'All statuses', $statuses], 'court_id' => ['Court', 'All courts', $courtOptions]]"
+            :dates="true" />
         {{-- Games Table --}}
         <div class="admin-card group-games-table-card">
 
             <div class="section-header">
-                <h2>All Group Games</h2>
+                <h2>{{ __('All Group Games') }}</h2>
             </div>
 
             <div class="admin-table-wrap">
@@ -50,12 +54,12 @@
 
                     <thead>
                         <tr>
-                            <th>Game</th>
-                            <th>Court and schedule</th>
-                            <th>Players</th>
-                            <th>Price / Player</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>{{ __('Game') }}</th>
+                            <th>{{ __('Court and schedule') }}</th>
+                            <th>{{ __('Players') }}</th>
+                            <th>{{ __('Price / Player') }}</th>
+                            <th>{{ __('Status') }}</th>
+                            <th>{{ __('Actions') }}</th>
                         </tr>
                     </thead>
 
@@ -95,7 +99,7 @@
                                 {{-- Price --}}
                                 <td>
                                     {{ number_format($game->player_price, 2) }}
-                                    JOD
+                                    {{ __('JOD') }}
                                 </td>
 
                                 {{-- Status --}}
@@ -109,7 +113,7 @@
 
                                         <a href="{{ route('admin.group-games.edit', $game->id) }}"
                                             class="admin-button admin-button-outline">
-                                            Edit
+                                            {{ __('Edit') }}
                                         </a>
 
                                         <form action="{{ route('admin.group-games.cancel', $game->id) }}" method="POST">
@@ -117,7 +121,7 @@
                                             @method('PATCH')
 
                                             <button type="submit" class="admin-button admin-button-outline">
-                                                Cancel
+                                                {{ __('Cancel') }}
                                             </button>
                                         </form>
 
@@ -125,7 +129,7 @@
                                             <form action="{{ route('admin.group-games.complete', $game->id) }}" method="POST">
                                                 @csrf
                                                 @method('PATCH')
-                                                <button type="submit" class="admin-button admin-button-outline">Mark completed</button>
+                                                <button type="submit" class="admin-button admin-button-outline">{{ __('Mark completed') }}</button>
                                             </form>
                                         @endif
 
@@ -134,7 +138,7 @@
                                             @method('DELETE')
 
                                             <button type="submit" class="admin-button admin-button-danger">
-                                                Delete
+                                                {{ __('Delete') }}
                                             </button>
                                         </form>
 
@@ -148,12 +152,15 @@
                             <tr>
                                 <td colspan="6">
                                     <div class="table-empty">
-                                        <h3>No Group Games Found</h3>
-                                        <p>You haven't created any group games yet.</p>
-
-                                        <a href="{{ route('admin.group-games.create') }}" class="admin-button">
-                                            Create Your First Game
-                                        </a>
+                                        <h3>{{ __('No Group Games Found') }}</h3>
+                                        @if (\App\Support\DashboardList::hasFilters(request()))
+                                            <p>{{ __('No results match your filters.') }}</p>
+                                        @elseif ($gameStats->isEmpty())
+                                            <p>{{ __('You haven\'t created any group games yet.') }}</p>
+                                            <a href="{{ route('admin.group-games.create') }}" class="admin-button">
+                                                {{ __('Create Your First Game') }}
+                                            </a>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

@@ -1,7 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\admin;
-
+namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -36,6 +35,6 @@ class MyProfileController extends Controller
 
         return redirect()
             ->route('admin.profile.index')
-            ->with('success', 'Profile updated successfully.');
+            ->with('success', __('Profile updated successfully.'));
     }
 }

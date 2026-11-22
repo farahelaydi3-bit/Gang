@@ -1,28 +1,35 @@
-@props(['action', 'copy', 'arabic' => false])
+@props(['action', 'copy'])
+@php($arabic = app()->isLocale('ar'))
 <!DOCTYPE html>
-<html lang="{{ $arabic ? 'ar' : 'en' }}" dir="{{ $arabic ? 'rtl' : 'ltr' }}">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 <head>
+    <x-theme-head />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $copy['title'] }} | Gang</title>
+    <title>{{ __($copy['title']) }} | Gang</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('courtbook-assets/icon.svg') }}?v=2">
     <link rel="stylesheet" href="{{ asset('assets/css/superadmin.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/super-admin-login.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/language.css') }}">
 </head>
 <body class="super-login">
     <main class="super-login-shell">
-        <header class="super-login-top">
+        <nav class="super-login-top" style="display:flex;gap:.75rem;align-items:center;justify-content:space-between" aria-label="{{ __('Main navigation') }}">
             <a class="super-login-home" href="{{ route('courtbook.home') }}">
                 <span aria-hidden="true">{{ $arabic ? '→' : '←' }}</span> {{ $arabic ? 'العودة إلى جانغ' : 'Back to Gang' }}
             </a>
-        </header>
+            <div class="gang-theme-controls">
+                <x-language-toggle />
+                <x-theme-toggle />
+            </div>
+        </nav>
 
         <div class="super-login-card">
             <section class="overview-welcome super-login-brand" aria-labelledby="super-login-brand-title">
                 <div class="super-login-brand-content">
                     <img class="super-login-logo" src="{{ asset('courtbook-assets/images/gang-logo.png') }}" alt="" width="753" height="489">
-                    <h2 id="super-login-brand-title">{{ $copy['brand'] }}</h2>
-                    <p>{{ $copy['description'] }}</p>
+                    <h2 id="super-login-brand-title">{{ __($copy['brand']) }}</h2>
+                    <p>{{ __($copy['description']) }}</p>
                 </div>
 
                 <span class="overview-orbit overview-orbit-one" aria-hidden="true"></span>
@@ -34,7 +41,7 @@
             </section>
 
             <section class="super-login-panel" aria-labelledby="super-login-title">
-                <h1 id="super-login-title">{{ $copy['title'] }}</h1>
+                <h1 id="super-login-title">{{ __($copy['title']) }}</h1>
 
                 @if (session('success'))
                     <p class="super-login-status" role="status">{{ session('success') }}</p>

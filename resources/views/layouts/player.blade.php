@@ -1,8 +1,10 @@
 <!DOCTYPE html>
+@php($showFloatingChat = !request()->routeIs('courtbook.assistant', 'admin.login', 'admin.register'))
 <html lang="{{ app()->getLocale() }}"
     dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 
 <head>
+    <x-theme-head />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -11,17 +13,23 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Home') · Gang</title>
+    <title>@yield('title', __('Home')) · Gang</title>
 
     <link rel="icon" type="image/svg+xml" href="{{ asset('courtbook-assets/icon.svg') }}?v=2">
 
     <link rel="stylesheet"
         href="{{ asset('courtbook-assets/styles.css') }}">
 
+    @if ($showFloatingChat || request()->routeIs('courtbook.assistant'))
+        <link rel="stylesheet" href="{{ asset('courtbook-assets/assistant.css') }}">
+    @endif
+
+    <link rel="stylesheet" href="{{ asset('assets/css/language.css') }}">
     @stack('styles')
+    <link rel="stylesheet" href="{{ asset('courtbook-assets/player-buttons.css') }}">
 </head>
 
-<body>
+<body class="gang-player">
     <a class="skip" href="#main">
         {{ __('Skip to content') }}
     </a>
@@ -33,6 +41,9 @@
     </main>
 
     @include('pages.footer')
+    @if ($showFloatingChat)
+        @include('pages.assistant-float')
+    @endif
     {{-- @include('pages.overlays') --}}
     <script>
         (() => {

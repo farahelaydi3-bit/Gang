@@ -1,34 +1,38 @@
 
 @extends('admins.layout.app')
 
-@section('title', 'My Courts')
+@section('title', __('My Courts'))
 
 @section('content')
-    <x-super-admin.page-header title="My Courts" description="Manage your courts, pricing, and approval status.">
+    <x-super-admin.page-header title="{{ __('My Courts') }}" description="{{ __('Manage your courts, pricing, and approval status.') }}">
         <x-slot:actions>
             <a href="{{ route('admin.courts.create') }}" class="admin-button">
-                <span aria-hidden="true">+</span> Add court
+                <span aria-hidden="true">+</span> {{ __('Add court') }}
             </a>
         </x-slot:actions>
     </x-super-admin.page-header>
 
     <x-super-admin.form-errors />
 
+    <x-super-admin.list-filters :action="route('admin.courts.index')"
+        placeholder="Court name or address"
+        :selects="['status' => ['Status', 'All statuses', $statuses], 'sport_id' => ['Sport', 'All Sports', $sportOptions]]" />
+
     <section class="admin-card super-admin-table-card" aria-labelledby="owner-court-list">
         <div class="admin-card-header">
-            <h2 id="owner-court-list">Courts ({{ $courts->total() }})</h2>
+            <h2 id="owner-court-list">{{ __('Courts (') }}{{ $courts->total() }})</h2>
         </div>
 
         <div class="admin-table-wrap">
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th scope="col">Image</th>
-                        <th scope="col">Court</th>
-                        <th scope="col">Sport</th>
-                        <th scope="col">Address</th>
-                        <th scope="col">Listing status</th>
-                        <th scope="col">Actions</th>
+                        <th scope="col">{{ __('Image') }}</th>
+                        <th scope="col">{{ __('Court') }}</th>
+                        <th scope="col">{{ __('Sport') }}</th>
+                        <th scope="col">{{ __('Address') }}</th>
+                        <th scope="col">{{ __('Listing status') }}</th>
+                        <th scope="col">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
 
@@ -42,11 +46,7 @@
                                 default => '',
                             };
 
-                            $imageUrl = $court->image
-                                ? (\Illuminate\Support\Str::startsWith($court->image, 'images/')
-                                    ? asset($court->image)
-                                    : asset('storage/' . $court->image))
-                                : asset('courtbook-assets/images/hero-football.png');
+                            $imageUrl = $court->thumbnailUrl();
                         @endphp
 
                         <tr>
@@ -65,13 +65,13 @@
                                 </a>
                             </td>
 
-                            <td>{{ $court->sports?->name ?? '—' }}</td>
+                            <td>{{ __($court->sports?->name ?? '—') }}</td>
 
                             <td dir="auto">{{ $court->address ?: '—' }}</td>
 
                             <td>
                                 <span class="badge {{ $statusClass }}">
-                                    {{ ucfirst($court->status) }}
+                                    {{ __(ucfirst($court->status)) }}
                                 </span>
                             </td>
 
@@ -79,17 +79,17 @@
                                 <div class="super-admin-inline-actions">
                                     <a href="{{ route('admin.courts.edit', $court) }}"
                                        class="admin-button admin-button-outline">
-                                        Edit
+                                        {{ __('Edit') }}
                                     </a>
 
                                     <form action="{{ route('admin.courts.destroy', $court) }}"
                                           method="POST"
-                                          onsubmit="return confirm('Are you sure you want to delete this court?');">
+                                          onsubmit="return confirm(@js(__('Are you sure you want to delete this court?')));">
                                         @csrf
                                         @method('DELETE')
 
                                         <button class="admin-button admin-button-danger" type="submit">
-                                            Delete
+                                            {{ __('Delete') }}
                                         </button>
                                     </form>
                                 </div>
@@ -98,7 +98,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="super-admin-empty">
-                                You haven’t added any courts yet.
+                                {{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'You haven’t added any courts yet.') }}
                             </td>
                         </tr>
                     @endforelse

@@ -6,7 +6,7 @@
 @endpush
 @section('content')
 <div class="wrap page review-page">
-  <header class="review-hero"><span class="review-eyebrow">GANG · COMMUNITY</span><h1>{{ __('Customer Reviews') }}</h1><p>{{ __('Real experiences from players across our courts.') }}</p></header>
+  <header class="review-hero"><span class="review-eyebrow">{{ __('GANG · COMMUNITY') }}</span><h1>{{ __('Customer Reviews') }}</h1><p>{{ __('Real experiences from players across our courts.') }}</p></header>
   @if(session('success'))<div class="review-alert" role="status">{{ session('success') }}</div>@endif
   @auth<p class="review-muted">{{ __('To add a review, open a completed booking and select Write Review.') }}</p>@endauth
   <div class="review-grid">

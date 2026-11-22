@@ -19,36 +19,36 @@
 
 :root {
     /* Brand */
-    --admin-primary: #16a34a;
-    --admin-primary-dark: #166534;
-    --admin-primary-light: #dcfce7;
+    --admin-primary: light-dark(#16a34a, var(--night-green));
+    --admin-primary-dark: light-dark(#166534, var(--night-green));
+    --admin-primary-light: light-dark(#dcfce7, var(--night-fill));
 
-    --admin-accent: #f59e0b;
-    --admin-accent-dark: #d97706;
-    --admin-accent-light: #fff3df;
+    --admin-accent: light-dark(#f59e0b, var(--night-warning-ink));
+    --admin-accent-dark: light-dark(#d97706, var(--night-warning-ink));
+    --admin-accent-light: light-dark(#fff3df, var(--night-warning-bg));
 
     /* Surfaces */
-    --admin-background: #f8fafc;
-    --admin-surface: #ffffff;
-    --admin-hover: #f3f4f6;
-    --admin-border: #e5e7eb;
+    --admin-background: light-dark(#f8fafc, var(--night-canvas));
+    --admin-surface: light-dark(#ffffff, var(--night-panel));
+    --admin-hover: light-dark(#f3f4f6, var(--night-raised));
+    --admin-border: light-dark(#e5e7eb, var(--night-line));
 
     /* Text */
-    --admin-text: #111827;
-    --admin-heading: #172033;
-    --admin-subtle: #64748b;
-    --admin-muted: #6b7280;
-    --admin-faint: #94a3b8;
+    --admin-text: light-dark(#111827, var(--night-ink));
+    --admin-heading: light-dark(#172033, var(--night-ink));
+    --admin-subtle: light-dark(#64748b, var(--night-muted));
+    --admin-muted: light-dark(#6b7280, var(--night-muted));
+    --admin-faint: light-dark(#94a3b8, var(--night-muted));
 
     /* Status colors */
-    --success-bg: #dcfce7;
-    --success-text: #166534;
-    --warning-bg: #fef3c7;
-    --warning-text: #92400e;
-    --info-bg: #eaf1ff;
-    --info-text: #3567c8;
-    --danger-bg: #fef2f2;
-    --danger-text: #dc2626;
+    --success-bg: light-dark(#dcfce7, var(--night-success-bg));
+    --success-text: light-dark(#166534, var(--night-green));
+    --warning-bg: light-dark(#fef3c7, var(--night-warning-bg));
+    --warning-text: light-dark(#92400e, var(--night-warning-ink));
+    --info-bg: light-dark(#eaf1ff, var(--night-info-bg));
+    --info-text: light-dark(#3567c8, var(--night-info-ink));
+    --danger-bg: light-dark(#fef2f2, var(--night-danger-bg));
+    --danger-text: light-dark(#dc2626, var(--night-danger-ink));
 
     /* Sizes */
     --admin-sidebar-width: 268px;
@@ -59,8 +59,8 @@
     --admin-radius: 16px;
     --admin-radius-sm: 10px;
 
-    --admin-shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.04);
-    --admin-shadow-md: 0 8px 24px rgba(17, 24, 39, 0.08);
+    --admin-shadow-sm: 0 1px 2px light-dark(rgba(17, 24, 39, 0.04), var(--night-shadow));
+    --admin-shadow-md: 0 8px 24px light-dark(rgba(17, 24, 39, 0.08), var(--night-shadow));
 }
 
 
@@ -200,7 +200,7 @@ body.no-scroll {
     padding: 11px 14px;
     border-radius: var(--admin-radius-sm);
 
-    color: #4b5563;
+    color: light-dark(#4b5563, var(--night-info-ink));
     font-size: 14px;
     font-weight: 600;
 
@@ -363,7 +363,7 @@ body.no-scroll {
     align-items: center;
     justify-content: space-between;
 
-    background: rgba(255, 255, 255, 0.88);
+    background: light-dark(rgba(255, 255, 255, 0.88), color-mix(in srgb, var(--night-panel) 88%, transparent));
     backdrop-filter: saturate(180%) blur(10px);
     -webkit-backdrop-filter: saturate(180%) blur(10px);
     border-bottom: 1px solid var(--admin-border);
@@ -404,7 +404,7 @@ body.no-scroll {
     border: 1px solid var(--admin-border);
     border-radius: var(--admin-radius-sm);
     background: var(--admin-surface);
-    color: #4b5563;
+    color: light-dark(#4b5563, var(--night-info-ink));
 
     cursor: pointer;
     transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
@@ -540,7 +540,7 @@ body.no-scroll {
 }
 
 .admin-button-outline:hover {
-    background: #f9fafb;
+    background: light-dark(#f9fafb, var(--night-panel));
     box-shadow: none;
 }
 
@@ -632,7 +632,7 @@ body.no-scroll {
     border-radius: 999px;
 
     background: var(--admin-hover);
-    color: #4b5563;
+    color: light-dark(#4b5563, var(--night-info-ink));
 
     font-size: 12px;
     font-weight: 700;
@@ -709,7 +709,7 @@ textarea.form-control {
 .form-control:focus {
     outline: none;
     border-color: var(--admin-primary);
-    box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.14);
+    box-shadow: 0 0 0 4px light-dark(rgba(22, 163, 74, 0.14), var(--night-shadow));
 }
 
 
@@ -732,7 +732,7 @@ textarea.form-control {
 .empty-state h3 {
     margin: 0 0 8px;
     font-size: 16px;
-    color: #334155;
+    color: light-dark(#334155, var(--night-info-ink));
 }
 
 .empty-state p {
@@ -821,10 +821,10 @@ textarea.form-control {
     font-size: 22px;
 }
 
-.courts-icon       { background: #e9f2ff; }
-.reservations-icon { background: #f0eaff; }
-.sports-icon       { background: #e6f8ee; }
-.revenue-icon      { background: #fff4df; }
+.courts-icon       { background: light-dark(#e9f2ff, var(--night-info-bg)); }
+.reservations-icon { background: light-dark(#f0eaff, var(--night-info-bg)); }
+.sports-icon       { background: light-dark(#e6f8ee, var(--night-raised)); }
+.revenue-icon      { background: light-dark(#fff4df, var(--night-warning-bg)); }
 
 .stat-info {
     min-width: 0;
@@ -1084,17 +1084,17 @@ textarea.form-control {
 .court-prices p {
     margin: 0;
     font-size: 14px;
-    color: #64748b;
+    color: light-dark(#64748b, var(--night-info-ink));
 }
 
 .court-prices strong {
-    color: #1e293b;
+    color: light-dark(#1A4030, var(--night-ink));
 }
 
 .court-deposit {
     margin-top: 12px;
     font-size: 14px;
-    color: #64748b;
+    color: light-dark(#64748b, var(--night-info-ink));
 }
 
 .court-status {
@@ -1104,8 +1104,8 @@ textarea.form-control {
     border-radius: 20px;
     font-size: 13px;
     font-weight: 600;
-    background: #dcfce7;
-    color: #166534;
+    background: light-dark(#dcfce7, var(--night-raised));
+    color: light-dark(#166534, var(--night-green));
 }
 
 
@@ -1137,16 +1137,16 @@ textarea.form-control {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    background: #ffffff;
-    border: 1px solid #e5e9ef;
+    background: light-dark(#ffffff, var(--night-panel));
+    border: 1px solid light-dark(#e5e9ef, var(--night-line));
     border-radius: 16px;
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+    box-shadow: 0 2px 6px light-dark(rgba(15, 23, 42, 0.03), var(--night-shadow));
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .reservation-stats .stat-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+    box-shadow: 0 6px 16px light-dark(rgba(15, 23, 42, 0.06), var(--night-shadow));
 }
 
 .reservation-stats .stat-card-info {
@@ -1159,7 +1159,7 @@ textarea.form-control {
     font-size: 14px;
     line-height: 1.5;
     font-weight: 500;
-    color: #7b8798;
+    color: light-dark(#7b8798, var(--night-info-ink));
 }
 
 .reservation-stats .stat-card-info h3 {
@@ -1167,7 +1167,7 @@ textarea.form-control {
     font-size: 30px;
     line-height: 1;
     font-weight: 700;
-    color: #182230;
+    color: light-dark(#182230, var(--night-info-ink));
 }
 
 .reservation-stats .stat-card-icon {
@@ -1184,23 +1184,23 @@ textarea.form-control {
 /* Stat colors */
 
 .reservation-stats .pending-icon {
-    color: #d99014;
-    background: #fff4df;
+    color: light-dark(#d99014, var(--night-warning-ink));
+    background: light-dark(#fff4df, var(--night-warning-bg));
 }
 
 .reservation-stats .confirmed-icon {
-    color: #169447;
-    background: #e4f7eb;
+    color: light-dark(#169447, var(--night-green));
+    background: light-dark(#e4f7eb, var(--night-raised));
 }
 
 .reservation-stats .cancelled-icon {
-    color: #dc4545;
-    background: #fdeaea;
+    color: light-dark(#dc4545, var(--night-danger-ink));
+    background: light-dark(#fdeaea, var(--night-danger-bg));
 }
 
 .reservation-stats .completed-icon {
-    color: #3679df;
-    background: #e9f1ff;
+    color: light-dark(#3679df, var(--night-info-ink));
+    background: light-dark(#e9f1ff, var(--night-info-bg));
 }
 
 
@@ -1209,11 +1209,11 @@ textarea.form-control {
 ========================================= */
 
 .reservations-card {
-    background: #ffffff;
-    border: 1px solid #e5e9ef;
+    background: light-dark(#ffffff, var(--night-panel));
+    border: 1px solid light-dark(#e5e9ef, var(--night-line));
     border-radius: 16px;
     padding: 28px;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+    box-shadow: 0 2px 8px light-dark(rgba(15, 23, 42, 0.03), var(--night-shadow));
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -1226,7 +1226,7 @@ textarea.form-control {
 }
 
 .reservations-card .admin-card-header h2 {
-    color: #182230;
+    color: light-dark(#182230, var(--night-info-ink));
     font-size: 22px;
     font-weight: 700;
     margin: 0;
@@ -1235,7 +1235,7 @@ textarea.form-control {
 .reservations-card .admin-card-header p {
     margin: 8px 0 0;
     font-size: 14px;
-    color: #8490a3;
+    color: light-dark(#8490a3, var(--night-info-ink));
 }
 
 
@@ -1262,30 +1262,30 @@ textarea.form-control {
     min-width: 0;
     height: 46px;
     padding: 0 16px;
-    border: 1px solid #e0e5ec;
+    border: 1px solid light-dark(#e0e5ec, var(--night-line));
     border-radius: 10px;
-    background: #f8fafc;
-    color: #182230;
+    background: light-dark(#f8fafc, var(--night-panel));
+    color: light-dark(#182230, var(--night-info-ink));
     font-size: 14px;
     outline: none;
     transition: all 0.2s ease;
 }
 
 .reservation-search input::placeholder {
-    color: #98a2b3;
+    color: light-dark(#98a2b3, var(--night-info-ink));
 }
 
 .reservation-search input:focus {
-    background: #ffffff;
-    border-color: #16a34a;
-    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.09);
+    background: light-dark(#ffffff, var(--night-panel));
+    border-color: light-dark(#16a34a, var(--night-line));
+    box-shadow: 0 0 0 3px light-dark(rgba(22, 163, 74, 0.09), var(--night-shadow));
 }
 
 .reservation-search button {
     height: 46px;
     padding: 0 24px;
     border-radius: 10px;
-    background: #16a34a;
+    background: light-dark(#16a34a, var(--night-brand));
     color: #ffffff;
     border: none;
     font-weight: 600;
@@ -1295,7 +1295,7 @@ textarea.form-control {
 }
 
 .reservation-search button:hover {
-    background: #12843c;
+    background: light-dark(#12843c, var(--night-brand));
 }
 
 
@@ -1314,9 +1314,9 @@ textarea.form-control {
     width: 175px;
     height: 43px;
     padding: 0 13px;
-    background-color: #ffffff;
-    color: #354154;
-    border: 1px solid #e0e5ec;
+    background-color: light-dark(#ffffff, var(--night-panel));
+    color: light-dark(#354154, var(--night-info-ink));
+    border: 1px solid light-dark(#e0e5ec, var(--night-line));
     border-radius: 9px;
     font-size: 14px;
     outline: none;
@@ -1324,15 +1324,15 @@ textarea.form-control {
 }
 
 .reservation-filter-group select:focus {
-    border-color: #16a34a;
+    border-color: light-dark(#16a34a, var(--night-line));
 }
 
 .reservation-filter-group button {
     height: 43px;
     padding: 0 18px;
-    border: 1px solid #16a34a;
+    border: 1px solid light-dark(#16a34a, var(--night-line));
     border-radius: 9px;
-    background: #16a34a;
+    background: light-dark(#16a34a, var(--night-brand));
     color: #ffffff;
     font-size: 14px;
     font-weight: 600;
@@ -1341,8 +1341,8 @@ textarea.form-control {
 }
 
 .reservation-filter-group button:hover {
-    background: #12843c;
-    border-color: #12843c;
+    background: light-dark(#12843c, var(--night-brand));
+    border-color: light-dark(#12843c, var(--night-line));
 }
 
 .reservation-filter-group a {
@@ -1351,19 +1351,19 @@ textarea.form-control {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #e0e5ec;
+    border: 1px solid light-dark(#e0e5ec, var(--night-line));
     border-radius: 9px;
-    background: #ffffff;
-    color: #647184;
+    background: light-dark(#ffffff, var(--night-panel));
+    color: light-dark(#647184, var(--night-info-ink));
     text-decoration: none;
     font-size: 14px;
     transition: 0.2s ease;
 }
 
 .reservation-filter-group a:hover {
-    background: #f5f7fa;
-    color: #182230;
-    border-color: #cbd3de;
+    background: light-dark(#f5f7fa, var(--night-panel));
+    color: light-dark(#182230, var(--night-info-ink));
+    border-color: light-dark(#cbd3de, var(--night-line));
 }
 
 
@@ -1374,9 +1374,9 @@ textarea.form-control {
 .reservations-card .admin-table-wrap {
     width: 100%;
     overflow-x: auto;
-    border: 1px solid #e8edf3;
+    border: 1px solid light-dark(#e8edf3, var(--night-line));
     border-radius: 12px;
-    background: #ffffff;
+    background: light-dark(#ffffff, var(--night-panel));
 }
 
 .reservations-card .admin-table {
@@ -1388,24 +1388,24 @@ textarea.form-control {
 }
 
 .reservations-card .admin-table thead {
-    background: #f7f9fc;
+    background: light-dark(#f7f9fc, var(--night-panel));
 }
 
 .reservations-card .admin-table th {
     padding: 16px 14px;
     text-align: left;
-    color: #68778d;
+    color: light-dark(#68778d, var(--night-info-ink));
     font-size: 13px;
     font-weight: 600;
-    border-bottom: 1px solid #e8edf3;
+    border-bottom: 1px solid light-dark(#e8edf3, var(--night-line));
     white-space: nowrap;
 }
 
 .reservations-card .admin-table td {
     padding: 17px 14px;
-    color: #64748b;
+    color: light-dark(#64748b, var(--night-info-ink));
     font-size: 13px;
-    border-bottom: 1px solid #edf1f5;
+    border-bottom: 1px solid light-dark(#edf1f5, var(--night-line));
     white-space: nowrap;
     vertical-align: middle;
 }
@@ -1419,11 +1419,11 @@ textarea.form-control {
 }
 
 .reservations-card .admin-table tbody tr:hover {
-    background: #f9fbfd;
+    background: light-dark(#f9fbfd, var(--night-panel));
 }
 
 .reservations-card .admin-table td:first-child {
-    color: #8b96a8;
+    color: light-dark(#8b96a8, var(--night-info-ink));
     font-weight: 600;
 }
 
@@ -1446,27 +1446,27 @@ textarea.form-control {
 }
 
 .reservations-card .status-badge.pending {
-    color: #b77908;
-    background: #fff5df;
-    border-color: #f8e6bd;
+    color: light-dark(#b77908, var(--night-warning-ink));
+    background: light-dark(#fff5df, var(--night-warning-bg));
+    border-color: light-dark(#f8e6bd, var(--night-line));
 }
 
 .reservations-card .status-badge.confirmed {
-    color: #15803d;
-    background: #e9f8ee;
-    border-color: #ccebd6;
+    color: light-dark(#15803d, var(--night-green));
+    background: light-dark(#e9f8ee, var(--night-raised));
+    border-color: light-dark(#ccebd6, var(--night-line));
 }
 
 .reservations-card .status-badge.cancelled {
-    color: #c73737;
-    background: #fff0f0;
-    border-color: #f4d1d1;
+    color: light-dark(#c73737, var(--night-danger-ink));
+    background: light-dark(#fff0f0, var(--night-panel));
+    border-color: light-dark(#f4d1d1, var(--night-line));
 }
 
 .reservations-card .status-badge.completed {
-    color: #2868c7;
-    background: #edf4ff;
-    border-color: #d5e4fc;
+    color: light-dark(#2868c7, var(--night-info-ink));
+    background: light-dark(#edf4ff, var(--night-info-bg));
+    border-color: light-dark(#d5e4fc, var(--night-line));
 }
 
 
@@ -1504,37 +1504,37 @@ textarea.form-control {
 }
 
 .reservation-actions .confirm-action {
-    background: #e9f8ee;
-    color: #15803d;
-    border-color: #ccebd6;
+    background: light-dark(#e9f8ee, var(--night-raised));
+    color: light-dark(#15803d, var(--night-green));
+    border-color: light-dark(#ccebd6, var(--night-line));
 }
 
 .reservation-actions .confirm-action:hover {
-    background: #d5f2df;
+    background: light-dark(#d5f2df, var(--night-raised));
 }
 
 .reservation-actions .complete-action {
-    background: #edf4ff;
-    color: #2868c7;
-    border-color: #d5e4fc;
+    background: light-dark(#edf4ff, var(--night-info-bg));
+    color: light-dark(#2868c7, var(--night-info-ink));
+    border-color: light-dark(#d5e4fc, var(--night-line));
 }
 
 .reservation-actions .complete-action:hover {
-    background: #dceaff;
+    background: light-dark(#dceaff, var(--night-info-bg));
 }
 
 .reservation-actions .cancel-action {
-    background: #fff0f0;
-    color: #c73737;
-    border-color: #f4d1d1;
+    background: light-dark(#fff0f0, var(--night-panel));
+    color: light-dark(#c73737, var(--night-danger-ink));
+    border-color: light-dark(#f4d1d1, var(--night-line));
 }
 
 .reservation-actions .cancel-action:hover {
-    background: #ffe2e2;
+    background: light-dark(#ffe2e2, var(--night-danger-bg));
 }
 
 .reservation-actions .no-actions {
-    color: #b5bdc9;
+    color: light-dark(#b5bdc9, var(--night-info-ink));
     font-size: 17px;
 }
 
@@ -1556,19 +1556,19 @@ textarea.form-control {
     align-items: center;
     justify-content: center;
     border-radius: 16px;
-    background: #f3f6f9;
-    color: #94a0b2;
+    background: light-dark(#f3f6f9, var(--night-panel));
+    color: light-dark(#94a0b2, var(--night-info-ink));
     font-size: 26px;
 }
 
 .reservations-card .empty-state h3 {
-    color: #263244;
+    color: light-dark(#263244, var(--night-info-ink));
     font-size: 17px;
     margin: 0 0 8px;
 }
 
 .reservations-card .empty-state p {
-    color: #8b96a8;
+    color: light-dark(#8b96a8, var(--night-info-ink));
     font-size: 14px;
     margin: 0;
 }
@@ -1605,21 +1605,21 @@ textarea.form-control {
 }
 
 .reservations-pagination nav a {
-    background: #ffffff;
-    border: 1px solid #e5e9ef;
-    color: #647184;
+    background: light-dark(#ffffff, var(--night-panel));
+    border: 1px solid light-dark(#e5e9ef, var(--night-line));
+    color: light-dark(#647184, var(--night-info-ink));
     transition: all 0.2s ease;
 }
 
 .reservations-pagination nav a:hover {
-    border-color: #16a34a;
-    color: #16a34a;
-    background: #f0fdf4;
+    border-color: light-dark(#16a34a, var(--night-line));
+    color: light-dark(#16a34a, var(--night-green));
+    background: light-dark(#f0fdf4, var(--night-panel));
 }
 
 .reservations-pagination nav span[aria-current="page"] {
-    background: #16a34a;
-    border: 1px solid #16a34a;
+    background: light-dark(#16a34a, var(--night-brand));
+    border: 1px solid light-dark(#16a34a, var(--night-line));
     color: #ffffff;
     font-weight: 600;
 }
@@ -1726,40 +1726,40 @@ textarea.form-control {
 
 /* Confirm - Green */
 .reservation-actions .action-confirm {
-    background: #e9f8ee;
-    color: #15803d;
-    border-color: #ccebd6;
+    background: light-dark(#e9f8ee, var(--night-raised));
+    color: light-dark(#15803d, var(--night-green));
+    border-color: light-dark(#ccebd6, var(--night-line));
 }
 
 .reservation-actions .action-confirm:hover {
-    background: #d5f2df;
+    background: light-dark(#d5f2df, var(--night-raised));
 }
 
 /* Complete - Blue */
 .reservation-actions .action-complete {
-    background: #edf4ff;
-    color: #2868c7;
-    border-color: #d5e4fc;
+    background: light-dark(#edf4ff, var(--night-info-bg));
+    color: light-dark(#2868c7, var(--night-info-ink));
+    border-color: light-dark(#d5e4fc, var(--night-line));
 }
 
 .reservation-actions .action-complete:hover {
-    background: #dceaff;
+    background: light-dark(#dceaff, var(--night-info-bg));
 }
 
 /* Cancel - Red */
 .reservation-actions .action-cancel {
-    background: #fff0f0;
-    color: #c73737;
-    border-color: #f4d1d1;
+    background: light-dark(#fff0f0, var(--night-panel));
+    color: light-dark(#c73737, var(--night-danger-ink));
+    border-color: light-dark(#f4d1d1, var(--night-line));
 }
 
 .reservation-actions .action-cancel:hover {
-    background: #ffe2e2;
+    background: light-dark(#ffe2e2, var(--night-danger-bg));
 }
 
 /* Final states */
 .reservation-actions .no-actions {
-    color: #a5afbd;
+    color: light-dark(#a5afbd, var(--night-info-ink));
     font-size: 16px;
     text-align: center;
     width: 100%;
@@ -1794,7 +1794,7 @@ textarea.form-control {
 
 .subscriptions-page .section-header p {
     margin: 0;
-    color: #64748b;
+    color: light-dark(#64748b, var(--night-info-ink));
 }
 
 /* Statistics Grid */
@@ -1810,9 +1810,9 @@ textarea.form-control {
     height: auto !important;
     padding: 22px !important;
     border-radius: 16px;
-    background: #ffffff;
-    border: 1px solid #e8edf2;
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    background: light-dark(#ffffff, var(--night-panel));
+    border: 1px solid light-dark(#e8edf2, var(--night-line));
+    box-shadow: 0 4px 14px light-dark(rgba(15, 23, 42, 0.04), var(--night-shadow));
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1822,14 +1822,14 @@ textarea.form-control {
 
 .subscriptions-stats .stat-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.07);
+    box-shadow: 0 8px 20px light-dark(rgba(15, 23, 42, 0.07), var(--night-shadow));
 }
 
 .subscriptions-stats .stat-card h3,
 .subscriptions-stats .stat-card .stat-title {
     margin: 0;
     font-size: 14px;
-    color: #64748b;
+    color: light-dark(#64748b, var(--night-info-ink));
     font-weight: 500;
 }
 
@@ -1839,28 +1839,28 @@ textarea.form-control {
     margin: 0;
     font-size: 28px;
     font-weight: 700;
-    color: #172033;
+    color: light-dark(#172033, var(--night-info-ink));
 }
 
 /* Statistics colors */
 .subscriptions-stats .stat-card:nth-child(1) {
-    border-top: 3px solid #16a34a;
+    border-top: 3px solid light-dark(#16a34a, var(--night-line));
 }
 
 .subscriptions-stats .stat-card:nth-child(2) {
-    border-top: 3px solid #16a34a;
+    border-top: 3px solid light-dark(#16a34a, var(--night-line));
 }
 
 .subscriptions-stats .stat-card:nth-child(3) {
-    border-top: 3px solid #f59e0b;
+    border-top: 3px solid light-dark(#f59e0b, var(--night-line));
 }
 
 .subscriptions-stats .stat-card:nth-child(4) {
-    border-top: 3px solid #64748b;
+    border-top: 3px solid light-dark(#64748b, var(--night-line));
 }
 
 .subscriptions-stats .stat-card:nth-child(5) {
-    border-top: 3px solid #ef4444;
+    border-top: 3px solid light-dark(#ef4444, var(--night-line));
 }
 
 /* Search and filter section */
@@ -1887,10 +1887,10 @@ textarea.form-control {
     gap: 12px;
     margin-top: 12px;
     padding: 14px 16px;
-    border: 1px solid #dce9db;
+    border: 1px solid light-dark(#dce9db, var(--night-line));
     border-radius: 14px;
-    background: linear-gradient(120deg, #f7faf5, #eef5e9);
-    color: #183d2b;
+    background: linear-gradient(120deg, light-dark(#f7faf5, var(--night-panel)), light-dark(#eef5e9, var(--night-raised)));
+    color: light-dark(#183d2b, var(--night-ink));
 }
 
 .subscription-court-preview-icon {
@@ -1900,8 +1900,8 @@ textarea.form-control {
     width: 38px;
     height: 38px;
     border-radius: 12px;
-    background: #dff0df;
-    color: #176b45;
+    background: light-dark(#dff0df, var(--night-raised));
+    color: light-dark(#176b45, var(--night-green));
 }
 
 .subscription-court-preview-icon svg {
@@ -1920,7 +1920,7 @@ textarea.form-control {
 }
 
 .subscription-court-preview-copy span {
-    color: #66796d;
+    color: light-dark(#66796d, var(--night-green));
     font-size: 12px;
     overflow-wrap: anywhere;
 }
@@ -1928,23 +1928,23 @@ textarea.form-control {
 .subscription-courts-empty {
     margin: 0 0 18px;
     padding: 14px 16px;
-    border: 1px solid #f0dfb8;
+    border: 1px solid light-dark(#f0dfb8, var(--night-line));
     border-radius: 12px;
-    background: #fff9eb;
-    color: #765a23;
+    background: light-dark(#fff9eb, var(--night-panel));
+    color: light-dark(#765a23, var(--night-warning-ink));
 }
 
 .subscription-courts-empty a {
     margin-left: 5px;
-    color: #176b45;
+    color: light-dark(#176b45, var(--night-green));
     font-weight: 800;
 }
 
 /* Table Card */
 .subscriptions-page .admin-card {
     border-radius: 16px;
-    border: 1px solid #e8edf2;
-    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+    border: 1px solid light-dark(#e8edf2, var(--night-line));
+    box-shadow: 0 4px 18px light-dark(rgba(15, 23, 42, 0.04), var(--night-shadow));
     overflow: hidden;
 }
 
@@ -1965,22 +1965,22 @@ textarea.form-control {
 
 .subscriptions-page .admin-table th {
     padding: 17px 16px;
-    background: #f8fafc;
-    color: #64748b;
+    background: light-dark(#f8fafc, var(--night-panel));
+    color: light-dark(#64748b, var(--night-info-ink));
     font-size: 13px;
     font-weight: 600;
     text-align: left;
     white-space: nowrap;
-    border-bottom: 1px solid #e8edf2;
+    border-bottom: 1px solid light-dark(#e8edf2, var(--night-line));
 }
 
 .subscriptions-page .admin-table td {
     padding: 17px 16px;
-    color: #475569;
+    color: light-dark(#475569, var(--night-info-ink));
     font-size: 14px;
     vertical-align: middle;
     white-space: nowrap;
-    border-bottom: 1px solid #eef2f6;
+    border-bottom: 1px solid light-dark(#eef2f6, var(--night-line));
 }
 
 .subscriptions-page .admin-table tbody tr {
@@ -1988,7 +1988,7 @@ textarea.form-control {
 }
 
 .subscriptions-page .admin-table tbody tr:hover {
-    background: #f8fafc;
+    background: light-dark(#f8fafc, var(--night-panel));
 }
 
 .subscriptions-page .admin-table tbody tr:last-child td {
@@ -1998,7 +1998,7 @@ textarea.form-control {
 /* Amount */
 .subscriptions-page .admin-table td:nth-child(6) {
     font-weight: 600;
-    color: #172033;
+    color: light-dark(#172033, var(--night-info-ink));
 }
 
 /* Status */
@@ -2039,27 +2039,27 @@ textarea.form-control {
 
 /* View */
 .subscriptions-page .subscription-actions .admin-button-outline {
-    background: #ffffff;
-    color: #475569;
-    border: 1px solid #dbe3eb;
+    background: light-dark(#ffffff, var(--night-panel));
+    color: light-dark(#475569, var(--night-info-ink));
+    border: 1px solid light-dark(#dbe3eb, var(--night-line));
 }
 
 /* Edit */
 .subscriptions-page .subscription-actions .admin-button-edit {
-    background: #16a34a;
+    background: light-dark(#16a34a, var(--night-brand));
     color: #ffffff !important;
-    border: 1px solid #16a34a;
+    border: 1px solid light-dark(#16a34a, var(--night-line));
 }
 
 .subscriptions-page .subscription-actions .admin-button-edit:hover {
-    background: #15803d;
+    background: light-dark(#15803d, var(--night-brand));
 }
 
 /* Delete */
 .subscriptions-page .subscription-actions .admin-button-danger {
-    background: #ef4444 !important;
+    background: light-dark(#ef4444, var(--night-danger-bg)) !important;
     color: #ffffff !important;
-    border: 1px solid #ef4444 !important;
+    border: 1px solid light-dark(#ef4444, var(--night-line)) !important;
 }
 
 .subscriptions-page .subscription-actions .admin-button-danger:hover {
@@ -2070,7 +2070,7 @@ textarea.form-control {
 .subscriptions-page .table-empty {
     padding: 45px 20px !important;
     text-align: center;
-    color: #94a3b8;
+    color: light-dark(#94a3b8, var(--night-info-ink));
 }
 
 /* Pagination */
@@ -2140,7 +2140,7 @@ textarea.form-control {
 }
 
 .group-games-header p {
-    color: #777;
+    color: light-dark(#777, var(--night-muted));
     margin: 0;
 }
 
@@ -2152,7 +2152,7 @@ textarea.form-control {
 
 .group-games-stats .stat-card h3 {
     font-size: 14px;
-    color: #777;
+    color: light-dark(#777, var(--night-muted));
     margin-bottom: 10px;
 }
 
@@ -2176,7 +2176,7 @@ textarea.form-control {
 }
 
 .admin-table td small {
-    color: #777;
+    color: light-dark(#777, var(--night-muted));
     font-size: 12px;
 }
 
@@ -2244,12 +2244,12 @@ textarea.form-control {
     margin: 0 0 8px;
     font-size: 28px;
     font-weight: 700;
-    color: #1f2937;
+    color: light-dark(#1f2937, var(--night-info-ink));
 }
 
 .group-game-edit-header p {
     margin: 0;
-    color: #6b7280;
+    color: light-dark(#6b7280, var(--night-info-ink));
     font-size: 14px;
 }
 
@@ -2283,7 +2283,7 @@ textarea.form-control {
     gap: 12px;
     margin-top: 30px;
     padding-top: 22px;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid light-dark(#e5e7eb, var(--night-line));
 }
 
 /* Validation Errors */
@@ -2291,7 +2291,7 @@ textarea.form-control {
 .group-game-edit-page .form-error {
     display: block;
     margin-top: 7px;
-    color: #dc2626;
+    color: light-dark(#dc2626, var(--night-danger-ink));
     font-size: 13px;
 }
 
@@ -2361,35 +2361,35 @@ textarea.form-control {
 
 /* Edit */
 .game-edit-btn {
-    color: #2563eb;
-    background: #eff6ff;
-    border-color: #dbeafe;
+    color: light-dark(#2563eb, var(--night-info-ink));
+    background: light-dark(#eff6ff, var(--night-info-bg));
+    border-color: light-dark(#dbeafe, var(--night-line));
 }
 
 .game-edit-btn:hover {
-    background: #2563eb;
+    background: light-dark(#2563eb, var(--night-info-bg));
     color: #ffffff;
-    border-color: #2563eb;
+    border-color: light-dark(#2563eb, var(--night-line));
 }
 
 /* Cancel */
 .game-cancel-btn {
-    color: #b45309;
-    background: #fffbeb;
-    border-color: #fde68a;
+    color: light-dark(#b45309, var(--night-warning-ink));
+    background: light-dark(#fffbeb, var(--night-warning-bg));
+    border-color: light-dark(#fde68a, var(--night-line));
 }
 
 .game-cancel-btn:hover {
-    background: #f59e0b;
+    background: light-dark(#f59e0b, var(--night-warning-bg));
     color: #ffffff;
-    border-color: #f59e0b;
+    border-color: light-dark(#f59e0b, var(--night-line));
 }
 
 /* Delete */
 .game-delete-btn {
-    color: #dc2626;
-    background: #fef2f2;
-    border-color: #fecaca;
+    color: light-dark(#dc2626, var(--night-danger-ink));
+    background: light-dark(#fef2f2, var(--night-panel));
+    border-color: light-dark(#fecaca, var(--night-line));
 }
 
 .game-delete-btn:hover {
@@ -2400,7 +2400,7 @@ textarea.form-control {
 
 /* Focus */
 .game-action-btn:focus-visible {
-    outline: 3px solid rgba(59, 130, 246, 0.25);
+    outline: 3px solid light-dark(rgba(59, 130, 246, 0.25), color-mix(in srgb, var(--night-line) 25%, transparent));
     outline-offset: 2px;
 }
 
@@ -2417,68 +2417,68 @@ textarea.form-control {
         font-size: 12px;
     }
 }
-/* Owner admin theme: sand, honey, navy, coral */
+/* Owner admin green palette */
 .owner-layout {
-    --admin-primary: #B5651D;
-    --admin-primary-dark: #965014;
-    --admin-primary-light: #F3E9DC;
-    --admin-accent: #E63946;
-    --admin-accent-dark: #BC2F3B;
-    --admin-accent-light: #FDEBED;
-    --admin-background: #F3E9DC;
-    --admin-surface: #FFFCF8;
-    --admin-hover: #EEE2D4;
-    --admin-border: #E6D8C8;
-    --admin-text: #1D3557;
-    --admin-heading: #1D3557;
-    --admin-subtle: #52657E;
-    --admin-muted: #68778B;
-    --admin-faint: #8A7C70;
-    --success-bg: #F3E9DC;
-    --success-text: #B5651D;
-    --warning-bg: #FDEBED;
-    --warning-text: #E63946;
-    --info-bg: #EDF1F6;
-    --info-text: #1D3557;
-    --danger-bg: #FDEBED;
-    --danger-text: #E63946;
-    background: #F3E9DC;
-    color: #1D3557;
+    --admin-primary: light-dark(#178044, var(--night-green));
+    --admin-primary-dark: light-dark(#146535, var(--night-green));
+    --admin-primary-light: light-dark(#EDF6EE, var(--night-fill));
+    --admin-accent: light-dark(#E63946, var(--night-warning-ink));
+    --admin-accent-dark: light-dark(#BC2F3B, var(--night-warning-ink));
+    --admin-accent-light: light-dark(#FDEBED, var(--night-warning-bg));
+    --admin-background: light-dark(#EDF6EE, var(--night-canvas));
+    --admin-surface: light-dark(#FCFEFC, var(--night-panel));
+    --admin-hover: light-dark(#E4F0E6, var(--night-raised));
+    --admin-border: light-dark(#D8E7DB, var(--night-line));
+    --admin-text: light-dark(#153E2B, var(--night-ink));
+    --admin-heading: light-dark(#153E2B, var(--night-ink));
+    --admin-subtle: light-dark(#456252, var(--night-muted));
+    --admin-muted: light-dark(#566C60, var(--night-muted));
+    --admin-faint: light-dark(#68796E, var(--night-muted));
+    --success-bg: light-dark(#EDF6EE, var(--night-success-bg));
+    --success-text: light-dark(#178044, var(--night-green));
+    --warning-bg: light-dark(#FDEBED, var(--night-warning-bg));
+    --warning-text: light-dark(#E63946, var(--night-warning-ink));
+    --info-bg: light-dark(#EDF7F2, var(--night-info-bg));
+    --info-text: light-dark(#153E2B, var(--night-info-ink));
+    --danger-bg: light-dark(#FDEBED, var(--night-danger-bg));
+    --danger-text: light-dark(#E63946, var(--night-danger-ink));
+    background: light-dark(#EDF6EE, var(--night-raised));
+    color: light-dark(#153E2B, var(--night-ink));
 }
-.owner-layout .owner-sidebar{background:#FFFCF8;border-color:#E6D8C8}
-.owner-layout .owner-topbar{background:#FFFCF8ED;border-color:#E6D8C8}
-.owner-layout .brand-icon{background:linear-gradient(145deg,#B5651D,#1D3557);box-shadow:0 6px 14px #1D355733}
-.owner-layout .brand-text h2,.owner-layout .topbar-title h1{color:#1D3557}
-.owner-layout .sidebar-label{color:#8A715A}
-.owner-layout .sidebar-link{color:#52657E}
-.owner-layout .sidebar-link:hover{background:#EEE2D4;color:#1D3557}
-.owner-layout .sidebar-link.active{background:#F3E9DC;color:#1D3557}
-.owner-layout .sidebar-link.active::before{background:#B5651D}
-.owner-layout .owner-content{background:#F3E9DC}
-.owner-layout .page-header h1,.owner-layout .section-header h2{color:#1D3557}
-.owner-layout .page-header p,.owner-layout .stat-label{color:#68778B}
-.owner-layout .stat-card,.owner-layout .section-card,.owner-layout .dashboard-section,.owner-layout .court-card{background:#FFFCF8;border-color:#E6D8C8}
-.owner-layout .stat-card:hover,.owner-layout .court-card:hover{border-color:#D4AE86;box-shadow:var(--admin-shadow-md)}
-.owner-layout .stat-info h2,.owner-layout .court-info h3,.owner-layout .court-details h3{color:#1D3557}
-.owner-layout .stat-icon{background:#F3E9DC;color:#B5651D}
-.owner-layout .courts-icon,.owner-layout .revenue-icon{background:#F3E9DC;color:#B5651D}
-.owner-layout .reservations-icon{background:#EDF1F6;color:#1D3557}
-.owner-layout .sports-icon{background:#FDEBED;color:#E63946}
-.owner-layout .section-header h2{color:#1D3557}
-.owner-layout .section-header a,.owner-layout .view-all{color:#B5651D}
-.owner-layout .court-sport,.owner-layout .court-address,.owner-layout .court-prices p,.owner-layout .court-deposit{color:#52657E}
-.owner-layout .court-prices strong{color:#1D3557}
-.owner-layout .court-status{background:#F3E9DC;color:#B5651D}
-.owner-layout .admin-table thead{background:#F8F0E8}
-.owner-layout .admin-table th{border-color:#E6D8C8;color:#68778B}
-.owner-layout .admin-table td{border-color:#EEE2D4;color:#52657E}
-.owner-layout .admin-table tbody tr:hover{background:#F8F0E8}
-.owner-layout .status-confirmed,.owner-layout .status-active{background:#F3E9DC;color:#B5651D}
-.owner-layout .status-pending{background:#FDEBED;color:#E63946}
-.owner-layout .status-completed{background:#EDF1F6;color:#1D3557}
-.owner-layout .status-cancelled,.owner-layout .status-canceled,.owner-layout .status-inactive{background:#FDEBED;color:#E63946}
-.owner-layout .empty-state{background:#F8F0E8;border-color:#E6D8C8}
-.owner-layout .empty-state h3,.owner-layout .empty-state p{color:#52657E}
-.owner-layout :focus-visible{outline-color:#B5651D}
+.owner-layout .owner-sidebar{background:light-dark(#FCFEFC, var(--night-panel));border-color:light-dark(#D8E7DB, var(--night-line))}
+.owner-layout .owner-topbar{background:light-dark(#FCFEFCED, color-mix(in srgb, var(--night-panel) 93%, transparent));border-color:light-dark(#D8E7DB, var(--night-line))}
+.owner-layout .brand-icon{background:linear-gradient(145deg,light-dark(#178044, var(--night-brand)),#153E2B);box-shadow:0 6px 14px light-dark(#153E2B33, var(--night-shadow))}
+.owner-layout .brand-text h2,.owner-layout .topbar-title h1{color:light-dark(#153E2B, var(--night-ink))}
+.owner-layout .sidebar-label{color:light-dark(#567060, var(--night-green))}
+.owner-layout .sidebar-link{color:light-dark(#456252, var(--night-green))}
+.owner-layout .sidebar-link:hover{background:light-dark(#E4F0E6, var(--night-raised));color:light-dark(#153E2B, var(--night-ink))}
+.owner-layout .sidebar-link.active{background:light-dark(#EDF6EE, var(--night-raised));color:light-dark(#153E2B, var(--night-ink))}
+.owner-layout .sidebar-link.active::before{background:light-dark(#178044, var(--night-brand))}
+.owner-layout .owner-content{background:light-dark(#EDF6EE, var(--night-raised))}
+.owner-layout .page-header h1,.owner-layout .section-header h2{color:light-dark(#153E2B, var(--night-ink))}
+.owner-layout .page-header p,.owner-layout .stat-label{color:light-dark(#566C60, var(--night-green))}
+.owner-layout .stat-card,.owner-layout .section-card,.owner-layout .dashboard-section,.owner-layout .court-card{background:light-dark(#FCFEFC, var(--night-panel));border-color:light-dark(#D8E7DB, var(--night-line))}
+.owner-layout .stat-card:hover,.owner-layout .court-card:hover{border-color:light-dark(#9BC9A4, var(--night-line));box-shadow:var(--admin-shadow-md)}
+.owner-layout .stat-info h2,.owner-layout .court-info h3,.owner-layout .court-details h3{color:light-dark(#153E2B, var(--night-ink))}
+.owner-layout .stat-icon{background:light-dark(#EDF6EE, var(--night-raised));color:light-dark(#178044, var(--night-green))}
+.owner-layout .courts-icon,.owner-layout .revenue-icon{background:light-dark(#EDF6EE, var(--night-raised));color:light-dark(#178044, var(--night-green))}
+.owner-layout .reservations-icon{background:light-dark(#EDF7F2, var(--night-panel));color:light-dark(#153E2B, var(--night-ink))}
+.owner-layout .sports-icon{background:light-dark(#EFF6DF, var(--night-raised));color:light-dark(#4B6D29, var(--night-green))}
+.owner-layout .section-header h2{color:light-dark(#153E2B, var(--night-ink))}
+.owner-layout .section-header a,.owner-layout .view-all{color:light-dark(#178044, var(--night-green))}
+.owner-layout .court-sport,.owner-layout .court-address,.owner-layout .court-prices p,.owner-layout .court-deposit{color:light-dark(#456252, var(--night-green))}
+.owner-layout .court-prices strong{color:light-dark(#153E2B, var(--night-ink))}
+.owner-layout .court-status{background:light-dark(#EDF6EE, var(--night-raised));color:light-dark(#178044, var(--night-green))}
+.owner-layout .admin-table thead{background:light-dark(#F1F8F2, var(--night-panel))}
+.owner-layout .admin-table th{border-color:light-dark(#D8E7DB, var(--night-line));color:light-dark(#566C60, var(--night-green))}
+.owner-layout .admin-table td{border-color:light-dark(#E4F0E6, var(--night-line));color:light-dark(#456252, var(--night-green))}
+.owner-layout .admin-table tbody tr:hover{background:light-dark(#F1F8F2, var(--night-panel))}
+.owner-layout .status-confirmed,.owner-layout .status-active{background:light-dark(#EDF6EE, var(--night-raised));color:light-dark(#178044, var(--night-green))}
+.owner-layout .status-pending{background:light-dark(#FDEBED, var(--night-danger-bg));color:light-dark(#E63946, var(--night-danger-ink))}
+.owner-layout .status-completed{background:light-dark(#EDF7F2, var(--night-panel));color:light-dark(#153E2B, var(--night-ink))}
+.owner-layout .status-cancelled,.owner-layout .status-canceled,.owner-layout .status-inactive{background:light-dark(#FDEBED, var(--night-danger-bg));color:light-dark(#E63946, var(--night-danger-ink))}
+.owner-layout .empty-state{background:light-dark(#F1F8F2, var(--night-panel));border-color:light-dark(#D8E7DB, var(--night-line))}
+.owner-layout .empty-state h3,.owner-layout .empty-state p{color:light-dark(#456252, var(--night-green))}
+.owner-layout :focus-visible{outline-color:#178044}
 /* Gang sidebar mark used across the owner panel */
-.owner-layout .brand-logo{width:62px;height:46px;flex:none;object-fit:contain;border:1px solid #E6D8C8;border-radius:12px;background:#F3E9DC}
+.owner-layout .brand-logo{width:62px;height:46px;flex:none;object-fit:contain;border:1px solid light-dark(#D8E7DB, var(--night-line));border-radius:12px;background:light-dark(#EDF6EE, var(--night-raised))}
