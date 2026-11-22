@@ -15,16 +15,12 @@ class Review extends Model
 		'court_id',
 		'rating',
 		'comment',
-		'ai_decision',
-		'ai_reason',
-		'ai_checked_at',
     ];
 
     protected function casts(): array
     {
         return [
             'rating' => 'integer',
-			'ai_checked_at' => 'datetime',
         ];
     }
 

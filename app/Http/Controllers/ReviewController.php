@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Booking;
 use App\Models\Review;
-use App\Models\ModerationReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
-use App\Jobs\ModerateReview;
 
 
 class ReviewController extends Controller
@@ -103,16 +101,11 @@ class ReviewController extends Controller
         'court_id'   => $booking->court_id,
         'rating'     => $validated['rating'],
         'comment'    => $validated['comment'] ?? null,
-        'ai_decision'=> 'pending',
     ]);
-
-    if (! empty($validated['comment'])) {
-        ModerateReview::dispatch($review->id);
-    }
 
     return redirect()
         ->route('reviews.show', $review)
-        ->with('success', 'Review submitted. AI moderation running in background.');
+        ->with('success', 'Review submitted successfully.');
 }
 
 
@@ -150,14 +143,8 @@ class ReviewController extends Controller
 
         $review->update([
             ...$validated,
-            'ai_decision' => 'pending',
-            'ai_reason' => null,
-            'ai_checked_at' => null,
         ]);
 
-        if (! empty($validated['comment'])) {
-            ModerateReview::dispatch($review->id);
-        }
 
         return redirect()
             ->route('reviews.show', $review)
@@ -172,11 +159,6 @@ class ReviewController extends Controller
             403
         );
 
-        abort_if(
-            ModerationReport::where('review_id', $review->id)->exists(),
-            409,
-            'This review is part of a moderation report and cannot be deleted.'
-        );
 
         $review->delete();
 

@@ -181,47 +181,6 @@
                 </a>
 
                 @endif
-{{-- Flagged Reviews (AI Moderation) --}}
-@if (Route::has('super_admin.reviews.flagged'))
-    @php
-    $flaggedCount = \App\Models\ModerationReport::where('action', 'auto_banned')->count();
-@endphp
-
-    <a href="{{ route('super_admin.reviews.flagged') }}"
-        class="sidebar-link {{ request()->routeIs('super_admin.reviews.flagged') ? 'active' : '' }}"
-        style="display: flex; align-items: center; justify-content: space-between;">
-
-        <div style="display: flex; align-items: center; gap: 0.75rem;">
-            <svg class="nav-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round">
-
-                <path d="M12 9v4M12 17h.01" />
-                <path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
-            </svg>
-
-            <span>Flagged Reviews</span>
-        </div>
-
-        @if ($flaggedCount > 0)
-            <span style="
-                background: #ef4444;
-                color: white;
-                font-size: 0.7rem;
-                font-weight: 700;
-                padding: 2px 8px;
-                border-radius: 9999px;
-                line-height: 1.4;
-            ">
-                {{ $flaggedCount }}
-            </span>
-        @endif
-    </a>
-@endif
                 <!-- Analytics -->
                 @if (Route::has('super_admin.analytics.index'))
 

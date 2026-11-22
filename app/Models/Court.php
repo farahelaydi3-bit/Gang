@@ -76,10 +76,4 @@ class Court extends Model
         return $this->hasMany(Subscription::class);
     }
 
-
-	public function reviewSummary()
-	{
-		return $this->hasOne(CourtReviewSummary::class, 'court_id');
-	}
-
 }

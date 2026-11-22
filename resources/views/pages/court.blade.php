@@ -2,17 +2,12 @@
 
 @php
     $court = \App\Models\Court::query()
-        ->with(['sports', 'reviewSummary'])
+        ->with(['sports'])
         ->withAvg('reviews', 'rating')
         ->findOrFail(request()->route('court'));
 
-    // Public reviews = only safe ones
     $publicReviews = $court->reviews()
         ->with('user')
-        ->where(function ($q) {
-            $q->whereNotIn('ai_decision', ['spam', 'abusive'])
-              ->orWhereNull('ai_decision');
-        })
         ->latest()
         ->get();
 @endphp
@@ -84,25 +79,6 @@
                         </dl>
                     </section>
                 </div>
-
-                @if($court->reviewSummary)
-                    <div class="panel" style="margin-top:1rem;">
-                        <h3>🤖 AI Review Summary</h3>
-                        <p>{{ $court->reviewSummary->summary }}</p>
-                        <p class="muted">
-                            Based on {{ $court->reviewSummary->total_reviews }} reviews ·
-                            Avg {{ $court->reviewSummary->average_rating }}/5
-                        </p>
-                        @if($court->reviewSummary->top_praises)
-                            <p><strong>What players love:</strong>
-                                {{ $court->reviewSummary->top_praises }}</p>
-                        @endif
-                        @if($court->reviewSummary->top_complaints)
-                            <p><strong>What players complain about:</strong>
-                                {{ $court->reviewSummary->top_complaints }}</p>
-                        @endif
-                    </div>
-                @endif
 
                 <section class="court-detail-card court-reviews-card">
                     <h2>{{ __('Reviews') }}</h2>
