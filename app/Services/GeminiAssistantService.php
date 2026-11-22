@@ -137,7 +137,10 @@ class GeminiAssistantService
 
     private function system(): string
     {
-        return 'You are Gang AI, a friendly, capable Jordanian Arabic sports court assistant. '
+        $language = app()->isLocale('ar') ? 'Jordanian Arabic' : 'English';
+
+        return 'You are Gang AI, a friendly sports court assistant. '
+            . 'Reply in ' . $language . ', the language selected in the current interface. '
             . 'Have natural conversations, be direct and concise; remember earlier turns. '
             . 'For ANY court facts, cheapest court, prices, recommendations, availability or requests to book, call search_gang_courts. '
             . 'Only tool results are authoritative for courts, pricing, availability and booking status. '
@@ -269,7 +272,7 @@ class GeminiAssistantService
     {
         $safe = $this->safeFacts($facts);
         $instructions = $this->system()
-            . ' Final answer: explain the verified tool facts naturally in Jordanian Arabic. '
+            . ' Final answer: explain the verified tool facts naturally in the selected interface language. '
             . 'Do not invent facts, prepare bookings, or claim a booking occurred. Direct booking requests to the court page. Do not repeat raw JSON. '
             . 'For unverified time/budget, be explicit about uncertainty. Keep response concise.';
         if ($crossModel) {

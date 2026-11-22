@@ -1,123 +1,82 @@
-
 @extends('layouts.demo')
 
-@section('title', 'Court Owner Registration')
-
+@section('title', __('Court Owner Registration'))
 @section('page', 'owner-register')
 
 @section('content')
+    <div class="wrap page login-page owner-register-page">
+        <div class="details login-auth-layout">
+            <form class="panel stack login-form-card" method="POST" action="{{ route('admin.register.store') }}">
+                @csrf
 
-<div class="wrap page">
+                <div class="login-form-heading">
+                    <div>
+                        <h1>{{ __('Create Owner Account') }}</h1>
+                        <small>{{ __('Register your facility to apply to join Gang.') }}</small>
+                    </div>
+                </div>
 
-    @include('pages.heading', [
-        'heading' => 'Become a Court Owner',
-        'description' => 'Register your business and start managing your courts with CourtBook.'
-    ])
+                <div class="owner-register-fields">
+                    <label>
+                        {{ __('Full Name') }}
+                        <input type="text" name="name" value="{{ old('name') }}" autocomplete="name" required
+                            @error('name') aria-invalid="true" aria-describedby="owner-register-name-error" @enderror>
+                        @error('name')
+                            <span id="owner-register-name-error" role="alert">{{ $message }}</span>
+                        @enderror
+                    </label>
 
-    <div class="details">
+                    <label>
+                        {{ __('Business Name') }}
+                        <input type="text" name="business_name" value="{{ old('business_name') }}" autocomplete="organization" required
+                            @error('business_name') aria-invalid="true" aria-describedby="owner-register-business-error" @enderror>
+                        @error('business_name')
+                            <span id="owner-register-business-error" role="alert">{{ $message }}</span>
+                        @enderror
+                    </label>
 
-        <form class="panel stack"
-              method="POST"
-              action="{{ route('admin.register.store') }}">
+                    <label>
+                        {{ __('Email Address') }}
+                        <input type="email" name="email" value="{{ old('email') }}" autocomplete="email" dir="ltr" required
+                            @error('email') aria-invalid="true" aria-describedby="owner-register-email-error" @enderror>
+                        @error('email')
+                            <span id="owner-register-email-error" role="alert">{{ $message }}</span>
+                        @enderror
+                    </label>
 
-            @csrf
+                    <label>
+                        {{ __('Phone Number') }}
+                        <input type="tel" name="phone" value="{{ old('phone') }}" autocomplete="tel" dir="ltr" required
+                            @error('phone') aria-invalid="true" aria-describedby="owner-register-phone-error" @enderror>
+                        @error('phone')
+                            <span id="owner-register-phone-error" role="alert">{{ $message }}</span>
+                        @enderror
+                    </label>
 
-            <label>
-                Full Name
-                <input type="text"
-                       name="name"
-                       value="{{ old('name') }}"
-                       autocomplete="name"
-                       required>
-            </label>
+                    <label>
+                        {{ __('Password') }}
+                        <input type="password" name="password" autocomplete="new-password" minlength="8" required
+                            @error('password') aria-invalid="true" aria-describedby="owner-register-password-error" @enderror>
+                        @error('password')
+                            <span id="owner-register-password-error" role="alert">{{ $message }}</span>
+                        @enderror
+                    </label>
 
-            @error('name')
-                <span role="alert">{{ $message }}</span>
-            @enderror
+                    <label>
+                        {{ __('Confirm Password') }}
+                        <input type="password" name="password_confirmation" autocomplete="new-password" required>
+                    </label>
+                </div>
 
-            <label>
-                Business Name
-                <input type="text"
-                       name="business_name"
-                       value="{{ old('business_name') }}"
-                       required>
-            </label>
+                <button type="submit">{{ __('Create Owner Account') }}</button>
+                <p class="owner-register-note">{{ __('Your application will be reviewed by the CourtBook administration.') }}</p>
+            </form>
 
-            @error('business_name')
-                <span role="alert">{{ $message }}</span>
-            @enderror
+            @include('pages.owner-auth-panel')
+        </div>
 
-            <label>
-                Email Address
-                <input type="email"
-                       name="email"
-                       value="{{ old('email') }}"
-                       autocomplete="email"
-                       required>
-            </label>
-
-            @error('email')
-                <span role="alert">{{ $message }}</span>
-            @enderror
-
-            <label>
-                Phone Number
-                <input type="tel"
-                       name="phone"
-                       value="{{ old('phone') }}"
-                       autocomplete="tel"
-                       required>
-            </label>
-
-            @error('phone')
-                <span role="alert">{{ $message }}</span>
-            @enderror
-
-            <label>
-                Password
-                <input type="password"
-                       name="password"
-                       autocomplete="new-password"
-                       minlength="8"
-                       required>
-            </label>
-
-            @error('password')
-                <span role="alert">{{ $message }}</span>
-            @enderror
-
-            <label>
-                Confirm Password
-                <input type="password"
-                       name="password_confirmation"
-                       autocomplete="new-password"
-                       required>
-            </label>
-
-            <button type="submit">
-                Create Owner Account
-            </button>
-
-            <p>
-                Your application will be reviewed by
-                the CourtBook administration.
-            </p>
-
-        </form>
-
-        <img class="gallery"
-             src="{{ asset('courtbook-assets/images/hero-football.png') }}"
-             alt="Football court">
-
+        <div class="row section login-form-links">
+            <a class="button outline" href="{{ route('admin.login') }}">{{ __('Already an owner? Log in') }}</a>
+        </div>
     </div>
-
-    <div class="row section">
-        <a class="button outline"
-           href="{{ route('admin.login') }}">
-            Already an owner? Log in
-        </a>
-    </div>
-
-</div>
-
 @endsection

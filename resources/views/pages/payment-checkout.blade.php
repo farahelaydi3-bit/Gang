@@ -79,7 +79,7 @@
                         <p class="visa-card-error" id="card-error" role="alert" aria-live="polite"></p>
                         <button class="visa-pay-button" type="submit">
                             <span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>{{ __('Pay securely') }}</span>
-                            <strong>{{ number_format((float) $payment->amount, 2) }} JOD</strong>
+                            <strong>{{ number_format((float) $payment->amount, 2) }} {{ __('JOD') }}</strong>
                         </button>
                     </form>
 
@@ -104,10 +104,10 @@
                     </div>
                     <div class="visa-order-detail"><span>{{ __('Date') }}</span><strong>{{ $booking->booking_date->translatedFormat('D, M j, Y') }}</strong></div>
                     <div class="visa-order-detail"><span>{{ __('Time') }}</span><strong>{{ $booking->start_time }} – {{ $booking->end_time }}</strong></div>
-                    <div class="visa-order-detail"><span>{{ __('Booking total') }}</span><strong>{{ number_format((float) $booking->total_price, 2) }} JOD</strong></div>
+                    <div class="visa-order-detail"><span>{{ __('Booking total') }}</span><strong>{{ number_format((float) $booking->total_price, 2) }} {{ __('JOD') }}</strong></div>
                     <div class="visa-order-amount">
                         <span>{{ $stage === 'deposit' ? __('Deposit due now') : __('Remaining balance due') }}</span>
-                        <strong>{{ number_format((float) $payment->amount, 2) }} <small>JOD</small></strong>
+                        <strong>{{ number_format((float) $payment->amount, 2) }} <small>{{ __('JOD') }}</small></strong>
                     </div>
                     <div class="visa-order-status"><span></span>{{ __(ucfirst($booking->booking_status)) }}</div>
                 </section>

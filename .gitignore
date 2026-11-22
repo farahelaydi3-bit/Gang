@@ -23,3 +23,9 @@ yarn-error.log
 /.zed
 /Gang.zip
 /stripe-cli/
+.env
+.env.*
+!.env.example
+.env
+.env.*
+!.env.example

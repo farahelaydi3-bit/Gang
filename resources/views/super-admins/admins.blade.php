@@ -1,19 +1,23 @@
 @extends('layouts.super-admin')
 
-@section('title', 'Manage Owners')
+@section('title', __('Manage Owners'))
 @section('page-title', 'Court Owners Management')
 
 @section('content')
 
-<x-super-admin.page-header title="Manage Owners" description="Manage court owner accounts and approval status." />
+<x-super-admin.page-header title="{{ __('Manage Owners') }}" description="{{ __('Manage court owner accounts and approval status.') }}" />
 
 <x-super-admin.form-errors />
+
+<x-super-admin.list-filters :action="route('super_admin.admins.index')"
+    placeholder="Name, business, email or phone"
+    :selects="['status' => ['Status', 'All statuses', $statuses]]" />
 
 {{-- Owners Table --}}
 <div class="admin-card super-admin-table-card">
 
     <div class="admin-card-header">
-        <h3>All Court Owners ({{ $admins->count() }})</h3>
+        <h3>{{ __('All Court Owners (') }}{{ $admins->total() }})</h3>
     </div>
 
     <div class="admin-table-wrap">
@@ -22,14 +26,14 @@
 
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Owner Name</th>
-                    <th>Business Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Status</th>
-                    <th>Registered</th>
-                    <th>Actions</th>
+                    <th>{{ __('ID') }}</th>
+                    <th>{{ __('Owner Name') }}</th>
+                    <th>{{ __('Business Name') }}</th>
+                    <th>{{ __('Email') }}</th>
+                    <th>{{ __('Phone') }}</th>
+                    <th>{{ __('Status') }}</th>
+                    <th>{{ __('Registered') }}</th>
+                    <th>{{ __('Actions') }}</th>
                 </tr>
             </thead>
 
@@ -56,27 +60,27 @@
                     <td>
                         @if ($admin->status === 'active')
                         <span class="badge badge-success">
-                            Active
+                            {{ __('Active') }}
                         </span>
 
                         @elseif ($admin->status === 'pending')
                         <span class="badge badge-warning">
-                            Pending
+                            {{ __('Pending') }}
                         </span>
 
                         @elseif ($admin->status === 'rejected')
                         <span class="badge badge-danger">
-                            Rejected
+                            {{ __('Rejected') }}
                         </span>
 
                         @elseif ($admin->status === 'suspended')
                         <span class="badge badge-danger">
-                            Suspended
+                            {{ __('Suspended') }}
                         </span>
 
                         @else
                         <span class="badge">
-                            Unknown
+                            {{ __('Unknown') }}
                         </span>
                         @endif
                     </td>
@@ -96,33 +100,33 @@
 
                             <select name="status"
                                 class="form-control"
-                                aria-label="Owner status">
+                                aria-label="{{ __('Owner status') }}">
 
                                 <option value="pending"
                                     @selected($admin->status === 'pending')>
-                                    Pending
+                                    {{ __('Pending') }}
                                 </option>
 
                                 <option value="active"
                                     @selected($admin->status === 'active')>
-                                    Active
+                                    {{ __('Active') }}
                                 </option>
 
                                 <option value="rejected"
                                     @selected($admin->status === 'rejected')>
-                                    Rejected
+                                    {{ __('Rejected') }}
                                 </option>
 
                                 <option value="suspended"
                                     @selected($admin->status === 'suspended')>
-                                    Suspended
+                                    {{ __('Suspended') }}
                                 </option>
 
                             </select>
 
                             <button type="submit"
                                 class="admin-button admin-button-outline">
-                                Save
+                                {{ __('Save') }}
                             </button>
 
                         </form>
@@ -133,7 +137,7 @@
 
                 <tr>
                     <td colspan="8" class="super-admin-empty">
-                        No court owners registered yet.
+                        {{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'No court owners registered yet.') }}
                     </td>
                 </tr>
 
@@ -144,6 +148,7 @@
 
     </div>
 
+    {{ $admins->links('components.super-admin.pagination') }}
 </div>
 
 @endsection

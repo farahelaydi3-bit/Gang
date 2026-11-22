@@ -224,6 +224,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('profile.update');
 
             // Subscriptions Management
+            Route::get('/subscriptions/players', [SubscriptionController::class, 'players'])
+                ->name('subscriptions.players');
             Route::resource('subscriptions', SubscriptionController::class);
 
             // Preserve Tarifi subscription URL

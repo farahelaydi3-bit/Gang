@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Models\Court;
 use App\Models\Sports;
+use App\Support\DashboardList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -13,60 +14,55 @@ class CourtsController extends Controller
 {
     public function index(Request $request)
     {
+        $search = DashboardList::search($request);
+        $statuses = DashboardList::labels(DashboardList::COURT_STATUSES);
+        $status = DashboardList::choice($request, 'status', DashboardList::COURT_STATUSES);
+        $sportId = DashboardList::id($request, 'sport_id');
+
         $courts = Court::with(['admin', 'sports'])
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
-
-            // Search
-            ->when($request->filled('search'), function ($query) use ($request) {
-                $search = $request->input('search');
-
-                $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                        ->orWhereHas('admin', function ($owner) use ($search) {
-                            $owner->where('name', 'like', "%{$search}%")
-                                ->orWhere('business_name', 'like', "%{$search}%");
-                        });
-                });
-            })
-
-            // Status filter
-            ->when($request->filled('status'), function ($query) use ($request) {
-                $query->where('status', $request->input('status'));
-            })
-
-            // Sport filter
-            ->when($request->filled('sport_id'), function ($query) use ($request) {
-                $query->where('sport_id', $request->input('sport_id'));
-            })
-
-            ->latest()
-            ->paginate(10)
+            ->when($search, fn ($query) => $query->where(function ($matching) use ($search) {
+                $matching->whereAny(['name', 'address'], 'like', $search)
+                    ->orWhereHas('admin', fn ($owner) => $owner->whereAny(['name', 'business_name'], 'like', $search));
+            }))
+            ->when($status, fn ($query) => $query->where('status', $status))
+            ->when($sportId, fn ($query) => $query->where('sport_id', $sportId))
+            ->latest('id')
+            ->paginate(DashboardList::PER_PAGE)
             ->withQueryString();
 
-        $sports = Sports::orderBy('name')->get();
+        $sportOptions = Sports::orderBy('name')->pluck('name', 'id');
 
-        return view('super-admins.courts', compact('courts', 'sports'));
+        return view('super-admins.courts', compact('courts', 'sportOptions', 'statuses'));
     }
 
-    public function show(Court $court)
+    public function show(Request $request, Court $court)
     {
         $court->load(['admin', 'sports']);
 
         $court->loadCount('reviews');
         $court->loadAvg('reviews', 'rating');
 
-        $reviews = $court->reviews()
-            ->latest()
-            ->take(10)
-            ->get();
+        $search = DashboardList::search($request);
+        $ratingOptions = array_combine(range(1, 5), range(1, 5));
+        $rating = DashboardList::id($request, 'rating');
+        $reviews = $court->reviews()->with('user')
+            ->when($search, fn ($query) => $query->where(function ($matching) use ($search) {
+                $matching->where('comment', 'like', $search)
+                    ->orWhereHas('user', fn ($user) => $user->where('name', 'like', $search));
+            }))
+            ->when(isset($ratingOptions[$rating]), fn ($query) => $query->where('rating', $rating))
+            ->latest('id')
+            ->paginate(DashboardList::PER_PAGE)
+            ->withQueryString();
 
         $courtPhoto = $court->bundledPhotoUrl();
         if ($courtPhoto === null && $court->uploadedPhotoPath() !== null) {
             $courtPhoto = route('super_admin.courts.photo', $court);
         }
 
-        return view('super-admins.court-details', compact('court', 'reviews', 'courtPhoto'));
+        return view('super-admins.court-details', compact('court', 'reviews', 'courtPhoto', 'ratingOptions'));
     }
 
     public function photo(Court $court)

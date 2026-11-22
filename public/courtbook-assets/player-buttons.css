@@ -1,0 +1,48 @@
+.gang-player {
+    --player-primary: light-dark(#176b45, #a8e684);
+    --player-primary-hover: light-dark(#105334, #bdf19f);
+    --player-on-primary: light-dark(#fff, #142516);
+    --player-secondary: light-dark(#fcfefc, var(--night-raised));
+    --player-secondary-hover: light-dark(#edf6ee, var(--night-fill));
+    --player-on-secondary: light-dark(#28513a, var(--night-ink));
+    --player-secondary-border: light-dark(#b8cdbd, var(--night-line));
+    --player-danger: light-dark(#fdf2f1, var(--night-danger-bg));
+    --player-danger-hover: light-dark(#fae4e2, #512e36);
+    --player-on-danger: light-dark(#922d37, var(--night-danger-ink));
+    --player-danger-border: light-dark(#e7c0c0, #85565d);
+}
+
+.gang-player :is(
+    .button, button[type="submit"], .game-detail-primary, .game-detail-secondary,
+    .booking-pass-action, .booking-modal-actions button, .games-create-button,
+    .cb-location-btn, .cb-court-link, .review-submit, .review-link:not(.review-back),
+    .site-footer-cta > a, .home-join-link, .gang-ai-court a, .gang-ai-close, .gang-ai-chip, .gang-logout-stay,
+    .subscription-cancel-action, .visa-cancel-button, .game-detail-leave
+) {
+    background: var(--player-action-fill, var(--player-primary)) !important;
+    border-color: var(--player-action-line, transparent) !important;
+    color: var(--player-action-ink, var(--player-on-primary)) !important;
+
+    &:hover:not(:disabled) {
+        background: var(--player-action-hover, var(--player-primary-hover)) !important;
+        filter: none;
+    }
+}
+
+.gang-player :is(
+    .outline, .game-detail-secondary, .cb-location-btn, .cb-court-link,
+    .review-link:not(.review-back), .site-footer-owner-login, .home-join-link, .gang-ai-close, .gang-ai-chip,
+    .gang-ai-toolbar button, .gang-logout-stay, .gang-logout-leave
+) {
+    --player-action-fill: var(--player-secondary);
+    --player-action-hover: var(--player-secondary-hover);
+    --player-action-ink: var(--player-on-secondary);
+    --player-action-line: var(--player-secondary-border);
+}
+
+.gang-player :is(.review-danger, .visa-cancel-button, .subscription-cancel-action, .game-detail-leave, .gang-ai-delete, .profile-settings-delete button[type="submit"]) {
+    --player-action-fill: var(--player-danger);
+    --player-action-hover: var(--player-danger-hover);
+    --player-action-ink: var(--player-on-danger);
+    --player-action-line: var(--player-danger-border);
+}

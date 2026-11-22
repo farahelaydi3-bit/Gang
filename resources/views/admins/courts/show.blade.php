@@ -1,12 +1,12 @@
 @extends('admins.layout.app')
 
-@section('title', 'Court Details')
+@section('title', __('Court Details'))
 
 @section('content')
-    <x-super-admin.page-header :title="$court->name" description="Court details and listing information.">
+    <x-super-admin.page-header :title="$court->name" description="{{ __('Court details and listing information.') }}">
         <x-slot:actions>
-            <a href="{{ route('admin.courts.index') }}" class="admin-button admin-button-outline">Back to my courts</a>
-            <a href="{{ route('admin.courts.edit', $court) }}" class="admin-button">Edit court</a>
+            <a href="{{ route('admin.courts.index') }}" class="admin-button admin-button-outline">{{ __('Back to my courts') }}</a>
+            <a href="{{ route('admin.courts.edit', $court) }}" class="admin-button">{{ __('Edit court') }}</a>
         </x-slot:actions>
     </x-super-admin.page-header>
 

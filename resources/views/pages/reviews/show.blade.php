@@ -6,7 +6,7 @@
 @endpush
 @section('content')
 <div class="wrap page review-page">
-  <header class="review-hero"><span class="review-eyebrow">GANG · COMMUNITY FEEDBACK</span><h1>{{ __('Review Details') }}</h1><p>{{ __('See what players are saying about their court experience.') }}</p></header>
+  <header class="review-hero"><span class="review-eyebrow">{{ __('GANG · COMMUNITY FEEDBACK') }}</span><h1>{{ __('Review Details') }}</h1><p>{{ __('See what players are saying about their court experience.') }}</p></header>
   <div class="review-detail">
     <a class="review-link review-back" href="{{ route('reviews.index') }}">← {{ __('Back to Reviews') }}</a>
     @if(session('success'))<div class="review-alert" role="status">{{ session('success') }}</div>@endif

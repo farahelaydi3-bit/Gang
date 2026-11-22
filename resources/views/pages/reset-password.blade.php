@@ -1,6 +1,6 @@
 @extends('layouts.demo')
 
-@section('title', 'Reset Password')
+@section('title', __('Reset Password'))
 @section('page', 'reset-password')
 
 @section('content')
@@ -26,7 +26,7 @@
                 value="{{ $request->route('token') }}">
 
             <label>
-                Email Address
+                {{ __('Email Address') }}
 
                 <input
                     type="email"
@@ -41,7 +41,7 @@
             @enderror
 
             <label>
-                New Password
+                {{ __('New Password') }}
 
                 <input
                     type="password"
@@ -56,7 +56,7 @@
             @enderror
 
             <label>
-                Confirm New Password
+                {{ __('Confirm New Password') }}
 
                 <input
                     type="password"
@@ -71,7 +71,7 @@
             @enderror
 
             <button type="submit">
-                Reset Password
+                {{ __('Reset Password') }}
             </button>
 
         </form>
@@ -79,13 +79,13 @@
         <img
             class="gallery"
             src="{{ asset('courtbook-assets/images/hero-football.png') }}"
-            alt="Football Court">
+            alt="{{ __('Football Court') }}">
 
     </div>
 
     <div class="row section">
         <a class="button outline" href="{{ route('login') }}">
-            Back to Login
+            {{ __('Back to Login') }}
         </a>
     </div>
 

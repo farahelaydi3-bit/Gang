@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 
 <head>
+    <x-theme-head />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>@yield('title', 'Super Admin') | Gang</title>
+    <title>@yield('title', __('Super Admin')) | Gang</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,6 +18,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/super-admin-pages.css') }}">
 
     @stack('styles')
+    <link rel="stylesheet" href="{{ asset('assets/css/language.css') }}">
 </head>
 
 <body>
@@ -36,19 +38,20 @@
             <a href="{{ route('super_admin.dashboard') }}"
                 class="sidebar-brand">
 
-                <img class="brand-logo" src="{{ asset('courtbook-assets/images/gang-logo.png') }}" alt="Gang logo">
+                <img class="brand-logo" src="{{ asset('courtbook-assets/images/gang-logo.png') }}" alt="{{ __('Gang logo') }}">
 
                 <div class="brand-text">
                     <h2>Gang</h2>
-                    <span>Super Admin Panel</span>
+                    <span>{{ __('Super Admin Panel') }}</span>
                 </div>
             </a>
 
-            <div class="sidebar-label">Main Menu</div>
+            <div class="sidebar-label">{{ __('Main Menu') }}</div>
 
             <!-- Navigation -->
             <nav class="sidebar-nav"
-                aria-label="Super Admin navigation">
+                aria-label="{{ __('Super Admin navigation') }}">
+
 
                 <!-- Overview -->
                 <a href="{{ route('super_admin.dashboard') }}"
@@ -68,7 +71,7 @@
                         <rect x="14" y="14" width="7" height="7" rx="1.5" />
                     </svg>
 
-                    <span>Overview</span>
+                    <span>{{ __('Overview') }}</span>
                 </a>
 
                 <!-- Owners -->
@@ -87,7 +90,7 @@
                         <path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 5a3.5 3.5 0 0 1 0 6M18 14c2 .8 3.5 2.6 3.5 6" />
                     </svg>
 
-                    <span>Manage Owners</span>
+                    <span>{{ __('Manage Owners') }}</span>
                 </a>
 
 
@@ -106,7 +109,7 @@
                         <path d="M8 8h8M8 12h8M8 16h5" />
                     </svg>
 
-                    <span>Owner Applications</span>
+                    <span>{{ __('Owner Applications') }}</span>
                 </a>
 
                 
@@ -133,7 +136,7 @@
                         <path d="M4 21c0-4.3 3.3-7 8-7s8 2.7 8 7" />
                     </svg>
 
-                    <span>Manage Players</span>
+                    <span>{{ __('Manage Players') }}</span>
                 </a>
 
                 <!-- Sports -->
@@ -153,7 +156,7 @@
                         <path d="m8 5 4 3 4-3M6 12l4 2-1 5M18 12l-4 2 1 5" />
                     </svg>
 
-                    <span>Manage Sports</span>
+                    <span>{{ __('Manage Sports') }}</span>
                 </a>
 
                 @endif
@@ -177,10 +180,51 @@
                         <circle cx="12" cy="12" r="3" />
                     </svg>
 
-                    <span>Manage Courts</span>
+                    <span>{{ __('Manage Courts') }}</span>
                 </a>
 
                 @endif
+{{-- Flagged Reviews (AI Moderation) --}}
+@if (Route::has('super_admin.reviews.flagged'))
+    @php
+    $flaggedCount = \App\Models\ModerationReport::where('action', 'auto_banned')->count();
+@endphp
+
+    <a href="{{ route('super_admin.reviews.flagged') }}"
+        class="sidebar-link {{ request()->routeIs('super_admin.reviews.flagged') ? 'active' : '' }}"
+        style="display: flex; align-items: center; justify-content: space-between;">
+
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <svg class="nav-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+
+                <path d="M12 9v4M12 17h.01" />
+                <path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
+            </svg>
+
+            <span>{{ __('Flagged Reviews') }}</span>
+        </div>
+
+        @if ($flaggedCount > 0)
+            <span style="
+                background: light-dark(#ef4444, var(--night-danger-bg));
+                color: white;
+                font-size: 0.7rem;
+                font-weight: 700;
+                padding: 2px 8px;
+                border-radius: 9999px;
+                line-height: 1.4;
+            ">
+                {{ $flaggedCount }}
+            </span>
+        @endif
+    </a>
+@endif
                 <!-- Analytics -->
                 @if (Route::has('super_admin.analytics.index'))
 
@@ -199,7 +243,7 @@
                         <path d="M7 16v-5M12 16V7M17 16v-8" />
                     </svg>
 
-                    <span>Analytics</span>
+                    <span>{{ __('Analytics') }}</span>
                 </a>
 
                 @endif
@@ -210,33 +254,37 @@
             <div class="sidebar-bottom">
 
                 <!-- Logout -->
-                <form method="POST"
-                    action="{{ route('super_admin.logout') }}">
+                <div class="sidebar-account-actions">
+                    <form method="POST"
+                        action="{{ route('super_admin.logout') }}">
 
-                    @csrf
+                        @csrf
 
-                    <button type="submit"
-                        class="sidebar-link sidebar-logout">
+                        <button type="submit"
+                            class="sidebar-link sidebar-logout">
 
-                        <svg class="nav-icon"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                            stroke-linecap="round">
+                            <svg class="nav-icon"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round">
 
-                            <path d="M9 21H5.5A2.5 2.5 0 0 1 3 18.5v-13A2.5 2.5 0 0 1 5.5 3H9" />
-                            <path d="m16 17 5-5-5-5M21 12H9" />
-                        </svg>
+                                <path d="M9 21H5.5A2.5 2.5 0 0 1 3 18.5v-13A2.5 2.5 0 0 1 5.5 3H9" />
+                                <path d="m16 17 5-5-5-5M21 12H9" />
+                            </svg>
 
-                        <span>Logout</span>
-                    </button>
-                </form>
+                            <span>{{ __('Logout') }}</span>
+                        </button>
+                    </form>
+                    <x-language-toggle :icon="true" />
+                    <x-theme-toggle />
+                </div>
 
                 <!-- Profile -->
                 <a href="{{ route('super_admin.profile.edit') }}"
                     class="owner-profile {{ request()->routeIs('super_admin.profile.*') ? 'active' : '' }}"
-                    aria-label="Edit Super Admin profile">
+                    aria-label="{{ __('Edit Super Admin profile') }}">
 
                     <div class="profile-avatar">
                         {{ mb_strtoupper(mb_substr(auth('super_admin')->user()?->name ?? 'S', 0, 1)) }}
@@ -248,7 +296,7 @@
                             {{ auth('super_admin')->user()?->name ?? 'Super Admin' }}
                         </strong>
 
-                        <span>Super Admin</span>
+                        <span>{{ __('Super Admin') }}</span>
 
                     </div>
                 </a>
@@ -260,7 +308,7 @@
         <main class="owner-main">
 
             <!-- Page Content -->
-                        <button class="owner-mobile-menu" type="button" aria-label="Open navigation menu"
+                        <button class="owner-mobile-menu" type="button" aria-label="{{ __('Open navigation menu') }}"
                 aria-controls="superSidebar" aria-expanded="false" onclick="toggleSuperSidebar()"
                 id="superSidebarButton">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">

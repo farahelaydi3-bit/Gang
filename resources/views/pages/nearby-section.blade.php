@@ -48,12 +48,12 @@ return $court->latitude !== null
             main:has(.nearby-page) + .site-footer { margin-top: 1.5rem; }
 
             .cb-nearby {
-                --cb-ink: #1f3215;
-                --cb-muted: #718076;
-                --cb-line: #e1eae1;
-                --cb-green: #176b45;
+                --cb-ink: light-dark(#1f3215, var(--night-ink));
+                --cb-muted: light-dark(#718076, var(--night-muted));
+                --cb-line: light-dark(#e1eae1, var(--night-line));
+                --cb-green: light-dark(#176b45, var(--night-green));
                 --cb-dark: #123b2a;
-                --cb-soft: #f1f7e5;
+                --cb-soft: light-dark(#f1f7e5, var(--night-raised));
                 --cb-lime: #c8f36b;
                 color: var(--cb-ink);
             }
@@ -93,7 +93,7 @@ return $court->latitude !== null
                 border: 1px solid var(--cb-line);
                 border-radius: 999px;
                 background: var(--cb-soft);
-                color: #557b31;
+                color: light-dark(#557b31, var(--night-green));
                 font-size: .76rem;
                 font-weight: 700;
             }
@@ -104,11 +104,11 @@ return $court->latitude !== null
                 gap: .55rem;
                 padding: .65rem;
                 align-items: end;
-                background: #fff;
+                background: light-dark(#fff, var(--night-panel));
                 border: 1px solid var(--cb-line);
                 border-radius: 18px;
                 margin-bottom: .8rem;
-                box-shadow: 0 8px 32px rgba(18, 59, 42, .05);
+                box-shadow: 0 8px 32px light-dark(rgba(18, 59, 42, .05), var(--night-shadow));
             }
 
             .cb-nearby .cb-nearby-filters > label {
@@ -125,7 +125,7 @@ return $court->latitude !== null
                 height: 54px;
                 padding: .55rem .7rem;
                 border: 1px solid var(--cb-line);
-                background: #fbfcf9;
+                background: light-dark(#fbfcf9, var(--night-panel));
                 border-radius: 12px;
                 color: var(--cb-ink);
                 font: inherit;
@@ -149,9 +149,9 @@ return $court->latitude !== null
                 display: inline-flex;
                 align-items: center;
                 gap: 7px;
-                background: #fff;
+                background: light-dark(#fff, var(--night-panel));
                 color: var(--cb-green);
-                border: 1px solid #deebc5;
+                border: 1px solid light-dark(#deebc5, var(--night-line));
                 white-space: nowrap;
             }
 
@@ -164,11 +164,11 @@ return $court->latitude !== null
 
             .cb-nearby .cb-nearby-search:hover {
                 transform: translateY(-1px);
-                background: #ddf4a2;
+                background: light-dark(#ddf4a2, var(--night-raised));
             }
 
             .cb-nearby .cb-location-btn:hover {
-                border-color: #c8dda9;
+                border-color: light-dark(#c8dda9, var(--night-line));
                 background: var(--cb-soft);
             }
 
@@ -176,7 +176,7 @@ return $court->latitude !== null
             .cb-nearby .cb-location-btn:focus-visible,
             .cb-nearby .cb-nearby-filters select:focus-visible,
             .cb-nearby .cb-nearby-filters input:focus-visible {
-                outline: 3px solid #c8f36b80;
+                outline: 3px solid light-dark(#c8f36b80, color-mix(in srgb, var(--night-line) 50%, transparent));
                 outline-offset: 2px;
             }
 
@@ -189,11 +189,11 @@ return $court->latitude !== null
 
             .cb-nearby .cb-nearby-list {
                 min-width: 0;
-                background: #fff;
+                background: light-dark(#fff, var(--night-panel));
                 border: 1px solid var(--cb-line);
                 border-radius: 19px;
                 overflow: hidden;
-                box-shadow: 0 12px 36px rgba(18, 59, 42, .055);
+                box-shadow: 0 12px 36px light-dark(rgba(18, 59, 42, .055), var(--night-shadow));
             }
 
             .cb-nearby .cb-nearby-list-head {
@@ -229,7 +229,7 @@ return $court->latitude !== null
                 gap: .65rem;
                 padding: .65rem;
                 border: 1px solid transparent;
-                border-bottom-color: #edf1eb;
+                border-bottom-color: light-dark(#edf1eb, var(--night-line));
                 border-radius: 13px;
                 margin-bottom: .25rem;
                 cursor: pointer;
@@ -237,12 +237,12 @@ return $court->latitude !== null
             }
 
             .cb-nearby .cb-court-card:hover {
-                background: #f7faef;
+                background: light-dark(#f7faef, var(--night-panel));
             }
 
             .cb-nearby .cb-court-card.is-selected {
-                background: #f1f7e5;
-                border-color: #c8dda9;
+                background: light-dark(#f1f7e5, var(--night-panel));
+                border-color: light-dark(#c8dda9, var(--night-line));
                 box-shadow: inset 3px 0 0 var(--cb-green);
             }
 
@@ -251,7 +251,7 @@ return $court->latitude !== null
                 height: 76px;
                 object-fit: cover;
                 border-radius: 11px;
-                background: #eaf1e7;
+                background: light-dark(#eaf1e7, var(--night-raised));
                 flex-shrink: 0;
             }
 
@@ -263,7 +263,7 @@ return $court->latitude !== null
             .cb-nearby .cb-court-sport {
                 display: inline-block;
                 background: var(--cb-soft);
-                color: #557b31;
+                color: light-dark(#557b31, var(--night-green));
                 border-radius: 7px;
                 padding: 3px 8px;
                 font-size: .70rem;
@@ -314,7 +314,7 @@ return $court->latitude !== null
 
             .cb-nearby .cb-court-no-location {
                 font-size: .74rem;
-                color: #7d6a2f;
+                color: light-dark(#7d6a2f, var(--night-warning-ink));
                 margin: 4px 0 0;
             }
 
@@ -325,7 +325,7 @@ return $court->latitude !== null
                 overflow: hidden;
                 border-radius: 19px;
                 border: 1px solid var(--cb-line);
-                background: #eaf1e7;
+                background: light-dark(#eaf1e7, var(--night-raised));
             }
 
             .cb-nearby #cb-nearby-map {
@@ -355,9 +355,9 @@ return $court->latitude !== null
             .cb-nearby .cb-map-label {
                 display: inline-flex;
                 align-items: center;
-                background: white;
+                background: light-dark(white, var(--night-panel));
                 border-radius: 10px;
-                box-shadow: 0 4px 14px rgba(12, 45, 39, .13);
+                box-shadow: 0 4px 14px light-dark(rgba(12, 45, 39, .13), var(--night-shadow));
                 padding: .5rem .65rem;
                 font-size: .76rem;
                 font-weight: 800;
@@ -387,7 +387,7 @@ return $court->latitude !== null
             .cb-nearby .cb-popup-link {
                 display: inline-block;
                 margin-top: 8px;
-                color: #176b45;
+                color: light-dark(#176b45, var(--night-green));
                 font-weight: 800;
             }
 
@@ -397,24 +397,24 @@ return $court->latitude !== null
 
             .cb-nearby .leaflet-control-zoom {
                 overflow: hidden;
-                border: 1px solid rgba(26, 69, 45, .12) !important;
+                border: 1px solid light-dark(rgba(26, 69, 45, .12), color-mix(in srgb, var(--night-line) 12%, transparent)) !important;
                 border-radius: 13px !important;
-                box-shadow: 0 8px 22px rgba(18, 59, 42, .16) !important;
+                box-shadow: 0 8px 22px light-dark(rgba(18, 59, 42, .16), var(--night-shadow)) !important;
             }
 
             .cb-nearby .leaflet-control-zoom a {
                 color: var(--cb-green) !important;
-                border-color: #e8eee4 !important;
+                border-color: light-dark(#e8eee4, var(--night-line)) !important;
             }
 
             .cb-nearby .leaflet-control-zoom a:hover {
-                background: #f1f9e5 !important;
+                background: light-dark(#f1f9e5, var(--night-panel)) !important;
             }
 
             .cb-nearby .leaflet-control-attribution {
                 border-radius: 8px 0 0 0;
-                background: rgba(255, 255, 255, .88) !important;
-                color: #49624f;
+                background: light-dark(rgba(255, 255, 255, .88), color-mix(in srgb, var(--night-panel) 88%, transparent)) !important;
+                color: light-dark(#49624f, var(--night-green));
                 backdrop-filter: blur(8px);
             }
 
@@ -491,7 +491,7 @@ return $court->latitude !== null
                     <select name="sport_id" aria-label="{{ __('Filter by sport') }}">
                         <option value="">{{ __('All sports') }}</option>
                         @foreach ($sports as $sport)
-                        <option value="{{ $sport->id }}" @selected((string) $selectedSport===(string) $sport->id)>{{ $sport->name }}</option>
+                        <option value="{{ $sport->id }}" @selected((string) $selectedSport===(string) $sport->id)>{{ __($sport->name) }}</option>
                         @endforeach
                     </select>
                 </label>
@@ -532,11 +532,7 @@ return $court->latitude !== null
                         && is_numeric($court->latitude) && is_numeric($court->longitude)
                         && (float) $court->latitude >= -90 && (float) $court->latitude <= 90
                             && (float) $court->longitude >= -180 && (float) $court->longitude <= 180;
-                                $imageUrl = $court->image
-    ? (\Illuminate\Support\Str::startsWith($court->image, 'images/')
-        ? asset($court->image)
-        : asset('storage/' . $court->image))
-    : asset('courtbook-assets/images/hero-football.png');
+                                $imageUrl = $court->thumbnailUrl();
 
 $fallbackUrl = asset('courtbook-assets/images/hero-football.png');
                                 @endphp
@@ -547,7 +543,7 @@ $fallbackUrl = asset('courtbook-assets/images/hero-football.png');
                                         <h3 class="cb-court-name">{{ $court->name }}</h3>
                                         <p class="cb-court-address">📍 {{ $court->address }}</p>
                                         <div class="cb-court-meta">
-                                            <span class="cb-court-price">{{ number_format((float) $court->weekday_price, 2) }} JOD <small>/ {{ __('hour') }}</small></span>
+                                            <span class="cb-court-price">{{ number_format((float) $court->weekday_price, 2) }} {{ __('JOD') }} <small>/ {{ __('hour') }}</small></span>
                                             <a class="cb-court-link" href="{{ route('courtbook.court', $court->id) }}">{{ __('Explore court') }} ↗</a>
                                         </div>
                                         @if ($hasLocation)

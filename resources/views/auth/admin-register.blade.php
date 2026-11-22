@@ -1,11 +1,11 @@
 <x-guest-layout>
 
     <h2 class="text-2xl font-bold text-center mb-2">
-        Register as Court Owner
+        {{ __('Register as Court Owner') }}
     </h2>
 
     <p class="text-sm text-gray-500 text-center mb-6">
-        Create your CourtBook owner account
+        {{ __('Create your CourtBook owner account') }}
     </p>
 
     <form method="POST" action="{{ route('admin.register.store') }}">
@@ -117,17 +117,17 @@
 
             <a href="{{ route('admin.login') }}"
                 class="text-sm text-indigo-600 hover:underline">
-                Already registered?
+                {{ __('Already registered?') }}
             </a>
 
             <x-primary-button>
-                Create Owner Account
+                {{ __('Create Owner Account') }}
             </x-primary-button>
 
         </div>
 
         <p class="text-xs text-gray-500 text-center mt-5">
-            Your account will be reviewed before you can manage courts.
+            {{ __('Your account will be reviewed before you can manage courts.') }}
         </p>
 
     </form>

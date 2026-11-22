@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\GroupGame;
 use App\Models\Court;
 use App\Models\Booking;
 use App\Services\BookingPricingService;
+use App\Support\DashboardList;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,187 +18,198 @@ class GroupGameController extends Controller
     /**
      * Display admin's group games.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $games = GroupGame::with(['court', 'booking', 'joinedPlayers'])
-            ->where('admin_id', auth('admin')->id())
-            ->withCount('joinedPlayers')
-            ->latest()
-            ->paginate(10);
+        $adminId = auth('admin')->id();
+        $search = DashboardList::search($request);
+        $statuses = DashboardList::labels(['open', 'full', 'cancelled', 'completed']);
+        $status = DashboardList::choice($request, 'status', array_keys($statuses));
+        $courtId = DashboardList::id($request, 'court_id');
+        $courtOptions = Court::where('admin_id', $adminId)->orderBy('name')->pluck('name', 'id');
 
-        return view('admins.group-games.index', compact('games'));
+        $ownerGames = GroupGame::where('admin_id', $adminId);
+        $gameStats = (clone $ownerGames)->selectRaw('status, COUNT(*) as total')->groupBy('status')->pluck('total', 'status');
+        $query = $ownerGames->with('court')->withCount('joinedPlayers')
+            ->when($search, fn ($query) => $query->whereAny(['title', 'description'], 'like', $search))
+            ->when($status, fn ($query) => $query->where('status', $status))
+            ->when($courtId, fn ($query) => $query->where('court_id', $courtId));
+
+        $games = DashboardList::dates($query, $request, 'game_date')
+            ->latest('id')->paginate(DashboardList::PER_PAGE)->withQueryString();
+
+        return view('admins.group-games.index', compact('games', 'gameStats', 'statuses', 'courtOptions'));
     }
 
     /**
      * Show create form.
      */
-   public function create()
-{
-    $courts = Court::where('admin_id', auth('admin')->id())
-        ->where('status', 'approved')
-        ->latest()
-        ->get();
+    public function create()
+    {
+        $courts = Court::where('admin_id', auth('admin')->id())
+            ->where('status', 'approved')
+            ->latest()
+            ->get();
 
-    return view('admins.group-games.create', compact('courts'));
-}
+        return view('admins.group-games.create', compact('courts'));
+    }
 
     /**
      * Store a new group game.
      */
-   public function store(Request $request, BookingPricingService $pricing)
-{
-    $validated = $request->validate([
-        'court_id' => 'required|exists:courts,id',
-        'title' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'game_date' => 'required|date|after_or_equal:today',
-        'start_time' => 'required|date_format:H:i',
-        'end_time' => 'required|date_format:H:i|after:start_time',
-        'max_players' => 'required|integer|min:2|max:100',
-    ]);
-
-    DB::transaction(function () use ($validated, $pricing) {
-        $court = Court::where('id', $validated['court_id'])->lockForUpdate()->firstOrFail();
-        abort_unless((int) $court->admin_id === (int) auth('admin')->id(), 403);
-        abort_unless($court->status === 'approved', 422, 'Only approved courts can host public group games.');
-        $this->validateCourtSchedule($court, $validated);
-
-        $prices = $pricing->calculate($court, $validated['game_date'], $validated['start_time'], $validated['end_time']);
-        $playerPrice = round(((float) $prices['total_price']) / $validated['max_players'], 2);
-        $booking = Booking::create([
-            'court_id' => $court->id,
-            'user_id' => null,
-            'created_by_admin_id' => auth('admin')->id(),
-            'booking_type' => 'group',
-            'booking_date' => $validated['game_date'],
-            'start_time' => $validated['start_time'],
-            'end_time' => $validated['end_time'],
-            'duration_minutes' => Carbon::parse($validated['game_date'].' '.$validated['start_time'])
-                ->diffInMinutes(Carbon::parse($validated['game_date'].' '.$validated['end_time'])),
-            'total_price' => $prices['total_price'],
-            'deposit_amount' => $prices['deposit_amount'],
-            'booking_status' => (float) $prices['deposit_amount'] > 0 ? 'pending' : 'confirmed',
+    public function store(Request $request, BookingPricingService $pricing)
+    {
+        $validated = $request->validate([
+            'court_id' => 'required|exists:courts,id',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'game_date' => 'required|date|after_or_equal:today',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'max_players' => 'required|integer|min:2|max:100',
         ]);
 
-        GroupGame::create([
-            'admin_id' => auth('admin')->id(),
-            'court_id' => $court->id,
-            'booking_id' => $booking->id,
-            'title' => $validated['title'],
-            'description' => $validated['description'] ?? null,
-            'game_date' => $validated['game_date'],
-            'start_time' => $validated['start_time'],
-            'end_time' => $validated['end_time'],
-            'max_players' => $validated['max_players'],
-            'player_price' => $playerPrice,
-            'status' => 'open',
-        ]);
-    });
+        DB::transaction(function () use ($validated, $pricing) {
+            $court = Court::where('id', $validated['court_id'])->lockForUpdate()->firstOrFail();
+            abort_unless((int) $court->admin_id === (int) auth('admin')->id(), 403);
+            abort_unless($court->status === 'approved', 422, 'Only approved courts can host public group games.');
+            $this->validateCourtSchedule($court, $validated);
 
-    return redirect()
-        ->route('admin.group-games.index')
-        ->with('success', 'Group game created successfully.');
-}
+            $prices = $pricing->calculate($court, $validated['game_date'], $validated['start_time'], $validated['end_time']);
+            $playerPrice = round(((float) $prices['total_price']) / $validated['max_players'], 2);
+            $booking = Booking::create([
+                'court_id' => $court->id,
+                'user_id' => null,
+                'created_by_admin_id' => auth('admin')->id(),
+                'booking_type' => 'group',
+                'booking_date' => $validated['game_date'],
+                'start_time' => $validated['start_time'],
+                'end_time' => $validated['end_time'],
+                'duration_minutes' => Carbon::parse($validated['game_date'] . ' ' . $validated['start_time'])
+                    ->diffInMinutes(Carbon::parse($validated['game_date'] . ' ' . $validated['end_time'])),
+                'total_price' => $prices['total_price'],
+                'deposit_amount' => $prices['deposit_amount'],
+                'booking_status' => (float) $prices['deposit_amount'] > 0 ? 'pending' : 'confirmed',
+            ]);
+
+            GroupGame::create([
+                'admin_id' => auth('admin')->id(),
+                'court_id' => $court->id,
+                'booking_id' => $booking->id,
+                'title' => $validated['title'],
+                'description' => $validated['description'] ?? null,
+                'game_date' => $validated['game_date'],
+                'start_time' => $validated['start_time'],
+                'end_time' => $validated['end_time'],
+                'max_players' => $validated['max_players'],
+                'player_price' => $playerPrice,
+                'status' => 'open',
+            ]);
+        });
+
+        return redirect()
+            ->route('admin.group-games.index')
+            ->with('success', __('Group game created successfully.'));
+    }
 
     /**
      * Show edit form.
      */
     public function edit($id)
-{
-    $game = GroupGame::where('admin_id', auth('admin')->id())
-        ->findOrFail($id);
+    {
+        $game = GroupGame::where('admin_id', auth('admin')->id())
+            ->findOrFail($id);
 
-    if ($game->status !== 'open') {
-        return redirect()
-            ->route('admin.group-games.index')
-            ->with('error', 'Only open games can be edited.');
+        if ($game->status !== 'open') {
+            return redirect()
+                ->route('admin.group-games.index')
+                ->with('error', __('Only open games can be edited.'));
+        }
+
+        $courts = Court::where('admin_id', auth('admin')->id())
+            ->where('status', 'approved')
+            ->latest()
+            ->get();
+
+        return view('admins.group-games.edit', compact('game', 'courts'));
     }
-
-    $courts = Court::where('admin_id', auth('admin')->id())
-        ->where('status', 'approved')
-        ->latest()
-        ->get();
-
-    return view('admins.group-games.edit', compact('game', 'courts'));
-}
 
 
     /**
      * Update group game.
      */
     public function update(Request $request, $id, BookingPricingService $pricing)
-{
-    $game = GroupGame::where('admin_id', auth('admin')->id())
-        ->findOrFail($id);
+    {
+        $game = GroupGame::where('admin_id', auth('admin')->id())
+            ->findOrFail($id);
 
-    // Only open games can be edited
-    if ($game->status !== 'open') {
+        // Only open games can be edited
+        if ($game->status !== 'open') {
+            return redirect()
+                ->route('admin.group-games.index')
+                ->with('error', __('Only open games can be edited.'));
+        }
+
+        // Validate form data
+        $validated = $request->validate([
+            'court_id' => 'required|exists:courts,id',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'game_date' => 'required|date|after_or_equal:today',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'max_players' => 'required|integer|min:2|max:100',
+        ]);
+
+        DB::transaction(function () use ($game, $validated, $pricing) {
+            $lockedGame = GroupGame::whereKey($game->id)->lockForUpdate()->firstOrFail();
+            if ($lockedGame->status !== 'open' || $lockedGame->players()->wherePivotIn('status', ['pending', 'joined', 'attended'])->exists()) {
+                throw ValidationException::withMessages(['game' => __('Game cannot be edited now.')]);
+            }
+            $court = Court::where('id', $validated['court_id'])->lockForUpdate()->firstOrFail();
+            abort_unless((int) $court->admin_id === (int) auth('admin')->id(), 403);
+            abort_unless($court->status === 'approved', 422, 'Only approved courts can host public group games.');
+            $this->validateCourtSchedule($court, $validated, $lockedGame->id, $lockedGame->booking_id);
+            $prices = $pricing->calculate($court, $validated['game_date'], $validated['start_time'], $validated['end_time']);
+            $playerPrice = round(((float) $prices['total_price']) / $validated['max_players'], 2);
+
+            $lockedGame->update([
+                'court_id' => $court->id,
+                'title' => $validated['title'],
+                'description' => $validated['description'] ?? null,
+                'game_date' => $validated['game_date'],
+                'start_time' => $validated['start_time'],
+                'end_time' => $validated['end_time'],
+                'max_players' => $validated['max_players'],
+                'player_price' => $playerPrice,
+            ]);
+            $bookingData = [
+                'court_id' => $court->id,
+                'booking_date' => $validated['game_date'],
+                'start_time' => $validated['start_time'],
+                'end_time' => $validated['end_time'],
+                'duration_minutes' => Carbon::parse($validated['game_date'] . ' ' . $validated['start_time'])
+                    ->diffInMinutes(Carbon::parse($validated['game_date'] . ' ' . $validated['end_time'])),
+                'total_price' => $prices['total_price'],
+                'deposit_amount' => $prices['deposit_amount'],
+                'booking_status' => (float) $prices['deposit_amount'] > 0 ? 'pending' : 'confirmed',
+            ];
+            if ($lockedGame->booking_id) {
+                $lockedGame->booking()->update($bookingData);
+            } else {
+                $booking = Booking::create([
+                    ...$bookingData,
+                    'user_id' => null,
+                    'created_by_admin_id' => auth('admin')->id(),
+                    'booking_type' => 'group',
+                ]);
+                $lockedGame->update(['booking_id' => $booking->id]);
+            }
+        });
+
         return redirect()
             ->route('admin.group-games.index')
-            ->with('error', 'Only open games can be edited.');
+            ->with('success', __('Group game updated successfully.'));
     }
-
-    // Validate form data
-    $validated = $request->validate([
-        'court_id' => 'required|exists:courts,id',
-        'title' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'game_date' => 'required|date|after_or_equal:today',
-        'start_time' => 'required|date_format:H:i',
-        'end_time' => 'required|date_format:H:i|after:start_time',
-        'max_players' => 'required|integer|min:2|max:100',
-    ]);
-
-    DB::transaction(function () use ($game, $validated, $pricing) {
-        $lockedGame = GroupGame::whereKey($game->id)->lockForUpdate()->firstOrFail();
-        if ($lockedGame->status !== 'open' || $lockedGame->players()->wherePivotIn('status', ['pending', 'joined', 'attended'])->exists()) {
-            throw ValidationException::withMessages(['game' => 'Game cannot be edited now.']);
-        }
-        $court = Court::where('id', $validated['court_id'])->lockForUpdate()->firstOrFail();
-        abort_unless((int) $court->admin_id === (int) auth('admin')->id(), 403);
-        abort_unless($court->status === 'approved', 422, 'Only approved courts can host public group games.');
-        $this->validateCourtSchedule($court, $validated, $lockedGame->id, $lockedGame->booking_id);
-        $prices = $pricing->calculate($court, $validated['game_date'], $validated['start_time'], $validated['end_time']);
-        $playerPrice = round(((float) $prices['total_price']) / $validated['max_players'], 2);
-
-        $lockedGame->update([
-            'court_id' => $court->id,
-            'title' => $validated['title'],
-            'description' => $validated['description'] ?? null,
-            'game_date' => $validated['game_date'],
-            'start_time' => $validated['start_time'],
-            'end_time' => $validated['end_time'],
-            'max_players' => $validated['max_players'],
-            'player_price' => $playerPrice,
-        ]);
-        $bookingData = [
-            'court_id' => $court->id,
-            'booking_date' => $validated['game_date'],
-            'start_time' => $validated['start_time'],
-            'end_time' => $validated['end_time'],
-            'duration_minutes' => Carbon::parse($validated['game_date'].' '.$validated['start_time'])
-                ->diffInMinutes(Carbon::parse($validated['game_date'].' '.$validated['end_time'])),
-            'total_price' => $prices['total_price'],
-            'deposit_amount' => $prices['deposit_amount'],
-            'booking_status' => (float) $prices['deposit_amount'] > 0 ? 'pending' : 'confirmed',
-        ];
-        if ($lockedGame->booking_id) {
-            $lockedGame->booking()->update($bookingData);
-        } else {
-            $booking = Booking::create([
-                ...$bookingData,
-                'user_id' => null,
-                'created_by_admin_id' => auth('admin')->id(),
-                'booking_type' => 'group',
-            ]);
-            $lockedGame->update(['booking_id' => $booking->id]);
-        }
-    });
-
-    return redirect()
-        ->route('admin.group-games.index')
-        ->with('success', 'Group game updated successfully.');
-}
 
 
     /**
@@ -209,7 +221,7 @@ class GroupGameController extends Controller
             ->findOrFail($id);
 
         if (! in_array($game->status, ['open', 'full'], true)) {
-            return back()->with('error', 'This game cannot be cancelled.');
+            return back()->with('error', __('This game cannot be cancelled.'));
         }
 
         DB::transaction(function () use ($game) {
@@ -222,7 +234,7 @@ class GroupGameController extends Controller
 
         return redirect()
             ->route('admin.group-games.index')
-            ->with('success', 'Group game cancelled successfully.');
+            ->with('success', __('Group game cancelled successfully.'));
     }
 
     /**
@@ -248,7 +260,7 @@ class GroupGameController extends Controller
 
         return redirect()
             ->route('admin.group-games.index')
-            ->with('success', 'Group game deleted successfully.');
+            ->with('success', __('Group game deleted successfully.'));
     }
 
     public function complete(int $id)
@@ -260,18 +272,20 @@ class GroupGameController extends Controller
             $locked->update(['status' => 'completed']);
             $locked->booking()->update(['booking_status' => 'completed']);
         });
-        return back()->with('success', 'Group game marked as completed. Players can now pay their remaining balance.');
+        return back()->with('success', __('Group game marked as completed. Players can now pay their remaining balance.'));
     }
 
     private function validateCourtSchedule(Court $court, array $data, ?int $ignoreGameId = null, ?int $ignoreBookingId = null): void
     {
-        if ($data['start_time'] < Carbon::parse($court->opening_time)->format('H:i')
-            || $data['end_time'] > Carbon::parse($court->closing_time)->format('H:i')) {
-            throw ValidationException::withMessages(['start_time' => 'Game time must be within court opening hours.']);
+        if (
+            $data['start_time'] < Carbon::parse($court->opening_time)->format('H:i')
+            || $data['end_time'] > Carbon::parse($court->closing_time)->format('H:i')
+        ) {
+            throw ValidationException::withMessages(['start_time' => __('Game time must be within court opening hours.')]);
         }
 
-        $minutes = Carbon::parse($data['game_date'].' '.$data['start_time'])
-            ->diffInMinutes(Carbon::parse($data['game_date'].' '.$data['end_time']));
+        $minutes = Carbon::parse($data['game_date'] . ' ' . $data['start_time'])
+            ->diffInMinutes(Carbon::parse($data['game_date'] . ' ' . $data['end_time']));
         $minimum = (int) ($court->min_booking_minutes ?: 30);
         if ($minutes < $minimum || $minutes % 30 !== 0) {
             throw ValidationException::withMessages(['end_time' => $minutes < $minimum
@@ -284,10 +298,10 @@ class GroupGameController extends Controller
             ->whereIn('status', ['open', 'full'])
             ->where('start_time', '<', $data['end_time'])
             ->where('end_time', '>', $data['start_time'])
-            ->when($ignoreGameId, fn ($query) => $query->where('id', '!=', $ignoreGameId))
+            ->when($ignoreGameId, fn($query) => $query->where('id', '!=', $ignoreGameId))
             ->exists();
         if ($overlap) {
-            throw ValidationException::withMessages(['start_time' => 'Another group game already exists on this court at that time.']);
+            throw ValidationException::withMessages(['start_time' => __('Another group game already exists on this court at that time.')]);
         }
 
         $bookingOverlap = Booking::where('court_id', $court->id)
@@ -295,11 +309,10 @@ class GroupGameController extends Controller
             ->whereIn('booking_status', ['pending', 'confirmed'])
             ->where('start_time', '<', $data['end_time'])
             ->where('end_time', '>', $data['start_time'])
-            ->when($ignoreBookingId, fn ($query) => $query->where('id', '!=', $ignoreBookingId))
+            ->when($ignoreBookingId, fn($query) => $query->where('id', '!=', $ignoreBookingId))
             ->exists();
         if ($bookingOverlap) {
-            throw ValidationException::withMessages(['start_time' => 'This court is already booked at that time.']);
+            throw ValidationException::withMessages(['start_time' => __('This court is already booked at that time.')]);
         }
-
     }
 }

@@ -25,7 +25,7 @@
             <h2>{{ __('Ready for your next game?') }}</h2>
             <p>{{ __('Pick a sport and we’ll help you find a place to play.') }}</p>
             <a href="{{ route('courtbook.courts') }}">{{ __('Find a court') }} <span aria-hidden="true">↗</span></a>
-            <a class="site-footer-owner-login" href="{{ route('admin.login') }}" aria-label="تسجيل دخول أصحاب الملاعب">عندك ملعب؟ سجّل دخولك</a>
+            <a class="site-footer-owner-login" href="{{ route('admin.login') }}" aria-label="{{ __('Court owner sign-in') }}">{{ __('Own a court? Log in') }}</a>
         </section>
     </div>
 

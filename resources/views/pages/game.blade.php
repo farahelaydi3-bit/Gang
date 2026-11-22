@@ -64,7 +64,7 @@
                         <span>{{ __('Entry Price') }}</span>
                         <strong>
                             @if ((float) $game->player_price > 0)
-                                {{ number_format((float) $game->player_price, 2) }} <small>JOD {{ __('per player') }}</small>
+                                {{ number_format((float) $game->player_price, 2) }} <small>{{ __('JOD') }} {{ __('per player') }}</small>
                             @else
                                 {{ __('Free entry') }}
                             @endif
