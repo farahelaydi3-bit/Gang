@@ -62,7 +62,8 @@ Do NOT invent facts. If there are no complaints or praises, say "none".
 PROMPT;
 
         try {
-            $result = Gemini::generativeModel('gemini-2.0-flash')
+            // $result = Gemini::generativeModel('gemini-2.0-flash')
+            $result = Gemini::generativeModel(config('services.gemini.model', 'gemini-3.5-flash-lite'))
                 ->withGenerationConfig(
                     new GenerationConfig(responseMimeType: ResponseMimeType::APPLICATION_JSON)
                 )

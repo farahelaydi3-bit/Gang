@@ -31,7 +31,8 @@ Review text:
 PROMPT;
 
         try {
-            $result = Gemini::generativeModel('gemini-2.0-flash')
+            // $result = Gemini::generativeModel('gemini-2.0-flash')
+            $result = Gemini::generativeModel(config('services.gemini.model', 'gemini-3.5-flash-lite'))
                 ->withGenerationConfig(
                     new GenerationConfig(responseMimeType: ResponseMimeType::APPLICATION_JSON)
                 )
