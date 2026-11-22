@@ -67,6 +67,7 @@ request()->route()?->getName() ?? '',
             @endauth
 
             <x-language-toggle :icon="true" />
+            <x-theme-toggle />
         </div>
     </div>
 </header>

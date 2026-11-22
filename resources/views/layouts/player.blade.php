@@ -4,6 +4,7 @@
     dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 
 <head>
+    <x-theme-head />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -25,9 +26,10 @@
 
     <link rel="stylesheet" href="{{ asset('assets/css/language.css') }}">
     @stack('styles')
+    <link rel="stylesheet" href="{{ asset('courtbook-assets/player-buttons.css') }}">
 </head>
 
-<body>
+<body class="gang-player">
     <a class="skip" href="#main">
         {{ __('Skip to content') }}
     </a>

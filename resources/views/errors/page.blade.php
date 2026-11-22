@@ -9,6 +9,7 @@
 <!doctype html>
 <html lang="{{ $locale }}" dir="{{ $locale === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
+    <x-theme-head />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex">
@@ -24,7 +25,10 @@
             <span>GANG</span>
         </a>
         @if ($canReopen)
-            <x-language-toggle :icon="true" :locale="$locale" />
+            <div class="gang-theme-controls">
+                <x-theme-toggle />
+                <x-language-toggle :icon="true" :locale="$locale" />
+            </div>
         @endif
     </header>
 

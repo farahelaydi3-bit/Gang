@@ -2,6 +2,7 @@
 <html lang="{{ app()->getLocale() }}" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 
 <head>
+    <x-theme-head />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -211,7 +212,7 @@
 
         @if ($flaggedCount > 0)
             <span style="
-                background: #ef4444;
+                background: light-dark(#ef4444, var(--night-danger-bg));
                 color: white;
                 font-size: 0.7rem;
                 font-weight: 700;
@@ -277,6 +278,7 @@
                         </button>
                     </form>
                     <x-language-toggle :icon="true" />
+                    <x-theme-toggle />
                 </div>
 
                 <!-- Profile -->

@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="{{ app()->getLocale() }}" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 <head>
+    <x-theme-head />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -27,8 +28,9 @@
             .auth-mobile-nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('courtbook-assets/player-buttons.css') }}">
 </head>
-<body>
+<body class="gang-player">
     @php
         $links = [
             [__('Home'), url('/'), request()->is('/')],
@@ -52,7 +54,10 @@
                     </a>
                 @endforeach
             </nav>
-            <x-language-toggle />
+            <div class="gang-theme-controls">
+                <x-language-toggle />
+                <x-theme-toggle />
+            </div>
         </div>
     </header>
 

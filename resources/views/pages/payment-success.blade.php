@@ -5,20 +5,20 @@
 
 @push('styles')
 <style>
-    .payment-success-modal{width:min(94vw,560px);padding:clamp(1.1rem,4vw,1.6rem);border-color:#dce8df;border-radius:22px;box-shadow:0 30px 80px #06190f45;text-align:start}
+    .payment-success-modal{width:min(94vw,560px);padding:clamp(1.1rem,4vw,1.6rem);border-color:light-dark(#dce8df, var(--night-line));border-radius:22px;box-shadow:0 30px 80px #06190f45;text-align:start}
     .payment-success-modal .dialog-head{align-items:center}
-    .payment-success-modal .dialog-head h2{margin:.25rem 0 0;color:#193b29;font-size:1.55rem}
-    .payment-success-kicker{display:inline-flex;align-items:center;gap:.42rem;color:#176534;font-size:.65rem;font-weight:900;letter-spacing:.1em}
-    .payment-success-kicker i{width:7px;height:7px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 3px #16a34a20}
-    .payment-success-mark{display:grid;place-items:center;width:68px;height:68px;margin:1.15rem auto .75rem;border:1px solid #d4ebd9;border-radius:22px;background:linear-gradient(145deg,#eff9f1,#dcfce7);color:#176534;animation:paymentSuccessPop .45s cubic-bezier(.2,.85,.25,1.2) both}
+    .payment-success-modal .dialog-head h2{margin:.25rem 0 0;color:light-dark(#193b29, var(--night-ink));font-size:1.55rem}
+    .payment-success-kicker{display:inline-flex;align-items:center;gap:.42rem;color:light-dark(#176534, var(--night-green));font-size:.65rem;font-weight:900;letter-spacing:.1em}
+    .payment-success-kicker i{width:7px;height:7px;border-radius:50%;background:light-dark(#16a34a, var(--night-brand));box-shadow:0 0 0 3px light-dark(#16a34a20, var(--night-shadow))}
+    .payment-success-mark{display:grid;place-items:center;width:68px;height:68px;margin:1.15rem auto .75rem;border:1px solid light-dark(#d4ebd9, var(--night-line));border-radius:22px;background:linear-gradient(145deg,light-dark(#eff9f1, var(--night-panel)),light-dark(#dcfce7, var(--night-raised)));color:light-dark(#176534, var(--night-green));animation:paymentSuccessPop .45s cubic-bezier(.2,.85,.25,1.2) both}
     .payment-success-mark svg{width:34px;height:34px}
-    .payment-success-title{text-align:center;margin:.25rem 0;color:#193b29;font-size:1.45rem}
-    .payment-success-copy{text-align:center;margin:0 auto 1rem;max-width:48ch;color:#718076;font-size:.84rem;line-height:1.7}
-    .payment-success-items{display:grid;gap:0;margin:1rem 0;padding:.55rem .8rem;border:1px solid #e5eee7;border-radius:15px;background:#fbfdfb}
-    .payment-success-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.62rem 0;border-bottom:1px dashed #e1e9e3;font-size:.8rem}
-    .payment-success-row:last-child{border-bottom:0}.payment-success-row>span{color:#718076}.payment-success-row>strong{max-width:64%;color:#233b2b;text-align:end;overflow-wrap:anywhere}
-    .payment-success-row.is-paid>strong{color:#176534;font-size:1rem}.payment-success-row.is-balance>strong{color:#9a6b12}
-    .payment-success-reference{margin:.75rem 0 0;color:#87938a;font-size:.7rem;overflow-wrap:anywhere}
+    .payment-success-title{text-align:center;margin:.25rem 0;color:light-dark(#193b29, var(--night-ink));font-size:1.45rem}
+    .payment-success-copy{text-align:center;margin:0 auto 1rem;max-width:48ch;color:light-dark(#718076, var(--night-green));font-size:.84rem;line-height:1.7}
+    .payment-success-items{display:grid;gap:0;margin:1rem 0;padding:.55rem .8rem;border:1px solid light-dark(#e5eee7, var(--night-line));border-radius:15px;background:light-dark(#fbfdfb, var(--night-panel))}
+    .payment-success-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.62rem 0;border-bottom:1px dashed light-dark(#e1e9e3, var(--night-line));font-size:.8rem}
+    .payment-success-row:last-child{border-bottom:0}.payment-success-row>span{color:light-dark(#718076, var(--night-green))}.payment-success-row>strong{max-width:64%;color:light-dark(#233b2b, var(--night-ink));text-align:end;overflow-wrap:anywhere}
+    .payment-success-row.is-paid>strong{color:light-dark(#176534, var(--night-green));font-size:1rem}.payment-success-row.is-balance>strong{color:light-dark(#9a6b12, var(--night-warning-ink))}
+    .payment-success-reference{margin:.75rem 0 0;color:light-dark(#87938a, var(--night-green));font-size:.7rem;overflow-wrap:anywhere}
     .payment-success-actions{margin-top:1rem}.payment-success-actions .button{width:100%;min-height:46px;border-radius:12px;font-size:.84rem}
     @keyframes paymentSuccessPop{from{opacity:0;transform:scale(.78) rotate(-8deg)}to{opacity:1;transform:scale(1) rotate(0)}}
     @media(prefers-reduced-motion:reduce){.payment-success-mark{animation:none}}

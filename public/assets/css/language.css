@@ -22,12 +22,12 @@
     inline-size: 2.75rem;
     block-size: 2.75rem;
     padding: 0;
-    border-color: #dce7df;
-    background: #fff;
-    color: #28513a;
+    border-color: light-dark(#dce7df, var(--night-line));
+    background: light-dark(#fff, var(--night-panel));
+    color: light-dark(#28513a, var(--night-ink));
 }
 
-.gang-language-toggle-icon:hover { border-color: #bdd5b2; background: #f3f8e9; }
+.gang-language-toggle-icon:hover { border-color: light-dark(#bdd5b2, var(--night-line)); background: light-dark(#f3f8e9, var(--night-panel)); }
 .sidebar-account-actions { display: flex; align-items: center; gap: .5rem; }
 .sidebar-account-actions form { flex: 1 1 auto; min-inline-size: 0; }
 

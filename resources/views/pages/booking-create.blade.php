@@ -64,11 +64,7 @@
                                     <option value="{{ $court->id }}"
                                         data-court-name="{{ $court->name }}"
                                         data-sport-name="{{ __($court->sports?->name) }}"
-                                       data-court-image="{{ $court->image
-    ? (\Illuminate\Support\Str::startsWith($court->image, 'images/')
-        ? asset($court->image)
-        : asset('storage/' . $court->image))
-    : asset('courtbook-assets/images/hero-football.png') }}"
+                                       data-court-image="{{ $court->thumbnailUrl() }}"
                                         data-weekday-price="{{ $court->weekday_price }}"
                                         data-weekend-price="{{ $court->weekend_price }}"
                                         data-evening-price="{{ $court->evening_price }}"
@@ -131,11 +127,7 @@
             <aside class="booking-create-aside" aria-label="{{ __('Booking preview') }}">
                 <div class="booking-court-preview">
                     <img id="booking-court-image"
-                       src="{{ $selectedCourt?->image
-    ? (\Illuminate\Support\Str::startsWith($selectedCourt->image, 'images/')
-        ? asset($selectedCourt->image)
-        : asset('storage/' . $selectedCourt->image))
-    : asset('courtbook-assets/images/players.png') }}"
+                        src="{{ $selectedCourt?->thumbnailUrl() ?? asset('courtbook-assets/images/players.png') }}"
                         alt="" loading="eager">
                     <span class="booking-preview-shade"></span>
                     <span class="booking-preview-label"><i></i>{{ __('GANG PICK') }}</span>

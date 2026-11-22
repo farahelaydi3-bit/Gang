@@ -101,11 +101,7 @@
         <tbody>
             @forelse ($MyCourts as $court)
                 @php
-                    $imageUrl = $court->image
-                        ? (\Illuminate\Support\Str::startsWith($court->image, 'images/')
-                            ? asset($court->image)
-                            : asset('storage/' . $court->image))
-                        : asset('courtbook-assets/images/hero-football.png');
+                    $imageUrl = $court->thumbnailUrl();
                 @endphp
 
                 <tr>

@@ -133,7 +133,7 @@
 
 .dashboard-layout :is(.admin-table, .overview-table) th {
     background: var(--admin-primary-light);
-    color: #456252;
+    color: light-dark(#456252, var(--night-green));
     font-size: 12px;
     font-weight: 800;
     white-space: nowrap;
@@ -149,12 +149,12 @@
 }
 
 .dashboard-layout :is(.admin-table, .overview-table) tbody tr:hover {
-    background: #F4FAF5;
+    background: light-dark(#F4FAF5, var(--night-panel));
 }
 
 .dashboard-layout :is(.admin-table, .overview-table) :is(.super-admin-empty, .overview-table-empty) {
     padding: 22px 14px !important;
-    color: #456252 !important;
+    color: light-dark(#456252, var(--night-green)) !important;
     text-align: center;
 }
 
@@ -180,43 +180,43 @@
 
 .dashboard-layout .form-control:focus {
     border-color: var(--admin-primary);
-    box-shadow: 0 0 0 3px #17804422;
+    box-shadow: 0 0 0 3px light-dark(#17804422, var(--night-shadow));
 }
 
 .dashboard-layout :is(.badge, .overview-status) {
     border: 1px solid var(--admin-border);
-    background: #F1F8F2;
-    color: #456252;
+    background: light-dark(#F1F8F2, var(--night-panel));
+    color: light-dark(#456252, var(--night-green));
     font-size: 11px;
     font-weight: 800;
     white-space: nowrap;
 }
 
 .dashboard-layout :is(.badge-success, .overview-status-active, .overview-status-approved) {
-    border-color: #D1E5D9;
-    background: #EAF5EF;
-    color: #236447;
+    border-color: light-dark(#D1E5D9, var(--night-line));
+    background: light-dark(#EAF5EF, var(--night-raised));
+    color: light-dark(#236447, var(--night-green));
 }
 
 .dashboard-layout :is(.badge-warning, .overview-status-pending) {
-    border-color: #EFDBBF;
-    background: #FCF0DA;
-    color: #79440E;
+    border-color: light-dark(#EFDBBF, var(--night-line));
+    background: light-dark(#FCF0DA, var(--night-warning-bg));
+    color: light-dark(#79440E, var(--night-warning-ink));
 }
 
 .dashboard-layout :is(.badge-danger, .overview-status-suspended, .overview-status-rejected) {
-    border-color: #F5D0D3;
-    background: #FDEBED;
-    color: #A52A35;
+    border-color: light-dark(#F5D0D3, var(--night-line));
+    background: light-dark(#FDEBED, var(--night-danger-bg));
+    color: light-dark(#A52A35, var(--night-danger-ink));
 }
 
 .super-admin-form-errors {
     margin-block-end: 14px;
     padding: 11px 15px;
-    border: 1px solid #F5D0D3;
+    border: 1px solid light-dark(#F5D0D3, var(--night-line));
     border-radius: 12px;
-    background: #FDEBED;
-    color: #A52A35;
+    background: light-dark(#FDEBED, var(--night-danger-bg));
+    color: light-dark(#A52A35, var(--night-danger-ink));
 }
 
 .super-admin-form-errors ul {
@@ -280,7 +280,7 @@
 .super-admin-pagination {
     justify-content: space-between;
     margin-block-start: 14px;
-    color: #456252;
+    color: light-dark(#456252, var(--night-green));
     font-size: 12px;
 }
 
@@ -363,12 +363,12 @@
     padding: 9px 11px;
     border: 1px solid var(--admin-border);
     border-radius: 10px;
-    background: #F4FAF5;
+    background: light-dark(#F4FAF5, var(--night-panel));
 }
 
 .super-admin-record-facts dt,
 .super-admin-muted {
-    color: #456252;
+    color: light-dark(#456252, var(--night-green));
     font-size: 12px;
 }
 
@@ -402,7 +402,7 @@
     overflow: hidden;
     border: 1px solid var(--admin-border);
     border-radius: 12px;
-    background: #F4FAF5;
+    background: light-dark(#F4FAF5, var(--night-panel));
 }
 
 .super-admin-court-photo img {
@@ -422,7 +422,7 @@
 }
 
 .dashboard-layout a.super-admin-record-link:hover {
-    color: #17643A;
+    color: light-dark(#17643A, var(--night-green));
 }
 
 .super-admin-dialog {

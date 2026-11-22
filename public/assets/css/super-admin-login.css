@@ -8,7 +8,7 @@
 
 .super-login {
     color: var(--admin-text);
-    background: radial-gradient(ellipse at 75% 0%, #FCFEFC 0%, transparent 62%), var(--admin-background);
+    background: radial-gradient(ellipse at 75% 0%, light-dark(#FCFEFC, var(--night-panel)) 0%, transparent 62%), var(--admin-background);
     font: 500 14px/1.6 Manrope, "Dashboard Cairo", system-ui, sans-serif;
 }
 
@@ -82,7 +82,7 @@
     padding: 5px;
     border: 1px solid var(--admin-border);
     border-radius: 12px;
-    background: white;
+    background: light-dark(white, var(--night-panel));
     object-fit: contain;
 }
 
@@ -192,7 +192,7 @@
     padding: 10px 13px;
     border: 1px solid var(--admin-border);
     border-radius: var(--admin-radius-sm);
-    background: #fff;
+    background: light-dark(#fff, var(--night-panel));
     color: var(--admin-text);
     font: inherit;
     font-size: 16px;
@@ -226,7 +226,7 @@
     border: 0;
     border-radius: 7px;
     background: transparent;
-    color: #17643A;
+    color: light-dark(#17643A, var(--night-green));
     font: inherit;
     font-size: 13px;
     font-weight: 800;
@@ -239,7 +239,7 @@
 
 .super-login-error {
     margin: 7px 0 0;
-    color: #A52A35;
+    color: light-dark(#A52A35, var(--night-danger-ink));
     font-size: 13px;
     overflow-wrap: anywhere;
 }
@@ -260,7 +260,7 @@
 }
 
 .super-login-links a {
-    color: #17643A;
+    color: light-dark(#17643A, var(--night-green));
     font-weight: 800;
     text-underline-offset: 3px;
 }

@@ -2,6 +2,7 @@
 <html lang="{{ app()->getLocale() }}" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 
 <head>
+    <x-theme-head />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -94,6 +95,7 @@
                         </button>
                     </form>
                     <x-language-toggle :icon="true" />
+                    <x-theme-toggle />
                 </div>
 
                 <a href="{{ route('admin.profile.index') }}"

@@ -8,10 +8,10 @@
     align-items: center;
     gap: 8px;
     padding: 7px 11px;
-    border: 1px solid #EFDBBF;
+    border: 1px solid light-dark(#EFDBBF, var(--night-line));
     border-radius: 999px;
-    background: #FCF0DA;
-    color: #79440E;
+    background: light-dark(#FCF0DA, var(--night-warning-bg));
+    color: light-dark(#79440E, var(--night-warning-ink));
     font-size: 12px;
     font-weight: 800;
 }
@@ -25,15 +25,15 @@
 }
 
 .application-review-status[data-status="approved"] {
-    border-color: #D1E5D9;
-    background: #EAF5EF;
-    color: #236447;
+    border-color: light-dark(#D1E5D9, var(--night-line));
+    background: light-dark(#EAF5EF, var(--night-raised));
+    color: light-dark(#236447, var(--night-green));
 }
 
 .application-review-status[data-status="rejected"] {
-    border-color: #F5D0D3;
-    background: #FDEBED;
-    color: #A52A35;
+    border-color: light-dark(#F5D0D3, var(--night-line));
+    background: light-dark(#FDEBED, var(--night-danger-bg));
+    color: light-dark(#A52A35, var(--night-danger-ink));
 }
 
 .application-review-grid {
@@ -84,14 +84,14 @@
     padding: 11px 12px;
     border: 1px solid var(--admin-border);
     border-radius: 10px;
-    background: #F4FAF5;
+    background: light-dark(#F4FAF5, var(--night-panel));
 }
 
 .application-review-facts dt,
 .application-review-files small,
 .application-review-muted,
 .application-review-decision p {
-    color: #496554;
+    color: light-dark(#496554, var(--night-green));
     font-size: 12px;
 }
 
@@ -119,7 +119,7 @@
 }
 
 .application-review-text {
-    color: #3B5948;
+    color: light-dark(#3B5948, var(--night-green));
     white-space: pre-wrap;
     overflow-wrap: anywhere;
 }
@@ -140,7 +140,7 @@
     border: 1px solid var(--admin-border);
     border-radius: 999px;
     background: var(--admin-primary-light);
-    color: #276B48;
+    color: light-dark(#276B48, var(--night-green));
     font-size: 12px;
     font-weight: 800;
     overflow-wrap: anywhere;
@@ -194,12 +194,12 @@
 }
 
 .super-admin-layout .admin-button.admin-button-outline.application-review-reject {
-    border-color: #E8C2C4;
-    color: #A52A35;
+    border-color: light-dark(#E8C2C4, var(--night-line));
+    color: light-dark(#A52A35, var(--night-danger-ink));
 }
 
 .super-admin-layout .admin-button.admin-button-outline.application-review-reject:hover {
-    background: #FDEBED;
+    background: light-dark(#FDEBED, var(--night-danger-bg));
 }
 
 .application-review-decision {
@@ -207,7 +207,7 @@
     padding: 13px;
     border: 1px solid var(--admin-border);
     border-radius: 12px;
-    background: #F4FAF5;
+    background: light-dark(#F4FAF5, var(--night-panel));
 }
 
 .application-review-decision p {
@@ -233,7 +233,7 @@
 }
 
 .application-review-decision .application-review-error {
-    color: #A52A35;
+    color: light-dark(#A52A35, var(--night-danger-ink));
     font-weight: 750;
 }
 

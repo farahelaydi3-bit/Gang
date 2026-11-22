@@ -44,14 +44,7 @@
         <div class="details">
             <section class="court-detail-main">
                 <div class="court-detail-photo">
-                    <img
-    src="{{ $court->image
-        ? (\Illuminate\Support\Str::startsWith($court->image, 'images/')
-            ? asset($court->image)
-            : asset('storage/' . $court->image))
-        : asset('courtbook-assets/images/hero-football.png') }}"
-    alt="{{ $court->name }}"
->
+                    <img src="{{ $court->thumbnailUrl() }}" alt="{{ $court->name }}">
                     <span class="court-photo-sport">{{ $court->sports->name }}</span>
                 </div>
 

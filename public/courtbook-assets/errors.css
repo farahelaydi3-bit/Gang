@@ -14,10 +14,9 @@
 }
 
 :root {
-    color-scheme: light;
     font-family: Manrope, Cairo, system-ui, sans-serif;
-    background: #edf6ee;
-    color: #193b29;
+    background: light-dark(#edf6ee, var(--night-canvas));
+    color: light-dark(#193b29, var(--night-ink));
 }
 
 :root[lang="ar"] { font-family: Cairo, Manrope, system-ui, sans-serif; }
@@ -54,10 +53,10 @@ body {
     grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
     align-self: center;
     overflow: hidden;
-    border: 1px solid #d8e7db;
+    border: 1px solid light-dark(#d8e7db, var(--night-line));
     border-radius: 1.5rem;
-    background: #fcfefc;
-    box-shadow: 0 20px 52px #193b2914;
+    background: light-dark(#fcfefc, var(--night-panel));
+    box-shadow: 0 20px 52px light-dark(#193b2914, var(--night-shadow));
 }
 
 .error-copy {
@@ -75,7 +74,7 @@ body {
 .error-copy p {
     margin: .85rem 0 1.5rem;
     max-width: 45ch;
-    color: #4b6457;
+    color: light-dark(#4b6457, var(--night-green));
     line-height: 1.7;
 }
 
@@ -96,8 +95,8 @@ body {
 
 .error-actions .error-primary { background: #176b45; color: #fff; }
 .error-actions .error-primary:hover { background: #123b2a; }
-.error-actions .error-secondary { border-color: #d8e7db; color: #193b29; }
-.error-actions .error-secondary:hover { background: #edf6ee; }
+.error-actions .error-secondary { border-color: light-dark(#d8e7db, var(--night-line)); color: light-dark(#193b29, var(--night-ink)); }
+.error-actions .error-secondary:hover { background: light-dark(#edf6ee, var(--night-raised)); }
 .error-actions a:focus-visible, .error-brand:focus-visible { outline: 2px solid #176b45; outline-offset: 3px; }
 
 .error-score {

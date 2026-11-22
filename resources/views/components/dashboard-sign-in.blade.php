@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html lang="{{ app()->getLocale() }}" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 <head>
+    <x-theme-head />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ __($copy['title']) }} | Gang</title>
@@ -17,7 +18,10 @@
             <a class="super-login-home" href="{{ route('courtbook.home') }}">
                 <span aria-hidden="true">{{ $arabic ? '→' : '←' }}</span> {{ $arabic ? 'العودة إلى جانغ' : 'Back to Gang' }}
             </a>
-            <x-language-toggle />
+            <div class="gang-theme-controls">
+                <x-language-toggle />
+                <x-theme-toggle />
+            </div>
         </nav>
 
         <div class="super-login-card">

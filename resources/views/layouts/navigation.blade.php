@@ -1,5 +1,5 @@
 <nav class="bg-white border-b border-gray-100" aria-label="{{ __('Main navigation') }}">
-    <div class="flex justify-end px-4 pt-2"><x-language-toggle /></div>
+    <div class="flex justify-end px-4 pt-2"><x-language-toggle /> <x-theme-toggle /></div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between min-h-16 gap-6">
             <a href="{{ route('courtbook.home') }}" aria-label="{{ __('Home') }}">
