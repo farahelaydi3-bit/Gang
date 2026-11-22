@@ -491,7 +491,7 @@ return $court->latitude !== null
                     <select name="sport_id" aria-label="{{ __('Filter by sport') }}">
                         <option value="">{{ __('All sports') }}</option>
                         @foreach ($sports as $sport)
-                        <option value="{{ $sport->id }}" @selected((string) $selectedSport===(string) $sport->id)>{{ $sport->name }}</option>
+                        <option value="{{ $sport->id }}" @selected((string) $selectedSport===(string) $sport->id)>{{ __($sport->name) }}</option>
                         @endforeach
                     </select>
                 </label>
@@ -547,7 +547,7 @@ $fallbackUrl = asset('courtbook-assets/images/hero-football.png');
                                         <h3 class="cb-court-name">{{ $court->name }}</h3>
                                         <p class="cb-court-address">📍 {{ $court->address }}</p>
                                         <div class="cb-court-meta">
-                                            <span class="cb-court-price">{{ number_format((float) $court->weekday_price, 2) }} JOD <small>/ {{ __('hour') }}</small></span>
+                                            <span class="cb-court-price">{{ number_format((float) $court->weekday_price, 2) }} {{ __('JOD') }} <small>/ {{ __('hour') }}</small></span>
                                             <a class="cb-court-link" href="{{ route('courtbook.court', $court->id) }}">{{ __('Explore court') }} ↗</a>
                                         </div>
                                         @if ($hasLocation)

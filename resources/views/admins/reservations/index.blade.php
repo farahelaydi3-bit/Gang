@@ -1,51 +1,51 @@
 @extends('admins.layout.app')
 
-@section('title', 'Reservations')
+@section('title', __('Reservations'))
 
 @section('content')
 
     <div class="reservations-page">
 
-        <x-super-admin.page-header title="Reservations" description="Find court bookings and manage their status." />
+        <x-super-admin.page-header title="{{ __('Reservations') }}" description="{{ __('Find court bookings and manage their status.') }}" />
         <x-super-admin.form-errors />
 
-        <div class="stats-grid" aria-label="Reservation totals">
+        <div class="stats-grid" aria-label="{{ __('Reservation totals') }}">
             @foreach (['pending' => 'Pending', 'confirmed' => 'Confirmed', 'cancelled' => 'Cancelled', 'completed' => 'Completed'] as $status => $label)
-                <div class="stat-card"><div class="stat-info"><span>{{ $label }}</span><strong>{{ $reservationStats->{$status} ?? 0 }}</strong></div></div>
+                <div class="stat-card"><div class="stat-info"><span>{{ __($label) }}</span><strong>{{ $reservationStats->{$status} ?? 0 }}</strong></div></div>
             @endforeach
         </div>
 
-        <section class="admin-card super-admin-filter" aria-label="Filter reservations">
+        <section class="admin-card super-admin-filter" aria-label="{{ __('Filter reservations') }}">
             <form action="{{ route('admin.reservations.index') }}" method="GET" class="super-admin-filter-form">
                 <div class="super-admin-filter-field super-admin-filter-field--search">
-                    <label class="form-label" for="reservation-search">Search</label>
-                    <input class="form-control" id="reservation-search" name="search" type="search" placeholder="Customer name" value="{{ request('search') }}">
+                    <label class="form-label" for="reservation-search">{{ __('Search') }}</label>
+                    <input class="form-control" id="reservation-search" name="search" type="search" placeholder="{{ __('Customer name') }}" value="{{ request('search') }}">
                 </div>
                 <div class="super-admin-filter-field">
-                    <label class="form-label" for="reservation-status">Status</label>
+                    <label class="form-label" for="reservation-status">{{ __('Status') }}</label>
                     <select id="reservation-status" name="status" class="form-control">
-                        <option value="">All statuses</option>
+                        <option value="">{{ __('All statuses') }}</option>
                         @foreach (['pending', 'confirmed', 'cancelled', 'completed'] as $status)
-                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
+                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ __(ucfirst($status)) }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="super-admin-filter-field">
-                    <label class="form-label" for="reservation-type">Booking type</label>
+                    <label class="form-label" for="reservation-type">{{ __('Booking type') }}</label>
                     <select id="reservation-type" name="type" class="form-control">
-                        <option value="">All types</option>
+                        <option value="">{{ __('All types') }}</option>
                         @foreach (['individual', 'group', 'subscription'] as $type)
-                            <option value="{{ $type }}" @selected(request('type') === $type)>{{ ucfirst($type) }}</option>
+                            <option value="{{ $type }}" @selected(request('type') === $type)>{{ __(ucfirst($type)) }}</option>
                         @endforeach
                     </select>
                 </div>
-                <button type="submit" class="admin-button">Filter</button>
-                <a href="{{ route('admin.reservations.index') }}" class="admin-button admin-button-outline">Reset</a>
+                <button type="submit" class="admin-button">{{ __('Filter') }}</button>
+                <a href="{{ route('admin.reservations.index') }}" class="admin-button admin-button-outline">{{ __('Reset') }}</a>
             </form>
         </section>
 
         <div class="admin-card super-admin-table-card">
-            <div class="admin-card-header"><h2>All reservations</h2></div>
+            <div class="admin-card-header"><h2>{{ __('All reservations') }}</h2></div>
             {{-- Reservations Table --}}
             <div class="admin-table-wrap">
 
@@ -54,16 +54,16 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Court</th>
-                            <th>Customer</th>
-                            <th>Type</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Duration</th>
-                            <th>Price</th>
-                            <th>Deposit</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>{{ __('Court') }}</th>
+                            <th>{{ __('Customer') }}</th>
+                            <th>{{ __('Type') }}</th>
+                            <th>{{ __('Date') }}</th>
+                            <th>{{ __('Time') }}</th>
+                            <th>{{ __('Duration') }}</th>
+                            <th>{{ __('Price') }}</th>
+                            <th>{{ __('Deposit') }}</th>
+                            <th>{{ __('Status') }}</th>
+                            <th>{{ __('Actions') }}</th>
                         </tr>
                     </thead>
 
@@ -83,7 +83,7 @@
                                 </td>
 
                                 <td>
-                                    {{ ucfirst($reservation->booking_type) }}
+                                    {{ __(ucfirst($reservation->booking_type)) }}
                                 </td>
 
                                 <td>
@@ -97,15 +97,15 @@
                                 </td>
 
                                 <td>
-                                    {{ $reservation->duration_minutes }} min
+                                    {{ $reservation->duration_minutes }} {{ __('min') }}
                                 </td>
 
                                 <td>
-                                    {{ number_format($reservation->total_price, 2) }} JOD
+                                    {{ number_format($reservation->total_price, 2) }} {{ __('JOD') }}
                                 </td>
 
                                 <td>
-                                    {{ number_format($reservation->deposit_amount, 2) }} JOD
+                                    {{ number_format($reservation->deposit_amount, 2) }} {{ __('JOD') }}
                                 </td>
 
                                 <td>
@@ -123,7 +123,7 @@
                                                 @method('PATCH')
 
                                                 <button type="submit" class="admin-button">
-                                                    Confirm
+                                                    {{ __('Confirm') }}
                                                 </button>
                                             </form>
                                         @endif
@@ -136,7 +136,7 @@
                                                 @method('PATCH')
 
                                                 <button type="submit" class="admin-button admin-button-outline">
-                                                    Complete
+                                                    {{ __('Complete') }}
                                                 </button>
                                             </form>
                                         @endif
@@ -148,7 +148,7 @@
                                                 @method('PATCH')
 
                                                 <button type="submit" class="admin-button admin-button-danger">
-                                                    Cancel
+                                                    {{ __('Cancel') }}
                                                 </button>
                                             </form>
                                         @endif
@@ -170,8 +170,8 @@
                                         <div class="empty-icon">
                                             <i class="fas fa-calendar-times"></i>
                                         </div>
-                                        <h3>No Reservations Found</h3>
-                                        <p>There are no reservations matching your search.</p>
+                                        <h3>{{ __('No Reservations Found') }}</h3>
+                                        <p>{{ __('There are no reservations matching your search.') }}</p>
                                     </div>
                                 </td>
                             </tr>

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+@php($showFloatingChat = !request()->routeIs('courtbook.assistant', 'admin.login', 'admin.register'))
 <html lang="{{ app()->getLocale() }}"
     dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 
@@ -11,13 +12,18 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Home') · Gang</title>
+    <title>@yield('title', __('Home')) · Gang</title>
 
     <link rel="icon" type="image/svg+xml" href="{{ asset('courtbook-assets/icon.svg') }}?v=2">
 
     <link rel="stylesheet"
         href="{{ asset('courtbook-assets/styles.css') }}">
 
+    @if ($showFloatingChat || request()->routeIs('courtbook.assistant'))
+        <link rel="stylesheet" href="{{ asset('courtbook-assets/assistant.css') }}">
+    @endif
+
+    <link rel="stylesheet" href="{{ asset('assets/css/language.css') }}">
     @stack('styles')
 </head>
 
@@ -33,6 +39,9 @@
     </main>
 
     @include('pages.footer')
+    @if ($showFloatingChat)
+        @include('pages.assistant-float')
+    @endif
     {{-- @include('pages.overlays') --}}
     <script>
         (() => {

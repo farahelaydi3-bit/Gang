@@ -12,6 +12,7 @@ $mobileLinks = [
 'courts' => 'Courts',
 'nearby' => 'Nearby',
 'games' => 'Games',
+'assistant' => 'AI Assistant',
 ];
 
 $activePage = match (request()->route()?->getName()) {
@@ -32,7 +33,7 @@ request()->route()?->getName() ?? '',
 
         @include('pages.animated-brand')
 
-        <nav class="desktop-nav" aria-label="Main navigation">
+        <nav class="desktop-nav" aria-label="{{ __('Main navigation') }}">
             @include('pages.nav-links', ['links' => $desktopLinks])
         </nav>
 
@@ -40,25 +41,26 @@ request()->route()?->getName() ?? '',
 
             @guest('web')
             <a class="button outline" href="{{ route('login') }}">
-                Login
+                {{ __('Login') }}
             </a>
 
             <a class="button" href="{{ route('register') }}">
-                Register
+                {{ __('Register') }}
             </a>
             @endguest
 
             @auth('web')
             <a class="button outline"
                 href="{{ route('courtbook.profile') }}">
-                Profile
+                {{ __('Profile') }}
             </a>
 
                 <button type="button" class="button outline" data-logout-open aria-haspopup="dialog" aria-controls="gang-logout-dialog">
-                    Logout
+                    {{ __('Logout') }}
                 </button>
             @endauth
 
+            <x-language-toggle :icon="true" />
         </div>
     </div>
 </header>
@@ -66,16 +68,16 @@ request()->route()?->getName() ?? '',
 @auth('web')
 <dialog class="gang-logout-modal" id="gang-logout-dialog" aria-labelledby="gang-logout-title" aria-describedby="gang-logout-message">
     <div class="gang-logout-card">
-        <button type="button" class="gang-logout-close" data-logout-cancel aria-label="إغلاق">×</button>
+        <button type="button" class="gang-logout-close" data-logout-cancel aria-label="{{ __('Close') }}">×</button>
         <div class="gang-logout-ball" aria-hidden="true">⚽</div>
-        <span class="gang-logout-kicker">GANG · لسه في لعب</span>
-        <h2 id="gang-logout-title">بطّلت تلعب معنا؟</h2>
-        <p id="gang-logout-message">ولا بس طالع وبرجع؟ إذا طلعت، رح نسجّلك خروج من حسابك.</p>
+        <span class="gang-logout-kicker">{{ __('GANG · GAME ON') }}</span>
+        <h2 id="gang-logout-title">{{ __('Done playing for now?') }}</h2>
+        <p id="gang-logout-message">{{ __('You can stay here or log out of your account.') }}</p>
         <div class="gang-logout-actions">
-            <button type="button" class="gang-logout-stay" data-logout-cancel>لا، برجع ألعب</button>
+            <button type="button" class="gang-logout-stay" data-logout-cancel>{{ __('Stay signed in') }}</button>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="gang-logout-leave">آه، طالع</button>
+                <button type="submit" class="gang-logout-leave">{{ __('Yes, log me out') }}</button>
             </form>
         </div>
     </div>
@@ -98,6 +100,6 @@ request()->route()?->getName() ?? '',
 </script>
 @endauth
 
-<nav class="mobile-nav" aria-label="Mobile navigation">
+<nav class="mobile-nav" aria-label="{{ __('Mobile navigation') }}">
     @include('pages.nav-links', ['links' => $mobileLinks])
 </nav>

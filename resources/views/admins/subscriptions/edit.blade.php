@@ -1,16 +1,15 @@
 
 @extends('admins.layout.app')
 
-@section('title', 'Edit Subscription')
-@section('html-lang', 'en')
+@section('title', __('Edit Subscription'))
 
 @section('content')
 
 <div class="subscriptions-page" lang="en" dir="ltr">
 
-    <x-super-admin.page-header title="Edit Subscription" description="Update subscription details and pricing.">
+    <x-super-admin.page-header title="{{ __('Edit Subscription') }}" description="{{ __('Update subscription details and pricing.') }}">
         <x-slot:actions>
-            <a class="admin-button admin-button-outline" href="{{ route('admin.subscriptions.index') }}">Back to subscriptions</a>
+            <a class="admin-button admin-button-outline" href="{{ route('admin.subscriptions.index') }}">{{ __('Back to subscriptions') }}</a>
         </x-slot:actions>
     </x-super-admin.page-header>
 
@@ -23,9 +22,9 @@
             @method('PUT')
 
             <div class="form-group">
-                <label for="court_id" class="form-label">Court</label>
+                <label for="court_id" class="form-label">{{ __('Court') }}</label>
                 <select name="court_id" id="court_id" class="form-control" required @disabled($courts->isEmpty())>
-                    <option value="">Choose one of your courts</option>
+                    <option value="">{{ __('Choose one of your courts') }}</option>
                     @foreach($courts as $court)
                         <option value="{{ $court->id }}"
                             data-name="{{ $court->name }}"
@@ -43,8 +42,8 @@
                         <svg viewBox="0 0 24 24" fill="none"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="10" r="2.2" stroke="currentColor" stroke-width="1.7"/></svg>
                     </span>
                     <span class="subscription-court-preview-copy">
-                        <strong id="court-preview-name">Choose a court</strong>
-                        <span id="court-preview-address">Only courts managed by your account are listed.</span>
+                        <strong id="court-preview-name">{{ __('Choose a court') }}</strong>
+                        <span id="court-preview-address">{{ __('Only courts managed by your account are listed.') }}</span>
                     </span>
                 </div>
             </div>
@@ -53,13 +52,13 @@
 
                 {{-- Subscription Name --}}
                 <div class="form-group">
-                    <label class="form-label">Subscription Name</label>
+                    <label class="form-label">{{ __('Subscription Name') }}</label>
 
                     <input type="text"
                            name="package_name"
                            class="form-control"
                            value="{{ old('package_name', $subscription->package_name) }}"
-                           placeholder="e.g. Monthly Subscription"
+                           placeholder="{{ __('e.g. Monthly Subscription') }}"
                            required>
 
                     @error('package_name')
@@ -69,7 +68,7 @@
 
                 {{-- Total Hours --}}
                 <div class="form-group">
-                    <label class="form-label">Total Hours</label>
+                    <label class="form-label">{{ __('Total Hours') }}</label>
 
                     <input type="number"
                            name="total_hours"
@@ -86,7 +85,7 @@
 
                 {{-- Price --}}
                 <div class="form-group">
-                    <label class="form-label">Price (JOD)</label>
+                    <label class="form-label">{{ __('Price (JOD)') }}</label>
 
                     <input type="number"
                            name="amount"
@@ -104,7 +103,7 @@
 
                 {{-- Discount --}}
                 <div class="form-group">
-                    <label class="form-label">Discount (%)</label>
+                    <label class="form-label">{{ __('Discount (%)') }}</label>
 
                     <input type="number"
                            name="discount_percentage"
@@ -123,7 +122,7 @@
 
                 {{-- Duration --}}
                 <div class="form-group">
-                    <label class="form-label">Duration (Days)</label>
+                    <label class="form-label">{{ __('Duration (Days)') }}</label>
 
                     <input type="number"
                            name="duration_days"
@@ -141,16 +140,16 @@
 
             {{-- Price Preview --}}
             <div class="price-preview">
-                <span>Final Price</span>
-                <h2><span id="final-price">0.00</span> JOD</h2>
+                <span>{{ __('Final Price') }}</span>
+                <h2><span id="final-price">0.00</span> {{ __('JOD') }}</h2>
                 <small id="discount-message"></small>
             </div>
 
             @if ($courts->isEmpty())
                 <div class="subscription-courts-empty" role="status">
-                    <strong>No courts available yet.</strong>
-                    Add one of your courts before updating this subscription.
-                    <a href="{{ route('admin.courts.create') }}">Add a court</a>
+                    <strong>{{ __('No courts available yet.') }}</strong>
+                    {{ __('Add one of your courts before updating this subscription.') }}
+                    <a href="{{ route('admin.courts.create') }}">{{ __('Add a court') }}</a>
                 </div>
             @endif
 
@@ -158,11 +157,11 @@
 
                 <a href="{{ route('admin.subscriptions.index') }}"
                    class="admin-button admin-button-outline">
-                    Cancel
+                    {{ __('Cancel') }}
                 </a>
 
                 <button type="submit" class="admin-button" @disabled($courts->isEmpty())>
-                    Save Changes
+                    {{ __('Save Changes') }}
                 </button>
 
             </div>
@@ -195,9 +194,9 @@
 
         if (discount > 0) {
             discountMessage.textContent =
-                `${discount}% discount applied`;
+                @js(__(':discount% discount applied')).replace(':discount', discount);
         } else {
-            discountMessage.textContent = 'No discount applied';
+            discountMessage.textContent = @js(__('No discount applied'));
         }
     }
 
@@ -205,13 +204,13 @@
         const selectedCourt = courtSelect.options[courtSelect.selectedIndex];
 
         if (!selectedCourt || !selectedCourt.value) {
-            courtPreviewName.textContent = 'Choose a court';
-            courtPreviewAddress.textContent = 'Only courts managed by your account are listed.';
+            courtPreviewName.textContent = @js(__('Choose a court'));
+            courtPreviewAddress.textContent = @js(__('Only courts managed by your account are listed.'));
             return;
         }
 
         courtPreviewName.textContent = selectedCourt.dataset.name || selectedCourt.textContent.trim();
-        courtPreviewAddress.textContent = selectedCourt.dataset.address || 'Court selected for this subscription.';
+        courtPreviewAddress.textContent = selectedCourt.dataset.address || @js(__('Court selected for this subscription.'));
     }
 
     priceInput.addEventListener('input', updatePricePreview);

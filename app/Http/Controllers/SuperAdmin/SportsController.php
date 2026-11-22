@@ -24,7 +24,7 @@ class SportsController extends Controller
 
         Sports::create($validated);
 
-        return redirect()->route('super_admin.sports.index')->with('success', 'Sport added successfully.');
+        return redirect()->route('super_admin.sports.index')->with('success', __('Sport added successfully.'));
     }
 
     public function update(Request $request, Sports $sport)
@@ -40,7 +40,7 @@ class SportsController extends Controller
 
         $sport->update($validated);
 
-        return back()->with('success', 'Sport updated successfully.');
+        return back()->with('success', __('Sport updated successfully.'));
     }
 
     public function destroy(Sports $sport)
@@ -53,6 +53,6 @@ class SportsController extends Controller
 
         $sport->delete();
 
-        return back()->with('success', 'Sport deleted successfully.');
+        return back()->with('success', __('Sport deleted successfully.'));
     }
 }

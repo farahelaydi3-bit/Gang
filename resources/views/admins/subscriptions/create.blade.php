@@ -1,15 +1,14 @@
 @extends('admins.layout.app')
 
-@section('title', 'Create Subscription')
-@section('html-lang', 'en')
+@section('title', __('Create Subscription'))
 
 @section('content')
 
 <div class="subscriptions-page" lang="en" dir="ltr">
 
-    <x-super-admin.page-header title="Create Subscription" description="Create a subscription plan that remains pending until payment.">
+    <x-super-admin.page-header title="{{ __('Create Subscription') }}" description="{{ __('Create a subscription plan that remains pending until payment.') }}">
         <x-slot:actions>
-            <a class="admin-button admin-button-outline" href="{{ route('admin.subscriptions.index') }}">Back to subscriptions</a>
+            <a class="admin-button admin-button-outline" href="{{ route('admin.subscriptions.index') }}">{{ __('Back to subscriptions') }}</a>
         </x-slot:actions>
     </x-super-admin.page-header>
 
@@ -17,7 +16,7 @@
     {{-- Validation Errors --}}
     @if ($errors->any())
         <div class="alert-danger">
-            <strong>Please fix the following errors:</strong>
+            <strong>{{ __('Please fix the following errors:') }}</strong>
 
             <ul>
                 @foreach ($errors->all() as $error)
@@ -39,10 +38,10 @@
 
                 {{-- User --}}
                 <div class="form-group">
-                    <label for="user_id" class="form-label">Select User</label>
+                    <label for="user_id" class="form-label">{{ __('Select User') }}</label>
 
                     <select name="user_id" id="user_id" class="form-control" required>
-                        <option value="">Choose a user</option>
+                        <option value="">{{ __('Choose a user') }}</option>
 
                         @foreach($users as $user)
                             <option value="{{ $user->id }}"
@@ -55,10 +54,10 @@
 
                 {{-- Court --}}
                 <div class="form-group">
-                    <label for="court_id" class="form-label">Court</label>
+                    <label for="court_id" class="form-label">{{ __('Court') }}</label>
 
                     <select name="court_id" id="court_id" class="form-control" required @disabled($courts->isEmpty())>
-                        <option value="">Choose one of your courts</option>
+                        <option value="">{{ __('Choose one of your courts') }}</option>
 
                         @foreach($courts as $court)
                             <option value="{{ $court->id }}"
@@ -79,8 +78,8 @@
                             <svg viewBox="0 0 24 24" fill="none"><path d="M19 10c0 5-7 11-7 11S5 15 5 10a7 7 0 1 1 14 0Z" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="10" r="2.2" stroke="currentColor" stroke-width="1.7"/></svg>
                         </span>
                         <span class="subscription-court-preview-copy">
-                            <strong id="court-preview-name">Choose a court</strong>
-                            <span id="court-preview-address">Only courts managed by your account are listed.</span>
+                            <strong id="court-preview-name">{{ __('Choose a court') }}</strong>
+                            <span id="court-preview-address">{{ __('Only courts managed by your account are listed.') }}</span>
                         </span>
                     </div>
                 </div>
@@ -88,21 +87,21 @@
 
                 {{-- Package Name --}}
                 <div class="form-group">
-                    <label for="package_name" class="form-label">Package Name</label>
+                    <label for="package_name" class="form-label">{{ __('Package Name') }}</label>
 
                     <input type="text"
                            name="package_name"
                            id="package_name"
                            class="form-control"
                            value="{{ old('package_name') }}"
-                           placeholder="e.g. Gold Package"
+                           placeholder="{{ __('e.g. Gold Package') }}"
                            required>
                 </div>
 
 
                 {{-- Total Hours --}}
                 <div class="form-group">
-                    <label for="total_hours" class="form-label">Total Hours</label>
+                    <label for="total_hours" class="form-label">{{ __('Total Hours') }}</label>
 
                     <input type="number"
                            name="total_hours"
@@ -111,14 +110,14 @@
                            min="1"
                            step="0.01"
                            value="{{ old('total_hours') }}"
-                           placeholder="Enter total hours"
+                           placeholder="{{ __('Enter total hours') }}"
                            required>
                 </div>
 
 
                 {{-- Base Amount --}}
                 <div class="form-group">
-                    <label for="amount" class="form-label">Base Price (JOD)</label>
+                    <label for="amount" class="form-label">{{ __('Base Price (JOD)') }}</label>
 
                     <input type="number"
                            name="amount"
@@ -127,7 +126,7 @@
                            min="0"
                            step="0.01"
                            value="{{ old('amount') }}"
-                           placeholder="Enter package price"
+                           placeholder="{{ __('Enter package price') }}"
                            required>
                 </div>
 
@@ -135,7 +134,7 @@
                 {{-- Discount --}}
                 <div class="form-group">
                     <label for="discount_percentage" class="form-label">
-                        Discount (%)
+                        {{ __('Discount (%)') }}
                     </label>
 
                     <input type="number"
@@ -153,7 +152,7 @@
                 {{-- Duration --}}
                 <div class="form-group">
                     <label for="duration_days" class="form-label">
-                        Duration (Days)
+                        {{ __('Duration (Days)') }}
                     </label>
 
                     <input type="number"
@@ -162,7 +161,7 @@
                            class="form-control"
                            min="1"
                            value="{{ old('duration_days') }}"
-                           placeholder="e.g. 30"
+                           placeholder="{{ __('e.g. 30') }}"
                            required>
                 </div>
 
@@ -173,18 +172,18 @@
             <div class="subscription-price-preview">
 
                 <div>
-                    <span>Base Price</span>
-                    <strong id="base-price-preview">0.00 JOD</strong>
+                    <span>{{ __('Base Price') }}</span>
+                    <strong id="base-price-preview">{{ __('0.00 JOD') }}</strong>
                 </div>
 
                 <div>
-                    <span>Discount</span>
+                    <span>{{ __('Discount') }}</span>
                     <strong id="discount-preview">0%</strong>
                 </div>
 
                 <div>
-                    <span>Final Price</span>
-                    <strong id="final-price-preview">0.00 JOD</strong>
+                    <span>{{ __('Final Price') }}</span>
+                    <strong id="final-price-preview">{{ __('0.00 JOD') }}</strong>
                 </div>
 
             </div>
@@ -193,17 +192,16 @@
             {{-- Pending Notice --}}
             @if ($courts->isEmpty())
                 <div class="subscription-courts-empty" role="status">
-                    <strong>No courts available yet.</strong>
-                    Add one of your courts before creating a subscription.
-                    <a href="{{ route('admin.courts.create') }}">Add a court</a>
+                    <strong>{{ __('No courts available yet.') }}</strong>
+                    {{ __('Add one of your courts before creating a subscription.') }}
+                    <a href="{{ route('admin.courts.create') }}">{{ __('Add a court') }}</a>
                 </div>
             @endif
 
             <div class="subscription-pending-notice">
-                <strong>Payment Required</strong>
+                <strong>{{ __('Payment Required') }}</strong>
                 <p>
-                    This subscription will be created as pending.
-                    The user must complete payment before the subscription becomes active.
+                    {{ __('This subscription will be created as pending. The user must complete payment before the subscription becomes active.') }}
                 </p>
             </div>
 
@@ -213,11 +211,11 @@
 
                 <a href="{{ route('admin.subscriptions.index') }}"
                    class="admin-button admin-button-outline">
-                    Cancel
+                    {{ __('Cancel') }}
                 </a>
 
                 <button type="submit" class="admin-button" @disabled($courts->isEmpty())>
-                    Create Subscription
+                    {{ __('Create Subscription') }}
                 </button>
 
             </div>
@@ -245,13 +243,13 @@
         const selectedCourt = courtSelect.options[courtSelect.selectedIndex];
 
         if (!selectedCourt || !selectedCourt.value) {
-            courtPreviewName.textContent = 'Choose a court';
-            courtPreviewAddress.textContent = 'Only courts managed by your account are listed.';
+            courtPreviewName.textContent = @js(__('Choose a court'));
+            courtPreviewAddress.textContent = @js(__('Only courts managed by your account are listed.'));
             return;
         }
 
         courtPreviewName.textContent = selectedCourt.dataset.name || selectedCourt.textContent.trim();
-        courtPreviewAddress.textContent = selectedCourt.dataset.address || 'Court selected for this subscription.';
+        courtPreviewAddress.textContent = selectedCourt.dataset.address || @js(__('Court selected for this subscription.'));
     }
 
     function updatePricePreview() {
@@ -260,9 +258,9 @@
 
         const finalPrice = basePrice - (basePrice * discount / 100);
 
-        basePricePreview.textContent = basePrice.toFixed(2) + ' JOD';
+        basePricePreview.textContent = basePrice.toFixed(2) + ' ' + @js(__('JOD'));
         discountPreview.textContent = discount.toFixed(2) + '%';
-        finalPricePreview.textContent = finalPrice.toFixed(2) + ' JOD';
+        finalPricePreview.textContent = finalPrice.toFixed(2) + ' ' + @js(__('JOD'));
     }
 
     amountInput.addEventListener('input', updatePricePreview);

@@ -17,7 +17,7 @@ class GangSiteManagementController extends Controller
     public function toggle(OwnerWebsite $website)
     {
         $website->update(['is_active' => !$website->is_active]);
-        return back()->with('success', $website->is_active ? 'Website activated.' : 'Website disabled.');
+        return back()->with('success', $website->is_active ? __('Website activated.') : __('Website disabled.'));
     }
 
     public function renew(Request $request, OwnerWebsite $website)
@@ -31,6 +31,6 @@ class GangSiteManagementController extends Controller
         ]);
         // A Super Admin manually marks the end of PAID coverage after confirming payment.
         $website->update(['paid_until' => $data['paid_until'] . ' 23:59:59']);
-        return back()->with('success', 'Subscription expiry updated. Payment must be verified manually.');
+        return back()->with('success', __('Subscription expiry updated. Payment must be verified manually.'));
     }
 }

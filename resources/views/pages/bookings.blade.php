@@ -87,7 +87,7 @@
                                         </span>
                                     </div>
                                     <div class="booking-pass-footer">
-                                        <span>{{ __('Booking total') }} <strong>{{ number_format((float) $booking->total_price, 2) }} JOD</strong></span>
+                                        <span>{{ __('Booking total') }} <strong>{{ number_format((float) $booking->total_price, 2) }} {{ __('JOD') }}</strong></span>
                                         
 
 @if ($booking->booking_status === 'pending')

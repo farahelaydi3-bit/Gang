@@ -1,6 +1,6 @@
 @extends('layouts.demo')
 
-@section('title', 'اشتراك الملعب')
+@section('title', __('Court subscription'))
 @section('page', 'subscriptions')
 
 @push('styles')
@@ -64,49 +64,48 @@
 
 @section('content')
 <div class="wrap page recurring-page">
-    <a href="{{ route('courtbook.courts') }}" class="recurring-back"><span aria-hidden="true">→</span> استكشف الملاعب</a>
-    <div class="rec-intro" dir="rtl">
-        <span class="eyebrow">اشتراك Gang</span>
-        <h1>ثبّت موعد لعبك كل أسبوع</h1>
-        <p class="rec-help">اختار الملعب والأيام والوقت اللي بناسبك، وبنحجزلك مواعيدك طول مدة الباقة بعد ما نتأكد إنها فاضية.</p>
+    <a href="{{ route('courtbook.courts') }}" class="recurring-back"><span aria-hidden="true">→</span> {{ __('Explore Courts') }}</a>
+    <div class="rec-intro">
+        <span class="eyebrow">{{ __('Gang subscription') }}</span>
+        <h1>{{ __('Set a regular time to play each week') }}</h1>
+        <p class="rec-help">{{ __('Pick your court, days, and time. We’ll check availability and reserve your slots for the entire package.') }}</p>
     </div>
 
-    <div class="rec-plans" aria-label="باقات الاشتراك">
+    <div class="rec-plans" aria-label="{{ __('Subscription packages') }}">
         @foreach (array_reverse($durations) as $duration)
             <div class="rec-plan">
-                <strong>{{ $duration['days'] }} يوم</strong>
-                <span>خصم {{ $duration['discount'] }} بالمئة</span>
+                <strong>{{ $duration['days'] }} {{ __('days') }}</strong>
+                <span>{{ __('Discount') }} {{ $duration['discount'] }} {{ __('percent') }}</span>
             </div>
         @endforeach
     </div>
 
     <section class="rec-shell">
-        <h2>اختيار المواعيد</h2>
-        <p class="rec-help">يتم حساب مجموع الساعات تلقائيًا حسب عدد المواعيد، وليس إدخال رقم منفصل.
-            الحد الأدنى 6 ساعات والحد الأعلى 100 ساعة. السعر الأساسي المعتمد هو سعر ساعة أيام الأسبوع للملعب.</p>
+        <h2>{{ __('Choose playing times') }}</h2>
+        <p class="rec-help">{{ __('Total hours are calculated from your playing times. The package must include between 6 and 100 hours. The court’s weekday hourly rate is used as the base price.') }}</p>
 
         @if ($errors->any())
             <div class="rec-error" role="alert">
-                <strong>تعذّر تنفيذ الطلب:</strong>
+                <strong>{{ __('We couldn’t complete your request:') }}</strong>
                 <ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
             </div>
         @endif
 
         @auth('web')
             @if ($courts->isEmpty())
-                <p>لا توجد ملاعب معتمدة متاحة للاشتراك حاليًا.</p>
+                <p>{{ __('No approved courts are available for subscriptions right now.') }}</p>
             @else
                 <form method="POST" action="{{ route('subscriptions.store') }}" id="recurring-form">
                     @csrf
                     <div class="rec-field">
-                        <label for="rec-court">الملعب</label>
+                        <label for="rec-court">{{ __('Court') }}</label>
                         <select id="rec-court" name="court_id" required>
-                            <option value="">اختر الملعب</option>
+                            <option value="">{{ __('Select court') }}</option>
                             @foreach ($courts as $court)
                                 <option value="{{ $court->id }}"
                                     data-price="{{ $court->weekday_price }}"
                                     @selected((string) old('court_id', $selectedCourtId) === (string) $court->id)>
-                                    {{ $court->name }} — {{ number_format((float) $court->weekday_price, 2) }} د.أ/ساعة
+                                    {{ $court->name }} — {{ number_format((float) $court->weekday_price, 2) }} {{ __('JOD/hour') }}
                                 </option>
                             @endforeach
                         </select>
@@ -114,18 +113,18 @@
 
                     <div class="rec-grid">
                         <div class="rec-field">
-                            <label for="rec-start-date">تاريخ بداية الاشتراك</label>
+                            <label for="rec-start-date">{{ __('Subscription start date') }}</label>
                             <input id="rec-start-date" type="date" name="start_date"
                                 min="{{ today()->toDateString() }}"
                                 value="{{ old('start_date', today()->addDay()->toDateString()) }}" required>
                         </div>
                         <div class="rec-field">
-                            <label for="rec-duration">مدة الاشتراك</label>
+                            <label for="rec-duration">{{ __('Subscription duration') }}</label>
                             <select id="rec-duration" name="duration_days" required>
                                 @foreach ($durations as $duration)
                                     <option value="{{ $duration['days'] }}"
                                         @selected((int) old('duration_days', 30) === $duration['days'])>
-                                        {{ $duration['days'] }} يوم — خصم {{ $duration['discount'] }} بالمئة
+                                        {{ $duration['days'] }} {{ __('days — discount') }} {{ $duration['discount'] }} {{ __('percent') }}
                                     </option>
                                 @endforeach
                             </select>
@@ -133,11 +132,11 @@
                     </div>
 
                     <fieldset style="border:0; margin:0; padding:0">
-                        <legend class="rec-caption">الأيام التي تكرر فيها اللعب</legend>
+                        <legend class="rec-caption">{{ __('Recurring playing days') }}</legend>
                         <div class="rec-days">
                             @php
-                                $dayNames = [0 => 'الأحد', 1 => 'الإثنين', 2 => 'الثلاثاء', 3 => 'الأربعاء',
-                                             4 => 'الخميس', 5 => 'الجمعة', 6 => 'السبت'];
+                                $dayNames = [0 => __('Sunday'), 1 => __('Monday'), 2 => __('Tuesday'), 3 => __('Wednesday'),
+                                             4 => __('Thursday'), 5 => __('Friday'), 6 => __('Saturday')];
                                 $chosen = array_map('intval', old('weekdays', [0, 2, 4]));
                             @endphp
                             @foreach ($dayNames as $dayNumber => $dayName)
@@ -152,28 +151,27 @@
 
                     <div class="rec-grid">
                         <div class="rec-field">
-                            <label for="rec-start-time">وقت البداية</label>
+                            <label for="rec-start-time">{{ __('Start time') }}</label>
                             <input id="rec-start-time" name="start_time" type="time" step="1800"
                                 value="{{ old('start_time', '18:00') }}" required>
                         </div>
                         <div class="rec-field">
-                            <label for="rec-end-time">وقت النهاية</label>
+                            <label for="rec-end-time">{{ __('End time') }}</label>
                             <input id="rec-end-time" name="end_time" type="time" step="1800"
                                 value="{{ old('end_time', '20:00') }}" required>
                         </div>
                     </div>
-                    <p class="rec-help">الوقت نفسه بيتكرر في الأيام المختارة. لازم ينتهي الموعد بنفس اليوم
-                        ويكون ضمن ساعات عمل الملعب. الطلب يحجز المواعيد مؤقتًا لغاية الدفع أو الإلغاء.</p>
+                    <p class="rec-help">{{ __('The same time repeats on the selected days. Each session must end the same day and fall within the court’s working hours. Slots are held until you pay or cancel.') }}</p>
 
                     <div class="rec-actions" style="grid-template-columns:1fr">
-                        <button type="submit" class="rec-btn rec-submit" style="width:100%">فحص التوفر والمتابعة إلى الفاتورة</button>
+                        <button type="submit" class="rec-btn rec-submit" style="width:100%">{{ __('Check availability and continue to invoice') }}</button>
                     </div>
-                    <p class="rec-help">إذا كان أي موعد غير متاح رح تظهر رسالة توضح التعارض. إذا الكل متاح، تنتقل إلى فاتورة الاشتراك لمراجعة التفاصيل والدفع عبر Stripe.</p>
+                    <p class="rec-help">{{ __('If a slot is unavailable, you’ll see which one conflicts. If every slot is open, continue to your invoice to review the details and pay with Stripe.') }}</p>
                 </form>
             @endif
         @else
-            <p class="rec-help">تقدر تشوف الباقات، لكن لازم تسجّل دخولك كلاعب قبل اختيار المواعيد.</p>
-            <a href="{{ route('login') }}" class="button rec-btn rec-submit">سجّل دخولك</a>
+            <p class="rec-help">{{ __('You can browse packages. Sign in as a player to choose playing times.') }}</p>
+            <a href="{{ route('login') }}" class="button rec-btn rec-submit">{{ __('Log in') }}</a>
         @endauth
     </section>
 </div>

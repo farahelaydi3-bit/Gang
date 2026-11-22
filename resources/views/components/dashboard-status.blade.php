@@ -9,4 +9,4 @@
     };
 @endphp
 
-<span class="badge {{ $tone }}">{{ $label ?? ucfirst($state ?? 'Unknown') }}</span>
+<span class="badge {{ $tone }}">{{ __($label ?? ucfirst($state ?? 'Unknown')) }}</span>

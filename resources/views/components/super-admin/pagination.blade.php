@@ -1,11 +1,11 @@
 @if ($paginator->hasPages())
-    <nav class="super-admin-pagination" aria-label="{{ ($arabic ?? false) ? 'التنقّل بين الصفحات' : 'Pagination' }}">
+    <nav class="super-admin-pagination" aria-label="{{ __('Pagination Navigation') }}">
         @if ($paginator->firstItem())
-            <span>{{ ($arabic ?? false) ? 'عرض' : 'Showing' }} {{ $paginator->firstItem() }}–{{ $paginator->lastItem() }} {{ ($arabic ?? false) ? 'من' : 'of' }} {{ $paginator->total() }}</span>
+            <span>{{ __('Showing :first–:last of :total', ['first' => $paginator->firstItem(), 'last' => $paginator->lastItem(), 'total' => $paginator->total()]) }}</span>
         @endif
         <div class="super-admin-pagination-links">
             @if ($paginator->previousPageUrl())
-                <a class="admin-button admin-button-outline" rel="prev" href="{{ $paginator->previousPageUrl() }}">{{ ($arabic ?? false) ? 'السابق' : 'Previous' }}</a>
+                <a class="admin-button admin-button-outline" rel="prev" href="{{ $paginator->previousPageUrl() }}">{{ __('Previous') }}</a>
             @endif
             @foreach ($elements as $element)
                 @if (is_string($element))
@@ -15,13 +15,13 @@
                         @if ($page === $paginator->currentPage())
                             <span class="super-admin-page-number" aria-current="page">{{ $page }}</span>
                         @else
-                            <a class="super-admin-page-number" href="{{ $url }}" aria-label="{{ ($arabic ?? false) ? 'صفحة' : 'Page' }} {{ $page }}">{{ $page }}</a>
+                            <a class="super-admin-page-number" href="{{ $url }}" aria-label="{{ __('Page :number', ['number' => $page]) }}">{{ $page }}</a>
                         @endif
                     @endforeach
                 @endif
             @endforeach
             @if ($paginator->nextPageUrl())
-                <a class="admin-button admin-button-outline" rel="next" href="{{ $paginator->nextPageUrl() }}">{{ ($arabic ?? false) ? 'التالي' : 'Next' }}</a>
+                <a class="admin-button admin-button-outline" rel="next" href="{{ $paginator->nextPageUrl() }}">{{ __('Next') }}</a>
             @endif
         </div>
     </nav>

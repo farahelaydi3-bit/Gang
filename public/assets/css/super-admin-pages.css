@@ -7,6 +7,7 @@
     max-width: 1514px;
     min-width: 0;
     margin-inline: auto;
+    background: var(--admin-background);
 }
 
 .super-admin-page-header {
@@ -34,7 +35,7 @@
 
 .super-admin-page-header .overview-welcome-copy > p {
     margin-top: 6px;
-    color: #F2E7DA;
+    color: #E0F3E5;
     font-size: 13px;
 }
 
@@ -88,7 +89,7 @@
 .super-admin-page-meta {
     display: grid;
     gap: 4px;
-    color: #F2E7DA;
+    color: #E0F3E5;
     font-size: 12px;
     font-weight: 750;
     text-align: end;
@@ -132,7 +133,7 @@
 
 .dashboard-layout :is(.admin-table, .overview-table) th {
     background: var(--admin-primary-light);
-    color: #52657E;
+    color: #456252;
     font-size: 12px;
     font-weight: 800;
     white-space: nowrap;
@@ -148,12 +149,12 @@
 }
 
 .dashboard-layout :is(.admin-table, .overview-table) tbody tr:hover {
-    background: #FAF2E8;
+    background: #F4FAF5;
 }
 
 .dashboard-layout :is(.admin-table, .overview-table) :is(.super-admin-empty, .overview-table-empty) {
     padding: 22px 14px !important;
-    color: #52657E !important;
+    color: #456252 !important;
     text-align: center;
 }
 
@@ -179,13 +180,13 @@
 
 .dashboard-layout .form-control:focus {
     border-color: var(--admin-primary);
-    box-shadow: 0 0 0 3px #B5651D22;
+    box-shadow: 0 0 0 3px #17804422;
 }
 
 .dashboard-layout :is(.badge, .overview-status) {
     border: 1px solid var(--admin-border);
-    background: #F8F0E8;
-    color: #52657E;
+    background: #F1F8F2;
+    color: #456252;
     font-size: 11px;
     font-weight: 800;
     white-space: nowrap;
@@ -267,7 +268,7 @@
 .super-admin-pagination {
     justify-content: space-between;
     margin-block-start: 14px;
-    color: #52657E;
+    color: #456252;
     font-size: 12px;
 }
 
@@ -350,12 +351,12 @@
     padding: 9px 11px;
     border: 1px solid var(--admin-border);
     border-radius: 10px;
-    background: #FAF2E8;
+    background: #F4FAF5;
 }
 
 .super-admin-record-facts dt,
 .super-admin-muted {
-    color: #52657E;
+    color: #456252;
     font-size: 12px;
 }
 
@@ -389,7 +390,7 @@
     overflow: hidden;
     border: 1px solid var(--admin-border);
     border-radius: 12px;
-    background: #FAF2E8;
+    background: #F4FAF5;
 }
 
 .super-admin-court-photo img {
@@ -403,13 +404,13 @@
     color: var(--admin-text);
     font-weight: 800;
     text-decoration: underline;
-    text-decoration-color: #B5651D;
+    text-decoration-color: #178044;
     text-underline-offset: 3px;
     overflow-wrap: anywhere;
 }
 
 .dashboard-layout a.super-admin-record-link:hover {
-    color: #89501D;
+    color: #17643A;
 }
 
 .super-admin-dialog {
@@ -420,7 +421,7 @@
     border-radius: 17px;
     background: var(--admin-surface);
     color: var(--admin-text);
-    box-shadow: 0 24px 66px -34px #1D3557A0;
+    box-shadow: 0 24px 66px -34px #153E2BA0;
 }
 
 .super-admin-dialog[open]:not(:modal) {
@@ -429,7 +430,7 @@
 }
 
 .super-admin-dialog::backdrop {
-    background: #152A48A8;
+    background: #123423A8;
 }
 
 .super-admin-dialog-content {

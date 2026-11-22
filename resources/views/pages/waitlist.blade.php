@@ -17,7 +17,7 @@
 
         @auth
             <p class="mb-4"><a class="button" href="{{ route('waitlist.create') }}">{{ __('Join a waiting list') }}</a></p>
-            <div class="categories-table">
+            <div class="categories-table waitlist-table" tabindex="0" role="region" aria-label="{{ __('Waiting list') }}">
                 <table>
                     <thead>
                         <tr>
@@ -60,7 +60,7 @@
                                         <details>
                                             <summary>{{ __('Notification history') }} ({{ $item->smsLogs->count() }})</summary>
                                             @foreach ($item->smsLogs as $sms)
-                                                <p><strong>{{ ucfirst($sms->status) }}</strong>
+                                                <p><strong>{{ __(ucfirst($sms->status)) }}</strong>
                                                     · {{ $sms->sent_at?->format('M j, Y H:i') ?? $sms->created_at->format('M j, Y H:i') }}
                                                     · {{ $sms->message }}</p>
                                             @endforeach

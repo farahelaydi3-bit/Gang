@@ -1,14 +1,15 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>@yield('title', 'حسابي') · GANG</title>
+    <title>@yield('title', __('My account')) · GANG</title>
 
     @vite(['resources/css/app.css'])
     <link rel="stylesheet" href="{{ asset('courtbook-assets/styles.css') }}">
 
+    <link rel="stylesheet" href="{{ asset('assets/css/language.css') }}">
     <style>
         .auth-shell { max-width: 34rem; }
         .auth-shell form > div + div { margin-block-start: 1rem; }
@@ -30,31 +31,32 @@
 <body>
     @php
         $links = [
-            ['الرئيسية', url('/'), request()->is('/')],
-            ['سجّل دخول', route('login'), request()->routeIs('login')],
-            ['اعمل حساب', route('register'), request()->routeIs('register')],
+            [__('Home'), url('/'), request()->is('/')],
+            [__('Log in'), route('login'), request()->routeIs('login')],
+            [__('Create an account'), route('register'), request()->routeIs('register')],
         ];
     @endphp
 
     <header class="site-header">
         <div class="wrap header-row">
-            <a class="brand" href="{{ url('/') }}" aria-label="GANG — الرئيسية">
+            <a class="brand" href="{{ url('/') }}" aria-label="{{ __('GANG — Home') }}">
                 <img class="brand-logo"
                      src="{{ asset('courtbook-assets/images/gang-logo.png') }}"
                      width="753" height="485" alt="GANG">
             </a>
 
-            <nav class="desktop-nav" aria-label="التنقّل الرئيسي">
+            <nav class="desktop-nav" aria-label="{{ __('Main navigation') }}">
                 @foreach ($links as [$label, $href, $active])
                     <a href="{{ $href }}" @if ($active) aria-current="page" @endif>
                         {{ $label }}
                     </a>
                 @endforeach
             </nav>
+            <x-language-toggle />
         </div>
     </header>
 
-    <nav class="mobile-nav auth-mobile-nav" aria-label="التنقّل على الموبايل">
+    <nav class="mobile-nav auth-mobile-nav" aria-label="{{ __('Mobile navigation') }}">
         @foreach ($links as [$label, $href, $active])
             <a href="{{ $href }}" @if ($active) aria-current="page" @endif>
                 {{ $label }}

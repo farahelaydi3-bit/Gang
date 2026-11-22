@@ -63,7 +63,7 @@
                                 @foreach ($courts as $court)
                                     <option value="{{ $court->id }}"
                                         data-court-name="{{ $court->name }}"
-                                        data-sport-name="{{ $court->sports?->name }}"
+                                        data-sport-name="{{ __($court->sports?->name) }}"
                                        data-court-image="{{ $court->image
     ? (\Illuminate\Support\Str::startsWith($court->image, 'images/')
         ? asset($court->image)
@@ -74,7 +74,7 @@
                                         data-evening-price="{{ $court->evening_price }}"
                                         data-deposit-amount="{{ $court->deposit_amount }}"
                                         @selected((string) old('court_id', request('court_id')) === (string) $court->id)>
-                                        {{ $court->name }} — {{ $court->sports?->name }}
+                                        {{ $court->name }} — {{ __($court->sports?->name) }}
                                     </option>
                                 @endforeach
                             </select>

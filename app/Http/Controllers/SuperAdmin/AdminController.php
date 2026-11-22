@@ -31,7 +31,7 @@ class AdminController extends Controller
         $status = $request->status;
 
         if ($status === 'pending' && $admin->status !== 'rejected') {
-            return back()->with('error', 'Only rejected accounts can be reset to pending.');
+            return back()->with('error', __('Only rejected accounts can be reset to pending.'));
         }
 
         if ($status === 'active') {
@@ -40,18 +40,18 @@ class AdminController extends Controller
                 ->exists();
 
             if (!$approved || $admin->status !== 'suspended') {
-                return back()->with('error', 'Approve the application first.');
+                return back()->with('error', __('Approve the application first.'));
             }
         }
 
         if ($status === 'suspended' && $admin->status !== 'active') {
-            return back()->with('error', 'Only active accounts can be suspended.');
+            return back()->with('error', __('Only active accounts can be suspended.'));
         }
 
         $admin->update([
             'status' => $status,
         ]);
 
-        return back()->with('success', 'Owner status updated.');
+        return back()->with('success', __('Owner status updated.'));
     }
 }

@@ -47,7 +47,7 @@
                 @foreach ($sports->take(4) as $sport)
                     <span class="home-sport-float home-sport-float-{{ $loop->iteration }}">
                         <span>{{ $sportIcons[$sport->name] ?? '🏆' }}</span>
-                        <small>{{ $sport->name }}</small>
+                        <small>{{ __($sport->name) }}</small>
                     </span>
                 @endforeach
             </div>
@@ -57,7 +57,7 @@
             <select name="sport_id" aria-label="{{ __('Sport') }}">
                 <option value="">{{ __('All sports') }}</option>
                 @foreach ($sports as $sport)
-                    <option value="{{ $sport->id }}">{{ $sport->name }}</option>
+                    <option value="{{ $sport->id }}">{{ __($sport->name) }}</option>
                 @endforeach
             </select>
             <select name="area" aria-label="{{ __('Area') }}">
@@ -72,7 +72,7 @@
                     @foreach ([false, true] as $copy)
                         <span class="home-ribbon-group" @if ($copy) aria-hidden="true" @endif>
                             @forelse ($sports as $sport)
-                                <span class="home-ribbon-sport"><i>{{ $sportIcons[$sport->name] ?? '🏆' }}</i>{{ $sport->name }}</span>
+                                <span class="home-ribbon-sport"><i>{{ $sportIcons[$sport->name] ?? '🏆' }}</i>{{ __($sport->name) }}</span>
                                 <b aria-hidden="true">✳</b>
                             @empty
                                 <span class="home-ribbon-sport">{{ __('The next game starts here') }}</span>
@@ -98,7 +98,7 @@
                             alt="" loading="lazy">
                         <span class="home-sport-card-icon" aria-hidden="true">{{ $sportIcons[$sport->name] ?? '🏆' }}</span>
                         <span class="home-sport-card-copy">
-                            <strong>{{ $sport->name }}</strong>
+                            <strong>{{ __($sport->name) }}</strong>
                             <small>{{ $sport->courts_count }} {{ __('courts') }}</small>
                         </span>
                         <span class="home-sport-card-arrow" aria-hidden="true">↗</span>
@@ -144,7 +144,7 @@
                                 {{ $court->address }}
                             </p>
                             <div class="home-court-meta">
-                                <span class="home-court-price">{{ number_format($court->weekday_price, 2) }} <small>JOD / {{ __('hour') }}</small></span>
+                                <span class="home-court-price">{{ number_format($court->weekday_price, 2) }} <small>{{ __('JOD /') }} {{ __('hour') }}</small></span>
                                 <span class="home-court-rating">
                                     @if ($court->reviews_avg_rating)
                                         <span>★</span> {{ number_format($court->reviews_avg_rating, 1) }}

@@ -1,11 +1,11 @@
 @extends('layouts.demo')
 
-@section('title', 'فاتورة اشتراك الملعب')
+@section('title', __('Court subscription invoice'))
 @section('page', 'subscription-invoice')
 
 @push('styles')
 <style>
-.gang-invoice{max-width:1040px;margin:0 auto;padding-block:1.2rem 2.5rem;direction:rtl;color:#193b29}
+.gang-invoice{max-width:1040px;margin:0 auto;padding-block:1.2rem 2.5rem;direction:inherit;color:#193b29}
 .invoice-back{display:inline-flex;align-items:center;gap:.4rem;margin-bottom:.8rem;color:#52763b;font-size:.8rem;font-weight:850;text-decoration:none}
 .invoice-back:hover{color:#176b45}
 .invoice-hero{position:relative;isolation:isolate;overflow:hidden;margin-bottom:1rem;padding:clamp(1.35rem,3vw,2.2rem);border:1px solid #dce9db;border-radius:24px;background:radial-gradient(circle at 95% 0%,#c8f36b38,transparent 27%),linear-gradient(120deg,#f7faf5,#eef5e9);box-shadow:0 16px 36px -30px #123b2a66}
@@ -50,13 +50,13 @@
 @endpush
 
 @section('content')
-<div class="wrap page gang-invoice" dir="rtl">
-  <a class="invoice-back" href="{{ route('courtbook.my-subscriptions') }}"><span aria-hidden="true">→</span> اشتراكاتي</a>
+<div class="wrap page gang-invoice">
+  <a class="invoice-back" href="{{ route('courtbook.my-subscriptions') }}"><span aria-hidden="true">→</span> {{ __('My subscriptions') }}</a>
 
   <header class="invoice-hero">
-    <span class="eyebrow">اشتراك Gang</span>
-    <h1>فاتورة اشتراكك</h1>
-    <p>راجع الملعب ومواعيد لعبك والسعر النهائي، وإذا كل شي تمام كمّل للدفع.</p>
+    <span class="eyebrow">{{ __('Gang subscription') }}</span>
+    <h1>{{ __('Your subscription invoice') }}</h1>
+    <p>{{ __('Review your court, playing times, and final price, then continue to payment.') }}</p>
   </header>
 
   <section class="invoice-card">
@@ -67,25 +67,25 @@
       <div class="invoice-alert" role="alert"><ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
     @endif
     @if (request()->boolean('cancelled'))
-      <div class="invoice-alert" role="status">رجعت من الدفع بدون ما تكمّله. مواعيدك لسه محجوزة مؤقتًا.</div>
+      <div class="invoice-alert" role="status">{{ __('You left checkout before paying. Your slots are still held temporarily.') }}</div>
     @endif
 
     <div class="invoice-grid">
-      <div class="invoice-field"><small>الملعب</small><strong>{{ $subscription->court->name }}</strong></div>
-      <div class="invoice-field"><small>رقم الاشتراك</small><strong>#{{ $subscription->id }}</strong></div>
-      <div class="invoice-field"><small>مدة الباقة</small><strong>{{ $subscription->duration_days }} يوم</strong></div>
-      <div class="invoice-field"><small>عدد المواعيد</small><strong>{{ $subscription->bookings->count() }} موعد</strong></div>
-      <div class="invoice-field"><small>مجموع ساعات اللعب</small><strong>{{ number_format((float) $subscription->total_hours, 1) }} ساعة</strong></div>
-      <div class="invoice-field"><small>بداية الاشتراك</small><strong>{{ $subscription->start_date->locale(app()->getLocale())->translatedFormat('j M Y') }}</strong></div>
+      <div class="invoice-field"><small>{{ __('Court') }}</small><strong>{{ $subscription->court->name }}</strong></div>
+      <div class="invoice-field"><small>{{ __('Subscription number') }}</small><strong>#{{ $subscription->id }}</strong></div>
+      <div class="invoice-field"><small>{{ __('Package duration') }}</small><strong>{{ $subscription->duration_days }} {{ __('days') }}</strong></div>
+      <div class="invoice-field"><small>{{ __('Number of sessions') }}</small><strong>{{ $subscription->bookings->count() }} {{ __('sessions') }}</strong></div>
+      <div class="invoice-field"><small>{{ __('Total playing hours') }}</small><strong>{{ number_format((float) $subscription->total_hours, 1) }} {{ __('hours') }}</strong></div>
+      <div class="invoice-field"><small>{{ __('Subscription start') }}</small><strong>{{ $subscription->start_date->locale(app()->getLocale())->translatedFormat('j M Y') }}</strong></div>
     </div>
 
     <div class="invoice-section-heading">
       <span class="invoice-section-icon" aria-hidden="true">◷</span>
-      <div><h2>مواعيد لعبك</h2><p>هاي الأوقات المحجوزة ضمن اشتراكك</p></div>
+      <div><h2>{{ __('Your playing times') }}</h2><p>{{ __('These times are reserved as part of your subscription.') }}</p></div>
     </div>
     <div class="invoice-scroll">
       <table class="invoice-table">
-        <thead><tr><th>التاريخ</th><th>من</th><th>إلى</th></tr></thead>
+        <thead><tr><th>{{ __('Date') }}</th><th>{{ __('From') }}</th><th>{{ __('To') }}</th></tr></thead>
         <tbody>
           @foreach ($subscription->bookings as $booking)
             <tr>
@@ -105,27 +105,27 @@
     @endphp
 
     <div class="invoice-breakdown">
-      <div class="invoice-line"><span>السعر قبل الخصم</span><strong>{{ number_format($beforeDiscount, 2) }} د.أ</strong></div>
-      <div class="invoice-line"><span>نسبة الخصم</span><strong>{{ number_format($discountPercent, 0) }}%</strong></div>
-      <div class="invoice-line"><span>قيمة الخصم</span><strong>−{{ number_format($beforeDiscount - $afterDiscount, 2) }} د.أ</strong></div>
-      <div class="invoice-line total"><span>المبلغ النهائي</span><strong>{{ number_format($afterDiscount, 2) }} د.أ</strong></div>
+      <div class="invoice-line"><span>{{ __('Price before discount') }}</span><strong>{{ number_format($beforeDiscount, 2) }} {{ __('JOD') }}</strong></div>
+      <div class="invoice-line"><span>{{ __('Discount rate') }}</span><strong>{{ number_format($discountPercent, 0) }}%</strong></div>
+      <div class="invoice-line"><span>{{ __('Discount amount') }}</span><strong>−{{ number_format($beforeDiscount - $afterDiscount, 2) }} {{ __('JOD') }}</strong></div>
+      <div class="invoice-line total"><span>{{ __('Final amount') }}</span><strong>{{ number_format($afterDiscount, 2) }} {{ __('JOD') }}</strong></div>
     </div>
 
     @if ($subscription->paid_at)
-      <p class="invoice-paid"><span aria-hidden="true">✓</span> اشتراكك مدفوع ومؤكد.</p>
+      <p class="invoice-paid"><span aria-hidden="true">✓</span> {{ __('Your subscription is paid and confirmed.') }}</p>
     @elseif ($subscription->status === 'pending')
       <div class="invoice-actions">
         <form method="POST" action="{{ route('subscriptions.stripe.checkout', $subscription) }}">
           @csrf
-          <button type="submit" class="invoice-pay-button">كمّل الاشتراك وادفع <span aria-hidden="true">←</span> {{ number_format($afterDiscount, 2) }} د.أ</button>
+          <button type="submit" class="invoice-pay-button">{{ __('Pay for your subscription') }} <span aria-hidden="true">←</span> {{ number_format($afterDiscount, 2) }} {{ __('JOD') }}</button>
         </form>
-        <p class="invoice-note">مواعيدك محجوزة مؤقتًا لغاية ما تكمل الدفع أو تلغي الطلب.</p>
+        <p class="invoice-note">{{ __('Your slots are held temporarily until you pay or cancel the request.') }}</p>
       </div>
     @else
-      <div class="invoice-alert" role="status" style="margin-top:1rem">هذا الاشتراك ما عاد متاح للدفع.</div>
+      <div class="invoice-alert" role="status" style="margin-top:1rem">{{ __('This subscription can no longer be paid.') }}</div>
     @endif
 
-    <a class="invoice-footer-link" href="{{ route('courtbook.my-subscriptions') }}">ارجع لاشتراكاتي</a>
+    <a class="invoice-footer-link" href="{{ route('courtbook.my-subscriptions') }}">{{ __('Back to my subscriptions') }}</a>
   </section>
 </div>
 @endsection

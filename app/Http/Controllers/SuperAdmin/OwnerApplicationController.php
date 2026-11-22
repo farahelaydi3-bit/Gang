@@ -46,13 +46,13 @@ class OwnerApplicationController extends Controller
     public function approve(OwnerApplication $application)
     {
         if ($application->status !== 'submitted') {
-            return back()->with('error', 'Application already reviewed.');
+            return back()->with('error', __('Application already reviewed.'));
         }
 
         $admin = $application->admin;
 
         if (!$admin || !in_array($admin->status, ['pending', 'rejected'])) {
-            return back()->with('error', 'Owner account cannot be activated.');
+            return back()->with('error', __('Owner account cannot be activated.'));
         }
 
         DB::transaction(function () use ($application, $admin) {
@@ -66,7 +66,7 @@ class OwnerApplicationController extends Controller
             $admin->update(['status' => 'active']);
         });
 
-        return back()->with('success', 'Application approved successfully.');
+        return back()->with('success', __('Application approved successfully.'));
     }
 
     public function reject(Request $request, OwnerApplication $application)
@@ -76,13 +76,13 @@ class OwnerApplicationController extends Controller
         ]);
 
         if ($application->status !== 'submitted') {
-            return back()->with('error', 'Application already reviewed.');
+            return back()->with('error', __('Application already reviewed.'));
         }
 
         $admin = $application->admin;
 
         if (!$admin || !in_array($admin->status, ['pending', 'rejected'])) {
-            return back()->with('error', 'Owner account cannot be rejected.');
+            return back()->with('error', __('Owner account cannot be rejected.'));
         }
 
         DB::transaction(function () use ($application, $admin, $request) {
@@ -97,7 +97,7 @@ class OwnerApplicationController extends Controller
             $admin->update(['status' => 'pending']);
         });
 
-        return back()->with('success', 'Application rejected. Owner can resubmit.');
+        return back()->with('success', __('Application rejected. Owner can resubmit.'));
     }
 
     public function download(OwnerApplication $application, $attachment)

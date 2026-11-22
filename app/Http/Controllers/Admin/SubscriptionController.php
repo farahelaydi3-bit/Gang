@@ -130,7 +130,7 @@ class SubscriptionController extends Controller
 
         return redirect()
             ->route('admin.subscriptions.index')
-            ->with('success', 'Subscription created successfully and is pending payment.');
+            ->with('success', __('Subscription created successfully and is pending payment.'));
     }
 
 
@@ -195,7 +195,7 @@ public function update(Request $request, $id)
 
     return redirect()
         ->route('admin.subscriptions.index')
-        ->with('success', 'Subscription updated successfully.');
+        ->with('success', __('Subscription updated successfully.'));
 }
 
 public function destroy($id)
@@ -206,14 +206,14 @@ public function destroy($id)
     if ($subscription->bookings()->exists() || $subscription->payment()->exists()) {
         return redirect()
             ->route('admin.subscriptions.index')
-            ->with('error', 'Cannot delete a subscription linked to bookings or payments.');
+            ->with('error', __('Cannot delete a subscription linked to bookings or payments.'));
     }
 
     $subscription->delete();
 
     return redirect()
         ->route('admin.subscriptions.index')
-        ->with('success', 'Subscription deleted successfully.');
+        ->with('success', __('Subscription deleted successfully.'));
 }
 
 }

@@ -1088,7 +1088,7 @@ textarea.form-control {
 }
 
 .court-prices strong {
-    color: #1e293b;
+    color: #1A4030;
 }
 
 .court-deposit {
@@ -2417,68 +2417,68 @@ textarea.form-control {
         font-size: 12px;
     }
 }
-/* Owner admin theme: sand, honey, navy, coral */
+/* Owner admin green palette */
 .owner-layout {
-    --admin-primary: #B5651D;
-    --admin-primary-dark: #965014;
-    --admin-primary-light: #F3E9DC;
+    --admin-primary: #178044;
+    --admin-primary-dark: #146535;
+    --admin-primary-light: #EDF6EE;
     --admin-accent: #E63946;
     --admin-accent-dark: #BC2F3B;
     --admin-accent-light: #FDEBED;
-    --admin-background: #F3E9DC;
-    --admin-surface: #FFFCF8;
-    --admin-hover: #EEE2D4;
-    --admin-border: #E6D8C8;
-    --admin-text: #1D3557;
-    --admin-heading: #1D3557;
-    --admin-subtle: #52657E;
-    --admin-muted: #68778B;
-    --admin-faint: #8A7C70;
-    --success-bg: #F3E9DC;
-    --success-text: #B5651D;
+    --admin-background: #EDF6EE;
+    --admin-surface: #FCFEFC;
+    --admin-hover: #E4F0E6;
+    --admin-border: #D8E7DB;
+    --admin-text: #153E2B;
+    --admin-heading: #153E2B;
+    --admin-subtle: #456252;
+    --admin-muted: #566C60;
+    --admin-faint: #68796E;
+    --success-bg: #EDF6EE;
+    --success-text: #178044;
     --warning-bg: #FDEBED;
     --warning-text: #E63946;
-    --info-bg: #EDF1F6;
-    --info-text: #1D3557;
+    --info-bg: #EDF7F2;
+    --info-text: #153E2B;
     --danger-bg: #FDEBED;
     --danger-text: #E63946;
-    background: #F3E9DC;
-    color: #1D3557;
+    background: #EDF6EE;
+    color: #153E2B;
 }
-.owner-layout .owner-sidebar{background:#FFFCF8;border-color:#E6D8C8}
-.owner-layout .owner-topbar{background:#FFFCF8ED;border-color:#E6D8C8}
-.owner-layout .brand-icon{background:linear-gradient(145deg,#B5651D,#1D3557);box-shadow:0 6px 14px #1D355733}
-.owner-layout .brand-text h2,.owner-layout .topbar-title h1{color:#1D3557}
-.owner-layout .sidebar-label{color:#8A715A}
-.owner-layout .sidebar-link{color:#52657E}
-.owner-layout .sidebar-link:hover{background:#EEE2D4;color:#1D3557}
-.owner-layout .sidebar-link.active{background:#F3E9DC;color:#1D3557}
-.owner-layout .sidebar-link.active::before{background:#B5651D}
-.owner-layout .owner-content{background:#F3E9DC}
-.owner-layout .page-header h1,.owner-layout .section-header h2{color:#1D3557}
-.owner-layout .page-header p,.owner-layout .stat-label{color:#68778B}
-.owner-layout .stat-card,.owner-layout .section-card,.owner-layout .dashboard-section,.owner-layout .court-card{background:#FFFCF8;border-color:#E6D8C8}
-.owner-layout .stat-card:hover,.owner-layout .court-card:hover{border-color:#D4AE86;box-shadow:var(--admin-shadow-md)}
-.owner-layout .stat-info h2,.owner-layout .court-info h3,.owner-layout .court-details h3{color:#1D3557}
-.owner-layout .stat-icon{background:#F3E9DC;color:#B5651D}
-.owner-layout .courts-icon,.owner-layout .revenue-icon{background:#F3E9DC;color:#B5651D}
-.owner-layout .reservations-icon{background:#EDF1F6;color:#1D3557}
-.owner-layout .sports-icon{background:#FDEBED;color:#E63946}
-.owner-layout .section-header h2{color:#1D3557}
-.owner-layout .section-header a,.owner-layout .view-all{color:#B5651D}
-.owner-layout .court-sport,.owner-layout .court-address,.owner-layout .court-prices p,.owner-layout .court-deposit{color:#52657E}
-.owner-layout .court-prices strong{color:#1D3557}
-.owner-layout .court-status{background:#F3E9DC;color:#B5651D}
-.owner-layout .admin-table thead{background:#F8F0E8}
-.owner-layout .admin-table th{border-color:#E6D8C8;color:#68778B}
-.owner-layout .admin-table td{border-color:#EEE2D4;color:#52657E}
-.owner-layout .admin-table tbody tr:hover{background:#F8F0E8}
-.owner-layout .status-confirmed,.owner-layout .status-active{background:#F3E9DC;color:#B5651D}
+.owner-layout .owner-sidebar{background:#FCFEFC;border-color:#D8E7DB}
+.owner-layout .owner-topbar{background:#FCFEFCED;border-color:#D8E7DB}
+.owner-layout .brand-icon{background:linear-gradient(145deg,#178044,#153E2B);box-shadow:0 6px 14px #153E2B33}
+.owner-layout .brand-text h2,.owner-layout .topbar-title h1{color:#153E2B}
+.owner-layout .sidebar-label{color:#567060}
+.owner-layout .sidebar-link{color:#456252}
+.owner-layout .sidebar-link:hover{background:#E4F0E6;color:#153E2B}
+.owner-layout .sidebar-link.active{background:#EDF6EE;color:#153E2B}
+.owner-layout .sidebar-link.active::before{background:#178044}
+.owner-layout .owner-content{background:#EDF6EE}
+.owner-layout .page-header h1,.owner-layout .section-header h2{color:#153E2B}
+.owner-layout .page-header p,.owner-layout .stat-label{color:#566C60}
+.owner-layout .stat-card,.owner-layout .section-card,.owner-layout .dashboard-section,.owner-layout .court-card{background:#FCFEFC;border-color:#D8E7DB}
+.owner-layout .stat-card:hover,.owner-layout .court-card:hover{border-color:#9BC9A4;box-shadow:var(--admin-shadow-md)}
+.owner-layout .stat-info h2,.owner-layout .court-info h3,.owner-layout .court-details h3{color:#153E2B}
+.owner-layout .stat-icon{background:#EDF6EE;color:#178044}
+.owner-layout .courts-icon,.owner-layout .revenue-icon{background:#EDF6EE;color:#178044}
+.owner-layout .reservations-icon{background:#EDF7F2;color:#153E2B}
+.owner-layout .sports-icon{background:#EFF6DF;color:#4B6D29}
+.owner-layout .section-header h2{color:#153E2B}
+.owner-layout .section-header a,.owner-layout .view-all{color:#178044}
+.owner-layout .court-sport,.owner-layout .court-address,.owner-layout .court-prices p,.owner-layout .court-deposit{color:#456252}
+.owner-layout .court-prices strong{color:#153E2B}
+.owner-layout .court-status{background:#EDF6EE;color:#178044}
+.owner-layout .admin-table thead{background:#F1F8F2}
+.owner-layout .admin-table th{border-color:#D8E7DB;color:#566C60}
+.owner-layout .admin-table td{border-color:#E4F0E6;color:#456252}
+.owner-layout .admin-table tbody tr:hover{background:#F1F8F2}
+.owner-layout .status-confirmed,.owner-layout .status-active{background:#EDF6EE;color:#178044}
 .owner-layout .status-pending{background:#FDEBED;color:#E63946}
-.owner-layout .status-completed{background:#EDF1F6;color:#1D3557}
+.owner-layout .status-completed{background:#EDF7F2;color:#153E2B}
 .owner-layout .status-cancelled,.owner-layout .status-canceled,.owner-layout .status-inactive{background:#FDEBED;color:#E63946}
-.owner-layout .empty-state{background:#F8F0E8;border-color:#E6D8C8}
-.owner-layout .empty-state h3,.owner-layout .empty-state p{color:#52657E}
-.owner-layout :focus-visible{outline-color:#B5651D}
+.owner-layout .empty-state{background:#F1F8F2;border-color:#D8E7DB}
+.owner-layout .empty-state h3,.owner-layout .empty-state p{color:#456252}
+.owner-layout :focus-visible{outline-color:#178044}
 /* Gang sidebar mark used across the owner panel */
-.owner-layout .brand-logo{width:62px;height:46px;flex:none;object-fit:contain;border:1px solid #E6D8C8;border-radius:12px;background:#F3E9DC}
+.owner-layout .brand-logo{width:62px;height:46px;flex:none;object-fit:contain;border:1px solid #D8E7DB;border-radius:12px;background:#EDF6EE}

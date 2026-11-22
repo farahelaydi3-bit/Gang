@@ -1,38 +1,38 @@
 @extends('layouts.super-admin')
 
-@section('title', 'Dashboard')
-@section('page-title', 'Platform Overview')
+@section('title', __('Dashboard'))
+@section('page-title', __('Platform Overview'))
 
 @section('content')
     @php
         $stats = [
-            ['label' => 'Players', 'value' => $totalPlayers, 'icon' => 'players', 'tone' => 'green'],
-            ['label' => 'Court owners', 'value' => $totalOwners, 'icon' => 'owners', 'tone' => 'blue'],
-            ['label' => 'Pending owners', 'value' => $pendingOwners, 'icon' => 'pending', 'tone' => 'amber'],
-            ['label' => 'Approved courts', 'value' => $activeCourts, 'icon' => 'courts', 'tone' => 'violet'],
-            ['label' => 'Public games', 'value' => $publicGames, 'icon' => 'games', 'tone' => 'rose'],
-            ['label' => 'Bookings', 'value' => $totalBookings, 'icon' => 'bookings', 'tone' => 'teal'],
+            ['label' => __('Players'), 'value' => $totalPlayers, 'icon' => 'players', 'tone' => 'green'],
+            ['label' => __('Court owners'), 'value' => $totalOwners, 'icon' => 'owners', 'tone' => 'blue'],
+            ['label' => __('Pending owners'), 'value' => $pendingOwners, 'icon' => 'pending', 'tone' => 'amber'],
+            ['label' => __('Approved courts'), 'value' => $activeCourts, 'icon' => 'courts', 'tone' => 'violet'],
+            ['label' => __('Public games'), 'value' => $publicGames, 'icon' => 'games', 'tone' => 'rose'],
+            ['label' => __('Bookings'), 'value' => $totalBookings, 'icon' => 'bookings', 'tone' => 'teal'],
         ];
         $chartStats = [
-            ['label' => 'Players', 'value' => $totalPlayers, 'color' => 'green'],
-            ['label' => 'Court owners', 'value' => $totalOwners, 'color' => 'blue'],
-            ['label' => 'Approved courts', 'value' => $activeCourts, 'color' => 'violet'],
-            ['label' => 'Bookings', 'value' => $totalBookings, 'color' => 'teal'],
-            ['label' => 'Public games', 'value' => $publicGames, 'color' => 'rose'],
-            ['label' => 'Sports', 'value' => $totalSports ?? 0, 'color' => 'amber'],
+            ['label' => __('Players'), 'value' => $totalPlayers, 'color' => 'green'],
+            ['label' => __('Court owners'), 'value' => $totalOwners, 'color' => 'blue'],
+            ['label' => __('Approved courts'), 'value' => $activeCourts, 'color' => 'violet'],
+            ['label' => __('Bookings'), 'value' => $totalBookings, 'color' => 'teal'],
+            ['label' => __('Public games'), 'value' => $publicGames, 'color' => 'rose'],
+            ['label' => __('Sports'), 'value' => $totalSports ?? 0, 'color' => 'amber'],
         ];
     @endphp
 
     <div class="overview-page">
-        <x-super-admin.page-header title="Platform Overview" description="Review platform activity and pending owner applications.">
+        <x-super-admin.page-header title="{{ __('Platform Overview') }}" description="{{ __('Review platform activity and pending owner applications.') }}">
             <x-slot:actions>
                 <div class="super-admin-page-meta">
-                    <time id="overview-current-date">{{ now()->format('D, M j, Y') }}</time>
+                    <time id="overview-current-date">{{ now()->locale(app()->getLocale())->translatedFormat('D, M j, Y') }}</time>
                 </div>
             </x-slot:actions>
         </x-super-admin.page-header>
 
-        <section class="overview-stats-grid" aria-label="Platform totals">
+        <section class="overview-stats-grid" aria-label="{{ __('Platform totals') }}">
             @foreach ($stats as $stat)
                 <article class="overview-stat-card overview-tone-{{ $stat['tone'] }}">
                     <span class="overview-stat-icon" aria-hidden="true">
@@ -59,7 +59,7 @@
                     </span>
                     <span class="overview-stat-label">{{ $stat['label'] }}</span>
                     <strong data-count="{{ $stat['value'] }}">{{ number_format($stat['value']) }}</strong>
-                    <span class="overview-stat-foot">Current total <i aria-hidden="true">↗</i></span>
+                    <span class="overview-stat-foot">{{ __('Current total') }} <i aria-hidden="true">↗</i></span>
                 </article>
             @endforeach
         </section>
@@ -68,14 +68,14 @@
             <section class="overview-panel overview-chart-panel" aria-labelledby="platform-chart-title">
                 <div class="overview-panel-head">
                     <div>
-                        <span class="overview-section-kicker">PLATFORM AT A GLANCE</span>
-                        <h3 id="platform-chart-title">Community overview</h3>
-                        <p>Compare current totals across the platform.</p>
+                        <span class="overview-section-kicker">{{ __('PLATFORM AT A GLANCE') }}</span>
+                        <h3 id="platform-chart-title">{{ __('Community overview') }}</h3>
+                        <p>{{ __('Compare current totals across the platform.') }}</p>
                     </div>
-                    <span class="overview-chart-legend"><i></i>Current total</span>
+                    <span class="overview-chart-legend"><i></i>{{ __('Current total') }}</span>
                 </div>
 
-                <div class="overview-bar-chart" role="img" aria-label="Current totals for platform categories">
+                <div class="overview-bar-chart" role="img" aria-label="{{ __('Current totals for platform categories') }}">
                     @foreach ($chartStats as $item)
                         <div class="overview-bar-row" data-chart-value="{{ $item['value'] }}" tabindex="0" aria-label="{{ $item['label'] }}: {{ number_format($item['value']) }}">
                             <span class="overview-bar-label">{{ $item['label'] }}</span>
@@ -84,43 +84,43 @@
                         </div>
                     @endforeach
                 </div>
-                <div class="overview-chart-foot"><span>Counts are shown as they are now.</span><span>Updated on page load</span></div>
+                <div class="overview-chart-foot"><span>{{ __('Counts are shown as they are now.') }}</span><span>{{ __('Updated on page load') }}</span></div>
             </section>
 
             <aside class="overview-panel overview-action-panel">
                 <div class="overview-panel-head overview-action-head">
-                    <div><span class="overview-section-kicker">NEEDS YOUR ATTENTION</span><h3>Owner applications</h3></div>
+                    <div><span class="overview-section-kicker">{{ __('NEEDS YOUR ATTENTION') }}</span><h3>{{ __('Owner applications') }}</h3></div>
                     <span class="overview-pending-count">{{ number_format($pendingOwners) }}</span>
                 </div>
-                <p>Applications waiting for review.</p>
+                <p>{{ __('Applications waiting for review.') }}</p>
                 <a class="overview-action-link" href="{{ route('super_admin.applications.index') }}">
-                    Review applications <span aria-hidden="true">→</span>
+                    {{ __('Review applications') }} <span aria-hidden="true">→</span>
                 </a>
                 <div class="overview-action-divider"></div>
-                <a class="overview-quick-link" href="{{ route('super_admin.courts.index') }}"><span class="overview-quick-icon">⌂</span><span><strong>Manage courts</strong><small>Review facilities and listings</small></span><b aria-hidden="true">↗</b></a>
-                <a class="overview-quick-link" href="{{ route('super_admin.users.index') }}"><span class="overview-quick-icon overview-quick-icon-blue">♙</span><span><strong>Manage players</strong><small>View player accounts</small></span><b aria-hidden="true">↗</b></a>
-                <a class="overview-quick-link" href="{{ route('super_admin.admins.index') }}"><span class="overview-quick-icon overview-quick-icon-purple">♧</span><span><strong>Manage owners</strong><small>View court owner accounts</small></span><b aria-hidden="true">↗</b></a>
+                <a class="overview-quick-link" href="{{ route('super_admin.courts.index') }}"><span class="overview-quick-icon">⌂</span><span><strong>{{ __('Manage courts') }}</strong><small>{{ __('Review facilities and listings') }}</small></span><b aria-hidden="true">↗</b></a>
+                <a class="overview-quick-link" href="{{ route('super_admin.users.index') }}"><span class="overview-quick-icon overview-quick-icon-blue">♙</span><span><strong>{{ __('Manage players') }}</strong><small>{{ __('View player accounts') }}</small></span><b aria-hidden="true">↗</b></a>
+                <a class="overview-quick-link" href="{{ route('super_admin.admins.index') }}"><span class="overview-quick-icon overview-quick-icon-purple">♧</span><span><strong>{{ __('Manage owners') }}</strong><small>{{ __('View court owner accounts') }}</small></span><b aria-hidden="true">↗</b></a>
             </aside>
         </div>
 
         <div class="overview-tables-grid">
             <section class="overview-panel overview-table-panel">
                 <div class="overview-panel-head">
-                    <div><span class="overview-section-kicker">LATEST ACCOUNTS</span><h3>Recent owners</h3></div>
-                    <a class="overview-view-all" href="{{ route('super_admin.admins.index') }}">View all <span aria-hidden="true">→</span></a>
+                    <div><span class="overview-section-kicker">{{ __('LATEST ACCOUNTS') }}</span><h3>{{ __('Recent owners') }}</h3></div>
+                    <a class="overview-view-all" href="{{ route('super_admin.admins.index') }}">{{ __('View all') }} <span aria-hidden="true">→</span></a>
                 </div>
                 <div class="overview-table-wrap">
                     <table class="overview-table">
-                        <thead><tr><th>Owner</th><th>Business</th><th>Status</th></tr></thead>
+                        <thead><tr><th>{{ __('Owner') }}</th><th>{{ __('Business') }}</th><th>{{ __('Status') }}</th></tr></thead>
                         <tbody>
                             @forelse (($recentOwners ?? collect()) as $owner)
                                 <tr>
                                     <td><span class="overview-owner-cell"><i>{{ mb_strtoupper(mb_substr($owner->name, 0, 1)) }}</i><span><strong>{{ $owner->name }}</strong><small>{{ $owner->email }}</small></span></span></td>
                                     <td>{{ $owner->business_name ?? '—' }}</td>
-                                    <td><span class="overview-status overview-status-{{ $owner->status }}"><i></i>{{ ucfirst($owner->status) }}</span></td>
+                                    <td><span class="overview-status overview-status-{{ $owner->status }}"><i></i>{{ __(ucfirst($owner->status)) }}</span></td>
                                 </tr>
                             @empty
-                                <tr><td colspan="3" class="overview-table-empty">No owners registered yet.</td></tr>
+                                <tr><td colspan="3" class="overview-table-empty">{{ __('No owners registered yet.') }}</td></tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -129,21 +129,21 @@
 
             <section class="overview-panel overview-table-panel">
                 <div class="overview-panel-head">
-                    <div><span class="overview-section-kicker">FACILITY DIRECTORY</span><h3>Recent courts</h3></div>
-                    <a class="overview-view-all" href="{{ route('super_admin.courts.index') }}">View all <span aria-hidden="true">→</span></a>
+                    <div><span class="overview-section-kicker">{{ __('FACILITY DIRECTORY') }}</span><h3>{{ __('Recent courts') }}</h3></div>
+                    <a class="overview-view-all" href="{{ route('super_admin.courts.index') }}">{{ __('View all') }} <span aria-hidden="true">→</span></a>
                 </div>
                 <div class="overview-table-wrap">
                     <table class="overview-table">
-                        <thead><tr><th>Court</th><th>Sport</th><th>Status</th></tr></thead>
+                        <thead><tr><th>{{ __('Court') }}</th><th>{{ __('Sport') }}</th><th>{{ __('Status') }}</th></tr></thead>
                         <tbody>
                             @forelse (($recentCourts ?? collect()) as $court)
                                 <tr>
                                     <td><span class="overview-court-cell"><i aria-hidden="true">⌂</i><span><strong>{{ $court->name }}</strong><small>{{ $court->admin?->name ?? 'No owner assigned' }}</small></span></span></td>
-                                    <td>{{ $court->sports?->name ?? '—' }}</td>
-                                    <td><span class="overview-status overview-status-{{ $court->status }}"><i></i>{{ ucfirst($court->status) }}</span></td>
+                                    <td>{{ __($court->sports?->name ?? '—') }}</td>
+                                    <td><span class="overview-status overview-status-{{ $court->status }}"><i></i>{{ __(ucfirst($court->status)) }}</span></td>
                                 </tr>
                             @empty
-                                <tr><td colspan="3" class="overview-table-empty">No courts found.</td></tr>
+                                <tr><td colspan="3" class="overview-table-empty">{{ __('No courts found.') }}</td></tr>
                             @endforelse
                         </tbody>
                     </table>

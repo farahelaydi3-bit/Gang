@@ -26,6 +26,6 @@ class UserController extends Controller
             'status' => $request->status,
         ]);
 
-        return back()->with('success', 'Player status updated successfully.');
+        return back()->with('success', __('Player status updated successfully.'));
     }
 }

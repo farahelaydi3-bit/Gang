@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="@yield('html-lang', str_replace('_', '-', app()->getLocale()))">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="utf-8">
@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/super-admin-pages.css') }}">
 
     @stack('styles')
+    <link rel="stylesheet" href="{{ asset('assets/css/language.css') }}">
 </head>
 
 <body>
@@ -29,28 +30,28 @@
         <aside class="owner-sidebar" id="ownerSidebar">
 
             <a href="{{ url('/admin/dashboard') }}" class="sidebar-brand">
-                <img class="brand-logo" src="{{ asset('courtbook-assets/images/gang-logo.png') }}" alt="Gang logo">
+                <img class="brand-logo" src="{{ asset('courtbook-assets/images/gang-logo.png') }}" alt="{{ __('Gang logo') }}">
 
                 <div class="brand-text">
                     <h2>Gang</h2>
-                    <span>Owner Panel</span>
+                    <span>{{ __('Owner Panel') }}</span>
                 </div>
             </a>
 
-            <div class="sidebar-label">Main Menu</div>
+            <div class="sidebar-label">{{ __('Main Menu') }}</div>
 
-            <nav class="sidebar-nav">
+            <nav class="sidebar-nav" aria-label="{{ __('Main navigation') }}">
 
                 <a href="{{ url('/admin/dashboard') }}"
                     class="sidebar-link {{ request()->is('admin/dashboard') ? 'active' : '' }}">
                     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-                    <span>Overview</span>
+                    <span>{{ __('Overview') }}</span>
                 </a>
 
                 <a href="{{ url('/admin/courts') }}"
                     class="sidebar-link {{ request()->is('admin/courts*') ? 'active' : '' }}">
                     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M12 5v14"/><circle cx="12" cy="12" r="2.6"/></svg>
-                    <span>My Courts</span>
+                    <span>{{ __('My Courts') }}</span>
                 </a>
 
                 <a href="{{ route('admin.site-studio.index') }}"
@@ -62,45 +63,48 @@
                 <a href="{{ url('/admin/reservations') }}"
                     class="sidebar-link {{ request()->is('admin/reservations*') ? 'active' : '' }}">
                     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="m9 15 2 2 4-4"/></svg>
-                    <span>Reservations</span>
+                    <span>{{ __('Reservations') }}</span>
                 </a>
                 <a href="{{ url('/admin/group-games') }}"
                     class="sidebar-link {{ request()->is('admin/group-games*') ? 'active' : '' }}">
                     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.7a3.5 3.5 0 0 1 0 6.6M18 14.3c2 .8 3.5 2.6 3.5 5.7"/></svg>
-                    <span>Group  Games</span>
+                    <span>{{ __('Group Games') }}</span>
                 </a> 
                 <a href="{{ route('admin.sms-logs.index') }}"
                     class="sidebar-link {{ request()->routeIs('admin.sms-logs.*') ? 'active' : '' }}">
-                    <span>SMS History</span>
+                    <span>{{ __('SMS History') }}</span>
                 </a>
                 <a href="{{ url('/admin/subscriptions') }}"
                     class="sidebar-link {{ request()->is('admin/subscription*') ? 'active' : '' }}">
                     <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h4"/></svg>
-                    <span>Subscription</span>
+                    <span>{{ __('Subscription') }}</span>
                 </a>
 
             </nav>
 
             <div class="sidebar-bottom">
 
-                <form method="POST" action="{{ url('/admin/logout') }}">
-                    @csrf
+                <div class="sidebar-account-actions">
+                    <form method="POST" action="{{ url('/admin/logout') }}">
+                        @csrf
 
-                    <button type="submit" class="sidebar-link sidebar-logout">
-                        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5.5A2.5 2.5 0 0 1 3 18.5v-13A2.5 2.5 0 0 1 5.5 3H9"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>
-                        <span>Logout</span>
-                    </button>
-                </form>
+                        <button type="submit" class="sidebar-link sidebar-logout">
+                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5.5A2.5 2.5 0 0 1 3 18.5v-13A2.5 2.5 0 0 1 5.5 3H9"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>
+                            <span>{{ __('Logout') }}</span>
+                        </button>
+                    </form>
+                    <x-language-toggle :icon="true" />
+                </div>
 
                 <a href="{{ route('admin.profile.index') }}"
                     class="owner-profile {{ request()->is('admin/profile*') ? 'active' : '' }}"
-                    aria-label="Open your profile">
+                    aria-label="{{ __('Open your profile') }}">
                     <div class="profile-avatar">
-                        {{ strtoupper(substr(auth('admin')->user()->name ?? 'O', 0, 1)) }}
+                        {{ mb_strtoupper(mb_substr(auth('admin')->user()->name ?? 'O', 0, 1)) }}
                     </div>
                     <div class="profile-info">
                         <strong>{{ auth('admin')->user()->name ?? 'Court Owner' }}</strong>
-                        <span>Court Owner</span>
+                        <span>{{ __('Court Owner') }}</span>
                     </div>
                 </a>
 
@@ -111,7 +115,7 @@
         {{-- Main Content --}}
         <main class="owner-main">
 
-            <button class="owner-mobile-menu" type="button" aria-label="Open navigation menu"
+            <button class="owner-mobile-menu" type="button" aria-label="{{ __('Open navigation menu') }}"
                 aria-controls="ownerSidebar" aria-expanded="false" onclick="toggleOwnerSidebar()">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
                     <path d="M4 7h16M4 12h16M4 17h16" />

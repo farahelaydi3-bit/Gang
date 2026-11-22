@@ -45,9 +45,9 @@
                 <div class="payment-success-row"><span>{{ __('Court') }}</span><strong>{{ $booking->court->name }}</strong></div>
                 <div class="payment-success-row"><span>{{ __('Date') }}</span><strong>{{ $booking->booking_date->translatedFormat('M j, Y') }}</strong></div>
                 <div class="payment-success-row"><span>{{ __('Time') }}</span><strong>{{ $booking->start_time }} – {{ $booking->end_time }}</strong></div>
-                <div class="payment-success-row is-paid"><span>{{ __('Paid') }}</span><strong>{{ number_format((float) $payment->amount, 2) }} JOD</strong></div>
+                <div class="payment-success-row is-paid"><span>{{ __('Paid') }}</span><strong>{{ number_format((float) $payment->amount, 2) }} {{ __('JOD') }}</strong></div>
                 @if ($stage === 'deposit' && (float) $booking->total_price > (float) $payment->amount)
-                    <div class="payment-success-row is-balance"><span>{{ __('Remaining after the booking') }}</span><strong>{{ number_format((float) $booking->total_price - (float) $payment->amount, 2) }} JOD</strong></div>
+                    <div class="payment-success-row is-balance"><span>{{ __('Remaining after the booking') }}</span><strong>{{ number_format((float) $booking->total_price - (float) $payment->amount, 2) }} {{ __('JOD') }}</strong></div>
                 @endif
             </div>
             <p class="payment-success-reference">{{ __('Payment reference') }}: {{ $payment->transaction_reference }}</p>

@@ -84,14 +84,14 @@
     padding: 11px 12px;
     border: 1px solid var(--admin-border);
     border-radius: 10px;
-    background: #FAF2E8;
+    background: #F4FAF5;
 }
 
 .application-review-facts dt,
 .application-review-files small,
 .application-review-muted,
 .application-review-decision p {
-    color: #54647B;
+    color: #496554;
     font-size: 12px;
 }
 
@@ -119,7 +119,7 @@
 }
 
 .application-review-text {
-    color: #465771;
+    color: #3B5948;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
 }
@@ -140,7 +140,7 @@
     border: 1px solid var(--admin-border);
     border-radius: 999px;
     background: var(--admin-primary-light);
-    color: #79440E;
+    color: #276B48;
     font-size: 12px;
     font-weight: 800;
     overflow-wrap: anywhere;
@@ -207,7 +207,7 @@
     padding: 13px;
     border: 1px solid var(--admin-border);
     border-radius: 12px;
-    background: #FAF2E8;
+    background: #F4FAF5;
 }
 
 .application-review-decision p {

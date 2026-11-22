@@ -1,7 +1,7 @@
 @extends('admins.layout.app')
 
-@section('title', 'Edit Court')
-@section('page-title', 'Edit Court')
+@section('title', __('Edit Court'))
+@section('page-title', __('Edit Court'))
 
 @section('content')
 
@@ -20,9 +20,9 @@
 <div class="dashboard-wrapper">
 
     {{-- Page Header --}}
-    <x-super-admin.page-header title="Edit Court" description="Update your court information and pricing.">
+    <x-super-admin.page-header title="{{ __('Edit Court') }}" description="{{ __('Update your court information and pricing.') }}">
         <x-slot:actions>
-            <a class="admin-button admin-button-outline" href="{{ route('admin.courts.index') }}">Back to my courts</a>
+            <a class="admin-button admin-button-outline" href="{{ route('admin.courts.index') }}">{{ __('Back to my courts') }}</a>
         </x-slot:actions>
     </x-super-admin.page-header>
 
@@ -35,14 +35,14 @@
             @method('PUT')
 
             <div class="form-group">
-                <label class="form-label" for="sport_id">Sport</label>
+                <label class="form-label" for="sport_id">{{ __('Sport') }}</label>
 
                 <select name="sport_id" id="sport_id" class="form-control">
-                    <option value="">Select Sport</option>
+                    <option value="">{{ __('Select Sport') }}</option>
 
                     @foreach ($sports as $sport)
                     <option value="{{ $sport->id }}" {{ old('sport_id', $court->sport_id) == $sport->id ? 'selected' : '' }}>
-                        {{ $sport->name }}
+                        {{ __($sport->name) }}
                     </option>
                     @endforeach
                 </select>
@@ -53,7 +53,7 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="name">Court Name</label>
+                <label class="form-label" for="name">{{ __('Court Name') }}</label>
 
                 <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $court->name) }}">
 
@@ -63,7 +63,7 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="address">Address</label>
+                <label class="form-label" for="address">{{ __('Address') }}</label>
 
                 <input type="text" name="address" id="address" class="form-control"
                     value="{{ old('address', $court->address) }}">
@@ -75,12 +75,12 @@
 
             {{-- Court Location --}}
             <div class="form-group">
-                <label class="form-label">Court Location</label>
+                <label class="form-label">{{ __('Court Location') }}</label>
 
-                <p>Click on the map to update the court location.</p>
+                <p>{{ __('Click on the map to update the court location.') }}</p>
 
                 <button type="button" id="my-location-btn" class="admin-button admin-button-outline">
-                    📍 Use My Location
+                    {{ __('📍 Use My Location') }}
                 </button>
 
                 <p id="location-message"></p>
@@ -104,7 +104,7 @@
 
             {{-- Current Image --}}
             <div class="form-group">
-                <label class="form-label">Current Image</label>
+                <label class="form-label">{{ __('Current Image') }}</label>
 
 @if ($courtPhoto ?? false)
     <div class="super-admin-court-photo owner-court-photo-preview">
@@ -119,12 +119,12 @@
             alt="{{ $court->name }}">
     </div>
                 @else
-                <p>No image uploaded.</p>
+                <p>{{ __('No image uploaded.') }}</p>
                 @endif
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="image">Upload New Image (Optional)</label>
+                <label class="form-label" for="image">{{ __('Upload New Image (Optional)') }}</label>
 
                 <input type="file" name="image" id="image" class="form-control" accept="image/*">
 
@@ -135,11 +135,11 @@
 
             {{-- Working Hours --}}
             <div class="section-header">
-                <h3>Working Hours</h3>
+                <h3>{{ __('Working Hours') }}</h3>
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="opening_time">Opening Time</label>
+                <label class="form-label" for="opening_time">{{ __('Opening Time') }}</label>
 
                 <input type="time" name="opening_time" id="opening_time" class="form-control"
                     value="{{ old('opening_time', substr($court->opening_time, 0, 5)) }}">
@@ -150,7 +150,7 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="closing_time">Closing Time</label>
+                <label class="form-label" for="closing_time">{{ __('Closing Time') }}</label>
 
                 <input type="time" name="closing_time" id="closing_time" class="form-control"
                     value="{{ old('closing_time', substr($court->closing_time, 0, 5)) }}">
@@ -162,7 +162,7 @@
 
             <div class="form-group">
                 <label class="form-label" for="min_booking_minutes">
-                    Minimum Booking Duration (Minutes)
+                    {{ __('Minimum Booking Duration (Minutes)') }}
                 </label>
 
                 <input type="number" name="min_booking_minutes" id="min_booking_minutes" class="form-control"
@@ -175,11 +175,11 @@
 
             {{-- Prices --}}
             <div class="section-header">
-                <h3>Pricing (JOD)</h3>
+                <h3>{{ __('Pricing (JOD)') }}</h3>
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="weekday_price">Weekday Price</label>
+                <label class="form-label" for="weekday_price">{{ __('Weekday Price') }}</label>
 
                 <input type="number" name="weekday_price" id="weekday_price" class="form-control"
                     value="{{ old('weekday_price', $court->weekday_price) }}" step="0.01" min="0">
@@ -190,7 +190,7 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="weekend_price">Weekend Price</label>
+                <label class="form-label" for="weekend_price">{{ __('Weekend Price') }}</label>
 
                 <input type="number" name="weekend_price" id="weekend_price" class="form-control"
                     value="{{ old('weekend_price', $court->weekend_price) }}" step="0.01" min="0">
@@ -201,7 +201,7 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="evening_price">Evening Price</label>
+                <label class="form-label" for="evening_price">{{ __('Evening Price') }}</label>
 
                 <input type="number" name="evening_price" id="evening_price" class="form-control"
                     value="{{ old('evening_price', $court->evening_price) }}" step="0.01" min="0">
@@ -212,7 +212,7 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="deposit_amount">Deposit Amount (JOD)</label>
+                <label class="form-label" for="deposit_amount">{{ __('Deposit Amount (JOD)') }}</label>
 
                 <input type="number" name="deposit_amount" id="deposit_amount" class="form-control"
                     value="{{ old('deposit_amount', $court->deposit_amount) }}" step="0.01" min="0">
@@ -225,11 +225,11 @@
             {{-- Actions --}}
             <div class="form-actions">
                 <button type="submit" class="admin-button">
-                    Update Court
+                    {{ __('Update Court') }}
                 </button>
 
                 <a href="{{ route('admin.courts.index') }}" class="admin-button admin-button-outline">
-                    Cancel
+                    {{ __('Cancel') }}
                 </a>
             </div>
 
@@ -294,11 +294,11 @@
         document.getElementById('my-location-btn').addEventListener('click', function() {
 
             if (!navigator.geolocation) {
-                locationMessage.textContent = 'Geolocation is not supported.';
+                locationMessage.textContent = @js(__('Geolocation is not supported.'));
                 return;
             }
 
-            locationMessage.textContent = 'Getting your location...';
+            locationMessage.textContent = @js(__('Getting your location...'));
 
             navigator.geolocation.getCurrentPosition(
                 function(position) {
@@ -308,11 +308,11 @@
                     map.setView([lat, lng], 16);
                     selectLocation(lat, lng);
 
-                    locationMessage.textContent = 'Location selected successfully!';
+                    locationMessage.textContent = @js(__('Location selected successfully!'));
                 },
                 function() {
                     locationMessage.textContent =
-                        'Unable to get your location. Please select it manually.';
+                        @js(__('Unable to get your location. Please select it manually.'));
                 }, {
                     enableHighAccuracy: true,
                     timeout: 10000

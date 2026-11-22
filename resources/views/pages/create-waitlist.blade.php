@@ -22,7 +22,7 @@
         @endif
 
         <section class="panel">
-            <form action="{{ route('waitlist.store') }}" method="POST" class="stack">
+            <form action="{{ route('waitlist.store') }}" method="POST" class="stack waitlist-entry-form">
                 @csrf
                 <div>
                     <label for="group_game_id">{{ __('Full group game') }}</label>

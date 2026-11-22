@@ -38,7 +38,7 @@ class SuperAdminReviewController extends Controller
         DB::transaction(function () use ($admin) {
             $lockedAdmin = Admin::whereKey($admin->id)->lockForUpdate()->firstOrFail();
             if ($lockedAdmin->status !== 'suspended') {
-                throw ValidationException::withMessages(['admin' => 'This owner is not currently suspended.']);
+                throw ValidationException::withMessages(['admin' => __('This owner is not currently suspended.')]);
             }
 
             $banReport = ModerationReport::where('admin_id', $lockedAdmin->id)
@@ -73,6 +73,6 @@ class SuperAdminReviewController extends Controller
 
         });
 
-        return back()->with('success', "Owner {$admin->name} has been reactivated.");
+        return back()->with('success', __('Owner :name has been reactivated.', ['name' => $admin->name]));
     }
 }

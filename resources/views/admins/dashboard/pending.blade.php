@@ -1,27 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->isLocale('ar') ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="UTF-8">
-    <title>Account Status - CourtBook</title>
+    <title>{{ __('Account Status - CourtBook') }}</title>
+    <link rel="stylesheet" href="{{ asset('assets/css/language.css') }}">
 </head>
 
 <body>
-    <h1>Account Status</h1>
+<nav aria-label="{{ __('Main navigation') }}"><x-language-toggle /></nav>
+    <h1>{{ __('Account Status') }}</h1>
 
-    <h2>Hello, {{ Auth::guard('admin')->user()->name }}</h2>
+    <h2>{{ __('Hello,') }} {{ Auth::guard('admin')->user()->name }}</h2>
 
     @if (Auth::guard('admin')->user()->status === 'pending')
-    <p>Your account is pending Super Admin approval.</p>
+    <p>{{ __('Your account is pending Super Admin approval.') }}</p>
     @elseif (Auth::guard('admin')->user()->status === 'rejected')
-    <p>Your owner application has been rejected.</p>
+    <p>{{ __('Your owner application has been rejected.') }}</p>
     @else
-    <p>Your account status has changed.</p>
+    <p>{{ __('Your account status has changed.') }}</p>
     @endif
 
     <form method="POST" action="{{ route('admin.logout') }}">
         @csrf
-        <button type="submit">Logout</button>
+        <button type="submit">{{ __('Logout') }}</button>
     </form>
 </body>
 

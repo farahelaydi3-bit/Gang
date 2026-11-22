@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
@@ -21,8 +21,8 @@ class ReservationsController extends Controller
 
         // Get reservation statistics for this admin's courts
         $reservationStats = Booking::whereHas('court', function ($query) use ($adminId) {
-                $query->where('admin_id', $adminId);
-            })
+            $query->where('admin_id', $adminId);
+        })
             ->selectRaw("
                 COUNT(CASE WHEN booking_status = 'pending' THEN 1 END) as pending,
                 COUNT(CASE WHEN booking_status = 'confirmed' THEN 1 END) as confirmed,
@@ -85,13 +85,13 @@ class ReservationsController extends Controller
         $adminId = auth('admin')->id();
 
         $reservation = Booking::whereHas('court', function ($query) use ($adminId) {
-                $query->where('admin_id', $adminId);
-            })
+            $query->where('admin_id', $adminId);
+        })
             ->findOrFail($id);
 
         // Only pending reservations can be confirmed
         if ($reservation->booking_status !== 'pending') {
-            return redirect()->back()->with('error', 'Only pending reservations can be confirmed.');
+            return redirect()->back()->with('error', __('Only pending reservations can be confirmed.'));
         }
 
         if ($reservation->groupGame) {
@@ -99,7 +99,7 @@ class ReservationsController extends Controller
             $paidDeposits = (float) Payment::whereIn('game_player_id', $playerIds)
                 ->where('payment_stage', 'deposit')->where('status', 'successful')->sum('amount');
             if ($paidDeposits + 0.01 < (float) $reservation->deposit_amount) {
-                return redirect()->back()->with('error', 'Players must pay the group deposit before this booking can be confirmed.');
+                return redirect()->back()->with('error', __('Players must pay the group deposit before this booking can be confirmed.'));
             }
         }
 
@@ -107,7 +107,7 @@ class ReservationsController extends Controller
             'booking_status' => 'confirmed'
         ]);
 
-        return redirect()->back()->with('success', 'Reservation confirmed successfully.');
+        return redirect()->back()->with('success', __('Reservation confirmed successfully.'));
     }
 
     /**
@@ -118,13 +118,13 @@ class ReservationsController extends Controller
         $adminId = auth('admin')->id();
 
         $reservation = Booking::whereHas('court', function ($query) use ($adminId) {
-                $query->where('admin_id', $adminId);
-            })
+            $query->where('admin_id', $adminId);
+        })
             ->findOrFail($id);
 
         // Prevent cancelling completed or already cancelled reservations
         if (in_array($reservation->booking_status, ['cancelled', 'completed'])) {
-            return redirect()->back()->with('error', 'This reservation cannot be cancelled.');
+            return redirect()->back()->with('error', __('This reservation cannot be cancelled.'));
         }
 
         $cancelled = DB::transaction(function () use ($reservation) {
@@ -143,11 +143,11 @@ class ReservationsController extends Controller
         });
 
         if (! $cancelled) {
-            return redirect()->back()->with('error', 'This reservation cannot be cancelled.');
+            return redirect()->back()->with('error', __('This reservation cannot be cancelled.'));
         }
         BookingCancelled::dispatch($cancelled);
 
-        return redirect()->back()->with('success', 'Reservation cancelled successfully.');
+        return redirect()->back()->with('success', __('Reservation cancelled successfully.'));
     }
 
     /**
@@ -158,13 +158,13 @@ class ReservationsController extends Controller
         $adminId = auth('admin')->id();
 
         $reservation = Booking::whereHas('court', function ($query) use ($adminId) {
-                $query->where('admin_id', $adminId);
-            })
+            $query->where('admin_id', $adminId);
+        })
             ->findOrFail($id);
 
         // Only confirmed reservations can be completed
         if ($reservation->booking_status !== 'confirmed') {
-            return redirect()->back()->with('error', 'Only confirmed reservations can be completed.');
+            return redirect()->back()->with('error', __('Only confirmed reservations can be completed.'));
         }
 
         DB::transaction(function () use ($reservation): void {
@@ -173,6 +173,6 @@ class ReservationsController extends Controller
             $locked->groupGame?->update(['status' => 'completed']);
         });
 
-        return redirect()->back()->with('success', 'Reservation marked as completed.');
+        return redirect()->back()->with('success', __('Reservation marked as completed.'));
     }
 }

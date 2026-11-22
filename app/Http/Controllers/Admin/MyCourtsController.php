@@ -90,7 +90,7 @@ class MyCourtsController extends Controller
 
         return redirect()
             ->route('admin.courts.index')
-            ->with('success', 'Court submitted successfully and is awaiting approval.');
+            ->with('success', __('Court submitted successfully and is awaiting approval.'));
     }
 
     public function edit($id)
@@ -148,7 +148,7 @@ class MyCourtsController extends Controller
 
         return redirect()
             ->route('admin.courts.index')
-            ->with('success', 'Court updated successfully.');
+            ->with('success', __('Court updated successfully.'));
     }
 
     public function destroy($id)
@@ -160,7 +160,7 @@ class MyCourtsController extends Controller
         if ($court->bookings()->exists()) {
             return redirect()
                 ->route('admin.courts.index')
-                ->with('error', 'This court cannot be deleted because it has reservations.');
+                ->with('error', __('This court cannot be deleted because it has reservations.'));
         }
 
         // Delete Court Image
@@ -172,6 +172,6 @@ class MyCourtsController extends Controller
 
         return redirect()
             ->route('admin.courts.index')
-            ->with('success', 'Court deleted successfully.');
+            ->with('success', __('Court deleted successfully.'));
     }
 }
