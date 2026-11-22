@@ -14,6 +14,12 @@ return [
     |
     */
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI'),
+    ],
+    
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
@@ -33,19 +39,19 @@ return [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
-	'textbee' => [
-		'api_key' => env('TEXTBEE_API_KEY'),
-		'device_id' => env('TEXTBEE_DEVICE_ID'),
-		],
+        'textbee' => [
+            'api_key' => env('TEXTBEE_API_KEY'),
+            'device_id' => env('TEXTBEE_DEVICE_ID'),
+        ],
     ],
 
     'gemini' => [
         'key' => env('GEMINI_API_KEY'),
         'model' => env('GEMINI_MODEL', 'gemini-3.5-flash'),
     ],
-'textbee' => [
-    'api_key' => env('TEXTBEE_API_KEY'),
-    'device_id' => env('TEXTBEE_DEVICE_ID'),
-    'base_url' => env('TEXTBEE_BASE_URL', 'https://api.textbee.dev/api/v1'),
-],
+    'textbee' => [
+        'api_key' => env('TEXTBEE_API_KEY'),
+        'device_id' => env('TEXTBEE_DEVICE_ID'),
+        'base_url' => env('TEXTBEE_BASE_URL', 'https://api.textbee.dev/api/v1'),
+    ],
 ];

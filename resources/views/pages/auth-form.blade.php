@@ -100,6 +100,38 @@ $submitLabel = 'Log in';
         @endif
 
         <button type="submit">{{ __($submitLabel) }}</button>
+
+        @if (in_array($mode, ['login', 'register']))
+        <div style="margin-top: 16px; text-align: center;">
+
+
+            <a href="{{ route('auth.google') }}"
+                class="button outline"
+                style="
+               display: inline-flex;
+               align-items: center;
+               justify-content: center;
+               gap: 12px;
+               width: 100%;
+               padding: 14px;
+               text-decoration: none;
+           ">
+
+                <span style="font-weight: bold; font-size: 20px;">
+                    G
+                </span>
+
+                Continue with Google
+            </a>
+
+            @error('google')
+            <p style="color: #dc2626; margin-top: 12px;">
+                {{ $message }}
+            </p>
+            @enderror
+
+        </div>
+        @endif
     </form>
 
     @if ($gangAuthCard)
@@ -117,10 +149,10 @@ $submitLabel = 'Log in';
     @endif
 
     @unless ($gangAuthCard)
-        <img
-            class="gallery"
-            src="{{ asset('courtbook-assets/images/hero-football.png') }}"
-            alt="{{ __('Football under floodlights') }}">
+    <img
+        class="gallery"
+        src="{{ asset('courtbook-assets/images/hero-football.png') }}"
+        alt="{{ __('Football under floodlights') }}">
     @endunless
 </div>
 
