@@ -233,7 +233,7 @@
                     @php
                         $draft = $editing ? $application : null;
                         $selectedSports = old('sports', $errors->has('sports') ? [] : ($draft?->sports->modelKeys() ?? []));
-                        $remainingFiles = max(0, 5 - ($draft?->attachments->count() ?? 0));
+                        $existingRegistrationImage = $draft?->attachments->first(fn ($attachment) => $attachment->document_type === 'commercial_registration');
                     @endphp
                     <form action="{{ $editing ? route('admin.application.update', $application) : route('admin.application.store') }}" method="POST" enctype="multipart/form-data" id="applicationForm">
                         @csrf
@@ -306,7 +306,7 @@
                             <p class="application-field-hint application-sports-count" id="selected-sports-count" aria-live="polite"></p>
                         </section>
 
-                        <section class="application-wizard-step" @if ($errors->hasAny(['application_message', 'attachments', 'attachments.*', 'terms_accepted', 'terms_version'])) data-step-errors @endif>
+                        <section class="application-wizard-step" @if ($errors->hasAny(['application_message', 'business_registration_image', 'terms_accepted', 'terms_version'])) data-step-errors @endif>
                             <div class="application-step-heading">
                                 <h2 tabindex="-1">{{ __('Review and submit') }}</h2>
                                 <p>{{ __('Review your details and accept the terms before sending your application.') }}</p>
@@ -328,29 +328,20 @@
                         </div>
 
                         <div class="application-form-section">
-<h3 class="application-form-section-title"><span>↑</span>{{ __('Supporting files') }}</h3>
+<h3 class="application-form-section-title"><span>↑</span>{{ __('Commercial registration') }}</h3>
                             <div class="application-field">
-                                @if ($draft && $draft->attachments->isNotEmpty())
-                                    <p class="application-field-hint">{{ __('Existing attachments') }}</p>
-                                    <ul class="application-existing-files">
-                                        @foreach ($draft->attachments as $attachment)
-                                            <li dir="auto">{{ $attachment->original_name }}</li>
-                                        @endforeach
-                                    </ul>
-                                    <p class="application-field-hint">{{ __('Additional files you can attach: :count', ['count' => $remainingFiles]) }}</p>
+                                @if ($existingRegistrationImage)
+                                    <p class="application-field-hint">{{ __('Commercial registration image already uploaded') }}: {{ $existingRegistrationImage->original_name }}</p>
                                 @endif
-                                @if ($remainingFiles > 0)
-<label for="attachments">{{ __('Photos or documents') }} <span style="color:light-dark(#89958b, var(--night-green));font-weight:600">{{ __('(optional)') }}</span></label>
-                                <label class="application-file-drop" for="attachments" id="application-file-drop">
-                                    <input id="attachments" type="file" name="attachments[]" accept=".jpg,.jpeg,.png,.webp,.pdf" data-max-files="{{ $remainingFiles }}" multiple>
+<label for="business_registration_image">{{ __('Commercial registration image') }} @unless ($existingRegistrationImage)<i class="application-required">*</i>@endunless</label>
+                                <label class="application-file-drop" for="business_registration_image" id="application-file-drop">
+                                    <input id="business_registration_image" type="file" name="business_registration_image" accept="image/jpeg,image/png,image/webp" @required(!$existingRegistrationImage)>
                                     <span class="application-file-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M4 15.5v3A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
 <strong>{{ __('Drag files here or click to browse') }}</strong>
-<small>{{ __('Up to 5 files · 5 MB per file · JPG, PNG, WEBP, or PDF') }}</small>
+<small>{{ __('Upload a clear photo of the court facility commercial registration. JPG, PNG, or WEBP · Up to 5 MB') }}</small>
                                     <span class="application-file-list" id="application-file-list"></span>
                                 </label>
-                                @endif
-                                @error('attachments')<small class="application-field-error">{{ $message }}</small>@enderror
-                                @error('attachments.*')<small class="application-field-error">{{ $message }}</small>@enderror
+                                @error('business_registration_image')<small class="application-field-error">{{ $message }}</small>@enderror
                             </div>
                         </div>
 
@@ -381,7 +372,7 @@
 <li><i>✓</i>{{ __('Facility name and location') }}</li>
 <li><i>✓</i>{{ __('Number of courts and sports offered') }}</li>
 <li><i>✓</i>{{ __('A short description of your facility') }}</li>
-<li><i>✓</i>{{ __('Photos or documents, if available') }}</li>
+<li><i>✓</i>{{ __('A required photo of the court facility commercial registration') }}</li>
                         </ul>
                     </section>
                     <section class="application-side-card">
@@ -411,7 +402,7 @@
             const sportsCount = document.getElementById('selected-sports-count');
             const sports = [...form.querySelectorAll('input[name="sports[]"]')];
             const sportsPanel = sportsCount.closest('.application-wizard-step');
-            const filesInput = document.getElementById('attachments');
+            const filesInput = document.getElementById('business_registration_image');
             const fileDrop = document.getElementById('application-file-drop');
             const fileList = document.getElementById('application-file-list');
 
@@ -490,14 +481,6 @@
                     sportsCount.textContent = @js(__('Choose at least one sport to continue.'));
                     sportsCount.classList.add('is-error');
                     (sports[0] ?? panel.querySelector('h2')).focus();
-                    return false;
-                }
-
-                if (index === lastStep && filesInput && filesInput.files.length > Number(filesInput.dataset.maxFiles)) {
-                    if (index !== currentStep) showStep(index, true);
-                    stepError.textContent = @js(__('You can have up to five existing and new attachments in total.'));
-                    stepError.hidden = false;
-                    filesInput.focus();
                     return false;
                 }
 

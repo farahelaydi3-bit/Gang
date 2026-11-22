@@ -52,7 +52,7 @@ public function index(Request $request)
         $hasAnyBookings = $statusCounts->isNotEmpty();
 
         $bookings = (clone $userBookings)
-            ->with(['court.sports', 'review'])
+            ->with(['court.sports', 'review', 'subscription'])
             ->whereIn('booking_status', ['pending', 'confirmed', 'completed'])
             ->orderByRaw(
                 'CASE WHEN booking_date >= ? THEN 0 ELSE 1 END',
