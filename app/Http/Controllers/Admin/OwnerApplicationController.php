@@ -11,7 +11,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
 use RuntimeException;
 use Throwable;
 
@@ -68,6 +67,12 @@ class OwnerApplicationController extends Controller
                 ->with('error', __('You already have an application under review. Please wait for a response.'));
         }
 
+        $applicationBeingEdited = $applicationId === null
+            ? null
+            : $admin->applications()->with('attachments')->findOrFail($applicationId);
+        $hasCommercialRegistration = $applicationBeingEdited?->attachments
+            ->contains(fn ($attachment) => $attachment->document_type === 'commercial_registration') ?? false;
+
         $validated = $request->validate([
             'facility_name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
@@ -80,8 +85,7 @@ class OwnerApplicationController extends Controller
             'sports' => 'required|array|min:1',
             'sports.*' => 'required|integer|distinct|exists:sports,id',
 
-            'attachments' => 'nullable|array|max:5',
-            'attachments.*' => 'file|mimes:jpg,jpeg,png,webp,pdf|max:5120',
+            'business_registration_image' => [$hasCommercialRegistration ? 'nullable' : 'required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ], [
             'facility_name.required' => __('Enter the facility name.'),
             'facility_name.max' => __('Shorten the facility name.'),
@@ -105,10 +109,10 @@ class OwnerApplicationController extends Controller
             'sports.*.integer' => __('The selected sport is invalid.'),
             'sports.*.distinct' => __('Select each sport only once.'),
             'sports.*.exists' => __('A selected sport is unavailable. Refresh and try again.'),
-            'attachments.max' => __('You can attach up to five files.'),
-            'attachments.*.file' => __('One attachment is not a valid file.'),
-            'attachments.*.mimes' => __('Upload JPG, PNG, WEBP, or PDF files.'),
-            'attachments.*.max' => __('Each file must be 5 MB or smaller.'),
+            'business_registration_image.required' => __('Upload a photo of the court facility commercial registration.'),
+            'business_registration_image.image' => __('The commercial registration must be an image.'),
+            'business_registration_image.mimes' => __('Upload a JPG, PNG, or WEBP image.'),
+            'business_registration_image.max' => __('The commercial registration image must be 5 MB or smaller.'),
         ], [
             'facility_name' => __('Facility name'),
             'address' => __('Address'),
@@ -116,14 +120,14 @@ class OwnerApplicationController extends Controller
             'facility_description' => __('Facility description'),
             'application_message' => __('Message'),
             'sports' => __('Sports'),
-            'attachments' => __('Attachments'),
+            'business_registration_image' => __('Commercial registration image'),
         ]);
 
-        $files = $request->file('attachments', []);
+        $registrationImage = $request->file('business_registration_image');
         $storedPaths = [];
 
         try {
-            return DB::transaction(function () use ($admin, $applicationId, $validated, $files, &$storedPaths) {
+            return DB::transaction(function () use ($admin, $applicationId, $validated, $registrationImage, &$storedPaths) {
                 // Review decisions also update the application row before the owner account.
                 $application = $applicationId === null
                     ? new OwnerApplication(['admin_id' => $admin->id, 'status' => 'submitted', 'submitted_at' => now()])
@@ -145,12 +149,6 @@ class OwnerApplicationController extends Controller
                         ->with('error', __('You already have an application under review.'));
                 }
 
-                if ($applicationId !== null && $files !== [] && $application->attachments()->count() + count($files) > 5) {
-                    throw ValidationException::withMessages([
-                        'attachments' => __('You can have up to five existing and new attachments in total.'),
-                    ]);
-                }
-
                 $application->fill(Arr::only($validated, [
                     'facility_name', 'address', 'courts_count', 'facility_description', 'application_message',
                 ]))->fill([
@@ -160,18 +158,19 @@ class OwnerApplicationController extends Controller
                 $application->sports()->sync($validated['sports']);
                 $admin->update(['status' => 'pending']);
 
-                foreach ($files as $file) {
-                    $path = $file->store('owner-applications/' . $application->id, 'local');
+                if ($registrationImage) {
+                    $path = $registrationImage->store('owner-applications/' . $application->id, 'local');
                     if ($path === false) {
-                        throw new RuntimeException('Could not store owner application attachment.');
+                        throw new RuntimeException('Could not store commercial registration image.');
                     }
                     $storedPaths[] = $path;
 
                     $application->attachments()->create([
-                        'original_name' => $file->getClientOriginalName(),
+                        'document_type' => 'commercial_registration',
+                        'original_name' => $registrationImage->getClientOriginalName(),
                         'file_path' => $path,
-                        'mime_type' => $file->getMimeType(),
-                        'file_size' => $file->getSize(),
+                        'mime_type' => $registrationImage->getMimeType(),
+                        'file_size' => $registrationImage->getSize(),
                     ]);
                 }
 

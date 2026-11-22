@@ -2,17 +2,12 @@
 
 @php
     $court = \App\Models\Court::query()
-        ->with(['sports', 'reviewSummary'])
+        ->with(['sports'])
         ->withAvg('reviews', 'rating')
         ->findOrFail(request()->route('court'));
 
-    // Public reviews = only safe ones
     $publicReviews = $court->reviews()
         ->with('user')
-        ->where(function ($q) {
-            $q->whereNotIn('ai_decision', ['spam', 'abusive'])
-              ->orWhereNull('ai_decision');
-        })
         ->latest()
         ->get();
 @endphp

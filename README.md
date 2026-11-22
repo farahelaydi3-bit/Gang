@@ -1,63 +1,80 @@
+> 🌐 **Language:** **English** | [العربية](./README.ar.md)
+
 # Gang
 
-**Gang** منصة لحجز الملاعب وتنظيم مباريات الأصدقاء في عمّان. بتجمع اللاعبين وأصحاب الملاعب بمكان واحد، وبتسهّل استكشاف الملاعب، معرفة المواعيد والأسعار، تثبيت الحجوزات، والانضمام للمباريات المفتوحة.
+**Gang** is a platform for booking sports courts and organizing games in Amman. It brings players and court owners together so people can discover venues, compare availability and prices, book courts, and join open games.
 
-## عن المشروع
+## About the project
 
-المشروع مبني باستخدام Laravel، وواجهاته مكتوبة بـ Blade وCSS وJavaScript. المنصة فيها ثلاثة أنواع من الحسابات:
+The project is built with Laravel. Its interface uses Blade, CSS, and JavaScript. The platform has three account types:
 
-- **اللاعب:** يستكشف الملاعب والمباريات، يحجز، يدير اشتراكاته، ويستخدم المساعد الذكي.
-- **صاحب الملعب:** يدير منشأته وملاعبه والحجوزات والمباريات.
-- **السوبر أدمن:** يدير أصحاب الملاعب والمنشآت والرياضات ومحتوى المنصة.
+- **Player:** discovers courts and games, books courts, manages subscriptions, and uses the Gang assistant.
+- **Court owner:** manages their venue, courts, bookings, and group games.
+- **Super Admin:** manages court owners, venues, sports, and platform content.
 
-## الميزات
+## Features
 
-- استعراض الملاعب والبحث حسب الرياضة والمنطقة.
-- عرض الملاعب القريبة على خريطة تفاعلية.
-- حجز الملاعب مع اختيار وقت متاح حسب ساعات عمل الملعب.
-- دفع عربون الحجز ومتابعة الحجوزات.
-- اشتراكات بمواعيد أسبوعية ثابتة مع فحص التوفر والفاتورة.
-- إنشاء مباريات مفتوحة والانضمام إليها وقوائم الانتظار.
-- ملفات اللاعبين وأصحاب الملاعب والتحقق من رقم الهاتف.
-- تقييمات للملاعب ومراجعة المحتوى.
-- مساعد Gang الذكي للبحث عن الملاعب والمواعيد.
-- صفحات عامة مخصصة لأصحاب الملاعب.
+- Browse courts and filter by sport and area.
+- Find nearby courts on an interactive map.
+- Book courts by selecting an available time within the venue's opening hours.
+- Pay a booking deposit and manage bookings.
+- Set up recurring weekly subscriptions with availability checks and invoices.
+- Create and join open group games and waiting lists.
+- Player and court-owner profiles, with phone verification.
+- Court ratings and content moderation.
+- Gang assistant for finding courts and available times.
+- Public pages for court owners.
 
-## المتطلبات
+## Live demo and test accounts
 
-- PHP 8.2 أو أحدث، مع إضافات PHP اللازمة لـ Laravel وPDO لقاعدة البيانات.
+- **Website:** [gang.infinityfreeapp.com](https://gang.infinityfreeapp.com/)
+- **Super Admin:** [Sign in](https://gang.infinityfreeapp.com/super-admin/login) — `admin@admin.com` / `123456789`
+- **Court owner:** [Sign in](https://gang.infinityfreeapp.com/admin/login) — `owner@owner.com` / `123456789`
+- **Player:** [Sign in](https://gang.infinityfreeapp.com/login) — `user@user.com` / `123456789`
+
+These are public demo credentials for presentation purposes only. Do not use them for real data or a private production environment. If the live site's demo accounts change, update this section.
+
+## Planned GangSite direction
+
+GangSite Studio currently lets court owners create public pages, while booking links take players to Gang's booking routes. The planned improvement is to let an owner request an AI-generated website and let players explore availability, complete a booking, and pay within one continuous, branded journey.
+
+Publishing, hosting, booking connections, payments, security, and platform management will remain under the Gang team's control. The owner's editing permissions for venue information and page content can be defined when this change is implemented. This describes a future direction, not current behavior.
+
+## Requirements
+
+- PHP 8.2 or newer, with the PHP extensions required by Laravel and PDO for the database.
 - Composer.
-- MySQL أو MariaDB للتشغيل الاعتيادي.
-- Node.js وnpm لبناء ملفات الواجهة وتشغيل Vite.
+- MySQL or MariaDB for normal operation.
+- Node.js and npm to build the frontend assets and run Vite.
 
-لتشغيل وضع الديمو المعزول، تحتاج كمان إضافة `pdo_sqlite`.
+The isolated demo mode also requires the `pdo_sqlite` extension.
 
-## تشغيل المشروع محليًا
+## Run the project locally
 
-1. نزّل المشروع وثبّت اعتماديات PHP وJavaScript:
+1. Install the PHP and JavaScript dependencies:
 
    ```bash
    composer install
    npm install
    ```
 
-2. أنشئ ملف البيئة ومفتاح التطبيق:
+2. Create the environment file and application key.
 
-   على Windows PowerShell:
+   On Windows PowerShell:
 
    ```powershell
    Copy-Item .env.example .env
    php artisan key:generate
    ```
 
-   على macOS أو Linux:
+   On macOS or Linux:
 
    ```bash
    cp .env.example .env
    php artisan key:generate
    ```
 
-3. أنشئ قاعدة بيانات MySQL باسم `gang`، وبعدها حدّث بيانات الاتصال في `.env`:
+3. Create a MySQL database named `gang`, then update the connection settings in `.env`:
 
    ```dotenv
    APP_NAME=Gang
@@ -70,79 +87,79 @@
    DB_PASSWORD=
    ```
 
-4. شغّل migrations والبيانات الأساسية:
+4. Run the migrations and seed the database:
 
    ```bash
    php artisan migrate --seed
    ```
 
-5. شغّل بيئة التطوير:
+5. Start the development environment:
 
    ```bash
    composer run dev
    ```
 
-   هذا الأمر يشغّل Laravel وVite وعامل الطوابير وسجلّات التطوير. افتح [http://127.0.0.1:8000](http://127.0.0.1:8000).
+   This starts Laravel, Vite, the queue worker, and development logs. Open [http://127.0.0.1:8000](http://127.0.0.1:8000).
 
-   لبناء ملفات الواجهة بدون وضع التطوير:
+   To build the frontend assets without the development server:
 
    ```bash
    npm run build
    ```
 
-## روابط المنصة الأساسية
+## Main platform routes
 
-| الصفحة | المسار |
+| Page | Route |
 | --- | --- |
-| الرئيسية | `/` |
-| الملاعب | `/courts` |
-| ملعب قريب | `/nearby` |
-| المباريات المفتوحة | `/games` |
-| إنشاء حجز | `/bookings/create` |
-| حجوزاتي | `/bookings` |
-| اشتراكاتي | `/my-subscriptions` |
-| المساعد الذكي | `/assistant` |
-| دخول صاحب الملعب | `/admin/login` |
-| دخول السوبر أدمن | `/super-admin/login` |
+| Home | `/` |
+| Courts | `/courts` |
+| Nearby courts | `/nearby` |
+| Open games | `/games` |
+| Create a booking | `/bookings/create` |
+| My bookings | `/bookings` |
+| My subscriptions | `/my-subscriptions` |
+| Assistant | `/assistant` |
+| Court-owner sign in | `/admin/login` |
+| Super Admin sign in | `/super-admin/login` |
 
-## الدفع والخدمات الخارجية
+## Payments and external services
 
-الإعدادات الافتراضية في `.env.example` تستخدم بوابة الدفع التجريبية:
+The default settings in `.env.example` use the demo payment gateway:
 
 ```dotenv
 PAYMENT_GATEWAY=demo
 PAYMENT_DEMO_ENABLED=true
 ```
 
-الدفع التجريبي مخصص للتطوير ولا يخصم مبلغًا حقيقيًا. يمكن إعداد مفاتيح خدمات خارجية اختيارية من ملف `.env` عند الحاجة:
+Demo payments are for development and do not charge real money. Optional external services can be configured in `.env` when needed:
 
-- `GEMINI_API_KEY` للمساعد الذكي وأدوات Gemini.
-- `TEXTBEE_API_KEY` و`TEXTBEE_DEVICE_ID` لإرسال رسائل SMS عبر TextBee.
-- مفاتيح Stripe عند إعداد الدفع على بيئة مناسبة.
+- `GEMINI_API_KEY` for the Gang assistant and Gemini tools.
+- `TEXTBEE_API_KEY` and `TEXTBEE_DEVICE_ID` to send SMS through TextBee.
+- Stripe keys when payment is configured for a suitable environment.
 
-لا تضف مفاتيح API أو كلمات مرور أو أي قيم سرية إلى Git أو إلى README.
+Do not add API keys, production passwords, or private credentials to Git or the README. The public demo accounts above are an intentional exception for presentations and must not be used as production accounts.
 
-## أوامر مفيدة
+## Useful commands
 
 ```bash
-php artisan route:list       # عرض المسارات
-php artisan migrate:status   # حالة migrations
-php artisan test             # تشغيل الاختبارات
-npm run dev                  # تشغيل Vite أثناء التطوير
-npm run build                # بناء ملفات الواجهة
+php artisan route:list       # List routes
+php artisan migrate:status   # Show migration status
+php artisan test             # Run tests
+npm run dev                  # Run Vite during development
+npm run build                # Build frontend assets
 ```
 
-## ملفات المشروع
+## Project files
 
-- `app/Http/Controllers` — منطق الصفحات والحجوزات والمدفوعات.
-- `app/Models` — نماذج قاعدة البيانات.
-- `app/Services` — منطق التوفر والاشتراكات والتكاملات.
-- `resources/views` — قوالب Blade.
-- `public/courtbook-assets` — CSS والصور وأصول واجهة Gang.
-- `routes` — مسارات اللاعبين وأصحاب الملاعب والسوبر أدمن.
-- `database/migrations` — تغييرات بنية قاعدة البيانات.
+- `app/Http/Controllers` — page, booking, and payment logic.
+- `app/Models` — database models.
+- `app/Services` — availability, subscription, and integration logic.
+- `resources/views` — Blade templates.
+- `public/courtbook-assets` — Gang interface styles, images, and assets.
+- `routes` — player, court-owner, and Super Admin routes.
+- `database/migrations` — database structure changes.
 
-## روابط المشروع
+## Project links
 
-- [لوحة Trello](https://trello.com/b/VnELJ4DJ/courtly)
-- [ملف Figma](https://www.figma.com/design/Ga1DsZWUEpK9qxpq9icO96/Untitled?node-id=0-1&t=Ot7QhuLpYDX8w93T-1)
+- [Trello board](https://trello.com/b/VnELJ4DJ/courtly)
+- [Figma file](https://www.figma.com/design/Ga1DsZWUEpK9qxpq9icO96/Untitled?node-id=0-1&t=Ot7QhuLpYDX8w93T-1)

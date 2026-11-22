@@ -71,13 +71,13 @@
                 </section>
 
                 <section class="overview-panel application-review-card" aria-labelledby="review-attachments">
-                    <h2 id="review-attachments">{{ __('Supporting documents') }}</h2>
+                    <h2 id="review-attachments">{{ __('Commercial registration image and supporting documents') }}</h2>
                     @if ($application->attachments->isNotEmpty())
                         <ul class="application-review-files">
                             @foreach ($application->attachments as $attachment)
                                 <li>
                                     <div>
-                                        <strong dir="auto">{{ $attachment->original_name }}</strong>
+                                        <strong dir="auto">{{ $attachment->document_type === 'commercial_registration' ? __('Commercial registration image') : __('Supporting document') }}: {{ $attachment->original_name }}</strong>
                                         <small>{{ $attachment->mime_type }} · {{ number_format($attachment->file_size / 1024, 1) }} {{ __('KB') }}</small>
                                     </div>
                                     <a class="admin-button admin-button-outline"
@@ -87,7 +87,7 @@
                             @endforeach
                         </ul>
                     @else
-                        <p class="application-review-muted">{{ __('No supporting documents uploaded.') }}</p>
+                        <p class="application-review-muted">{{ __('No commercial registration image or supporting documents uploaded.') }}</p>
                     @endif
                 </section>
             </div>

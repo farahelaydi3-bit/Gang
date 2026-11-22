@@ -22,5 +22,4 @@ Schedule::command('subscriptions:expiry-reminders')
 Schedule::command('subscriptions:activate-due-renewals')->everyMinute()->withoutOverlapping();
 
 
-Schedule::command('reviews:refresh-summaries')->dailyAt('03:00');
 
