@@ -4,7 +4,6 @@ $desktopLinks = [
 'courts' => 'Explore Courts',
 'nearby' => 'Nearby Courts',
 'games' => 'Find Games',
-'assistant' => 'AI Assistant',
 ];
 
 $mobileLinks = [
@@ -12,11 +11,18 @@ $mobileLinks = [
 'courts' => 'Courts',
 'nearby' => 'Nearby',
 'games' => 'Games',
-'assistant' => 'AI Assistant',
 ];
+
+if (auth('web')->check()) {
+    $desktopLinks['bookings'] = $mobileLinks['bookings'] = 'My Bookings';
+}
 
 $activePage = match (request()->route()?->getName()) {
 'courtbook.court' => 'courts',
+'courtbook.booking.create',
+'courtbook.payments.checkout',
+'courtbook.payments.success',
+'courtbook.payments.cancel' => 'bookings',
 'courtbook.game',
 'courtbook.create-game',
 'courtbook.waitlist' => 'games',
@@ -100,6 +106,6 @@ request()->route()?->getName() ?? '',
 </script>
 @endauth
 
-<nav class="mobile-nav" aria-label="{{ __('Mobile navigation') }}">
+<nav class="mobile-nav player-mobile-nav" aria-label="{{ __('Mobile navigation') }}">
     @include('pages.nav-links', ['links' => $mobileLinks])
 </nav>

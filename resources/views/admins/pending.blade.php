@@ -77,6 +77,8 @@
         .application-wizard-step[data-direction]{animation:application-step-enter .24s ease-out both}
         .application-wizard-step[data-direction="next"]{--step-offset:-10px}
         .application-wizard-step[data-direction="back"]{--step-offset:10px}
+        [dir="rtl"] .application-wizard-step[data-direction="next"]{--step-offset:10px}
+        [dir="rtl"] .application-wizard-step[data-direction="back"]{--step-offset:-10px}
         @keyframes application-step-enter{from{opacity:0;transform:translateX(var(--step-offset,0px))}to{opacity:1;transform:translateX(0)}}
         .application-step-heading{margin:0 0 16px}
         .application-step-heading h2{margin:0;color:#153E2B;font-size:21px;line-height:1.4}
@@ -107,6 +109,9 @@
         .application-edit-link{color:#146535;font-size:13px;font-weight:800;text-decoration:underline;text-underline-offset:3px}
         .application-terms-accept a{display:inline-block;margin-block-start:5px;text-decoration:underline;text-underline-offset:3px}
         .application-existing-files{display:grid;gap:4px;margin:0 0 12px;padding-inline-start:20px;color:#456252;font-size:13px;overflow-wrap:anywhere}
+        .application-review-preview{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:12px;margin:0 0 18px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#F1F8F2}
+        .application-review-preview dt{color:#456252;font-size:12px}
+        .application-review-preview dd{margin:0;color:#153E2B;font-size:13px;font-weight:800;overflow-wrap:anywhere}
         @media(max-width:620px){.application-header{gap:8px}.application-header-actions{gap:6px}.application-terms-button,.application-header-actions button{padding-inline:8px}}
         @media(max-width:360px){.application-brand-copy{display:none}}
         @media(max-width:620px){.application-steps li{font-size:11px}.application-hero{gap:10px}.application-wizard-actions{flex-wrap:wrap}}
@@ -178,6 +183,9 @@
 <div class="application-summary-item application-summary-item-wide"><small>{{ __('Available sports') }}</small><strong>{{ $application->sports->map(fn ($sport) => __($sport->name))->join('، ') ?: '—' }}</strong></div>
                         </div>
                     </div>
+                    <div class="application-edit-actions">
+                        <a class="application-edit-link" href="{{ route('admin.pending', ['edit' => 1]) }}">{{ __('Edit application') }}</a>
+                    </div>
                     <div class="application-review-footer">
                         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z" stroke="currentColor" stroke-width="1.7"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
 {{ __('Your application details are securely stored on Gang.') }}
@@ -195,12 +203,6 @@
                     <svg viewBox="0 0 48 48" fill="none"><path d="M24 5 40 14v20L24 43 8 34V14L24 5Z" stroke="currentColor" stroke-width="2"/><path d="M24 5v38M8 14l16 10 16-10M8 34l16-10 16 10" stroke="currentColor" stroke-width="1.6"/><circle cx="24" cy="24" r="5" stroke="currentColor" stroke-width="1.6"/></svg>
                 </span>
             </section>
-
-<div class="application-progress" aria-label="{{ __('Application steps') }}">
-<span class="application-progress-step is-current"><b>{{ __('01') }}</b>{{ __('Facility') }}</span><i class="application-progress-line"></i>
-<span class="application-progress-step"><b>{{ __('02') }}</b>{{ __('Sports') }}</span><i class="application-progress-line"></i>
-<span class="application-progress-step"><b>{{ __('03') }}</b>{{ __('Submit') }}</span>
-            </div>
 
             @if (session('success'))
                 <div class="application-alert application-alert-success" role="status"><strong>{{ session('success') }}</strong></div>
@@ -226,11 +228,6 @@
 <div class="application-alert application-alert-error" role="alert"><strong>{{ __('Your facility owner account was declined. You can submit a new application for review.') }}</strong></div>
                     @endif
 
-                    <div class="application-form-heading">
-                        <span class="application-section-number">01</span>
-<div><small>{{ __('Owner application') }}</small><h2>{{ __('Facility information') }}</h2><p>{{ __('Share a few details so we can get to know your facility.') }}</p></div>
-                    </div>
-
                     @php
                         $draft = $editing ? $application : null;
                         $selectedSports = old('sports', $errors->has('sports') ? [] : ($draft?->sports->modelKeys() ?? []));
@@ -238,34 +235,64 @@
                     @endphp
                     <form action="{{ $editing ? route('admin.application.update', $application) : route('admin.application.store') }}" method="POST" enctype="multipart/form-data" id="applicationForm">
                         @csrf
+                        @if ($editing)
+                            @method('PATCH')
+                            <div class="application-edit-actions">
+                                <a class="application-edit-link" href="{{ route('admin.pending') }}">{{ __('Cancel editing') }}</a>
+                            </div>
+                        @endif
+
+                        <div class="application-wizard-progress" id="applicationProgress" hidden>
+                            <div class="application-step-track" aria-hidden="true"><span class="application-step-fill"></span></div>
+                            <ol class="application-steps" aria-label="{{ __('Application steps') }}">
+                                <li><b>{{ __('01') }}</b>{{ __('Facility') }}</li>
+                                <li><b>{{ __('02') }}</b>{{ __('Sports') }}</li>
+                                <li><b>{{ __('03') }}</b>{{ __('Review and submit') }}</li>
+                            </ol>
+                        </div>
+
+                        <section class="application-wizard-step" @if ($errors->hasAny(['facility_name', 'address', 'courts_count', 'facility_description'])) data-step-errors @endif>
+                            <div class="application-step-heading">
+                                <h2 tabindex="-1">{{ __('Facility information') }}</h2>
+                                <p>{{ __('Share a few details so we can get to know your facility.') }}</p>
+                            </div>
                         <div class="application-form-section">
 <h3 class="application-form-section-title"><span>⌂</span>{{ __('About your facility') }}</h3>
                             <div class="application-fields-grid">
                                 <div class="application-field application-field-wide">
 <label for="facility_name">{{ __('Facility name') }} <i class="application-required">*</i></label>
-<input id="facility_name" name="facility_name" type="text" maxlength="255" required value="{{ old('facility_name', $admin->business_name) }}" placeholder="{{ __('e.g. Downtown Sports Club') }}">
+<input id="facility_name" name="facility_name" type="text" maxlength="255" required value="{{ old('facility_name', $draft?->facility_name ?? $admin->business_name) }}" placeholder="{{ __('e.g. Downtown Sports Club') }}">
                                     @error('facility_name')<small class="application-field-error">{{ $message }}</small>@enderror
                                 </div>
                                 <div class="application-field">
 <label for="address">{{ __('Facility address') }} <i class="application-required">*</i></label>
-<input id="address" name="address" type="text" maxlength="255" required value="{{ old('address') }}" placeholder="{{ __('City, area, and street') }}">
+<input id="address" name="address" type="text" maxlength="255" required value="{{ old('address', $draft?->address) }}" placeholder="{{ __('City, area, and street') }}">
                                     @error('address')<small class="application-field-error">{{ $message }}</small>@enderror
                                 </div>
                                 <div class="application-field">
 <label for="courts_count">{{ __('Number of courts') }} <i class="application-required">*</i></label>
-<input id="courts_count" name="courts_count" type="number" min="1" max="1000" required value="{{ old('courts_count') }}" placeholder="{{ __('e.g. 4') }}">
+<input id="courts_count" name="courts_count" type="number" min="1" max="1000" required value="{{ old('courts_count', $draft?->courts_count) }}" placeholder="{{ __('e.g. 4') }}">
                                     @error('courts_count')<small class="application-field-error">{{ $message }}</small>@enderror
+                                </div>
+                                <div class="application-field application-field-wide">
+<label for="facility_description">{{ __('Facility description') }} <i class="application-required">*</i></label>
+<textarea id="facility_description" name="facility_description" maxlength="3000" required placeholder="{{ __('Tell us about your courts, facilities, and what you offer players...') }}">{{ old('facility_description', $draft?->facility_description) }}</textarea>
+                                    @error('facility_description')<small class="application-field-error">{{ $message }}</small>@enderror
                                 </div>
                             </div>
                         </div>
 
-                        <div class="application-form-section">
-<h3 class="application-form-section-title"><span>✦</span>{{ __('Sports your facility offers') }} <i class="application-required">*</i></h3>
-<p class="application-field-hint" style="margin:-6px 0 10px">{{ __('Choose all the sports your courts support.') }}</p>
+                        </section>
+
+                        <section class="application-wizard-step" @if ($errors->hasAny(['sports', 'sports.*'])) data-step-errors @endif>
+                            <div class="application-step-heading">
+                                <h2 tabindex="-1">{{ __('Sports your facility offers') }}</h2>
+                                <p>{{ __('Choose all the sports your courts support.') }}</p>
+                            </div>
                             <div class="application-sports-grid">
                                 @forelse ($sports as $sport)
                                     <label class="application-sport-option">
-                                        <input type="checkbox" name="sports[]" value="{{ $sport->id }}" @checked(in_array($sport->id, old('sports', [])))>
+                                        <input type="checkbox" name="sports[]" value="{{ $sport->id }}" @checked(in_array($sport->id, (array) $selectedSports))>
                                         <span>{{ __($sport->name) }}</span>
                                     </label>
                                 @empty
@@ -274,20 +301,25 @@
                             </div>
                             @error('sports')<small class="application-field-error">{{ $message }}</small>@enderror
                             @error('sports.*')<small class="application-field-error">{{ $message }}</small>@enderror
-                            <p class="application-field-hint" id="selected-sports-count" aria-live="polite"></p>
-                        </div>
+                            <p class="application-field-hint application-sports-count" id="selected-sports-count" aria-live="polite"></p>
+                        </section>
 
+                        <section class="application-wizard-step" @if ($errors->hasAny(['application_message', 'attachments', 'attachments.*', 'terms_accepted', 'terms_version'])) data-step-errors @endif>
+                            <div class="application-step-heading">
+                                <h2 tabindex="-1">{{ __('Review and submit') }}</h2>
+                                <p>{{ __('Review your details and accept the terms before sending your application.') }}</p>
+                            </div>
+                            <dl class="application-review-preview" id="applicationReviewPreview" hidden>
+                                <div><dt>{{ __('Facility name') }}</dt><dd dir="auto" id="applicationPreviewFacility"></dd></div>
+                                <div><dt>{{ __('Address') }}</dt><dd dir="auto" id="applicationPreviewAddress"></dd></div>
+                                <div><dt>{{ __('Number of courts') }}</dt><dd id="applicationPreviewCourts"></dd></div>
+                                <div><dt>{{ __('Sports') }}</dt><dd id="applicationPreviewSports"></dd></div>
+                            </dl>
                         <div class="application-form-section">
-<h3 class="application-form-section-title"><span>✎</span>{{ __('Tell us about your facility') }}</h3>
                             <div class="application-fields-grid">
                                 <div class="application-field application-field-wide">
-<label for="facility_description">{{ __('Facility description') }} <i class="application-required">*</i></label>
-<textarea id="facility_description" name="facility_description" maxlength="3000" required placeholder="{{ __('Tell us about your courts, facilities, and what you offer players...') }}">{{ old('facility_description') }}</textarea>
-                                    @error('facility_description')<small class="application-field-error">{{ $message }}</small>@enderror
-                                </div>
-                                <div class="application-field application-field-wide">
 <label for="application_message">{{ __('Your message to Gang') }} <i class="application-required">*</i></label>
-<textarea id="application_message" name="application_message" maxlength="5000" required placeholder="{{ __('Introduce yourself and tell us why you’d like to join Gang...') }}">{{ old('application_message') }}</textarea>
+<textarea id="application_message" name="application_message" maxlength="5000" required placeholder="{{ __('Introduce yourself and tell us why you’d like to join Gang...') }}">{{ old('application_message', $draft?->application_message) }}</textarea>
                                     @error('application_message')<small class="application-field-error">{{ $message }}</small>@enderror
                                 </div>
                             </div>
@@ -296,30 +328,45 @@
                         <div class="application-form-section">
 <h3 class="application-form-section-title"><span>↑</span>{{ __('Supporting files') }}</h3>
                             <div class="application-field">
+                                @if ($draft && $draft->attachments->isNotEmpty())
+                                    <p class="application-field-hint">{{ __('Existing attachments') }}</p>
+                                    <ul class="application-existing-files">
+                                        @foreach ($draft->attachments as $attachment)
+                                            <li dir="auto">{{ $attachment->original_name }}</li>
+                                        @endforeach
+                                    </ul>
+                                    <p class="application-field-hint">{{ __('Additional files you can attach: :count', ['count' => $remainingFiles]) }}</p>
+                                @endif
+                                @if ($remainingFiles > 0)
 <label for="attachments">{{ __('Photos or documents') }} <span style="color:#89958b;font-weight:600">{{ __('(optional)') }}</span></label>
                                 <label class="application-file-drop" for="attachments" id="application-file-drop">
-                                    <input id="attachments" type="file" name="attachments[]" accept=".jpg,.jpeg,.png,.webp,.pdf" multiple>
+                                    <input id="attachments" type="file" name="attachments[]" accept=".jpg,.jpeg,.png,.webp,.pdf" data-max-files="{{ $remainingFiles }}" multiple>
                                     <span class="application-file-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M4 15.5v3A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
 <strong>{{ __('Drag files here or click to browse') }}</strong>
 <small>{{ __('Up to 5 files · 5 MB per file · JPG, PNG, WEBP, or PDF') }}</small>
                                     <span class="application-file-list" id="application-file-list"></span>
                                 </label>
+                                @endif
                                 @error('attachments')<small class="application-field-error">{{ $message }}</small>@enderror
                                 @error('attachments.*')<small class="application-field-error">{{ $message }}</small>@enderror
                             </div>
                         </div>
 
                         <div class="application-terms-accept">
-                            <input id="terms_accepted" name="terms_accepted" type="checkbox" value="1" required @checked(old('terms_accepted'))>
+                            <input id="terms_accepted" name="terms_accepted" type="checkbox" value="1" required @checked(old('terms_accepted', ! $errors->any() && $draft?->terms_version === config('owner.terms_version') && $draft?->terms_accepted_at))>
 <label for="terms_accepted">{{ __('I have read and accepted the') }} <a href="{{ route('admin.terms') }}" target="_blank" rel="noopener">{{ __('Court owner terms and conditions') }}</a>{{ __(', including Gang’s commission of') }} {{ number_format(config('owner.commission_percentage'), 0) }}{{ __('% on completed bookings.') }}</label>
                             <input type="hidden" name="terms_version" value="{{ config('owner.terms_version') }}">
                         </div>
                         @error('terms_accepted')<small class="application-field-error">{{ $message }}</small>@enderror
+                        @error('terms_version')<small class="application-field-error">{{ $message }}</small>@enderror
+                        </section>
 
-                        <div class="application-submit-row">
-<p class="application-submit-note">{{ __('By submitting, you confirm that your facility information is accurate. Our team will review it before activating your account.') }}</p>
+                        <p class="application-step-error" id="applicationStepError" role="alert" hidden></p>
+                        <div class="application-wizard-actions">
+                            <button type="button" class="application-back" id="applicationBack" hidden>{{ __('Previous') }}</button>
+                            <button type="button" class="application-submit" id="applicationNext" hidden>{{ __('Next') }}</button>
                             <button type="submit" class="application-submit" id="submitButton" @disabled($sports->isEmpty())>
-{{ __('Submit for review') }} <span aria-hidden="true">←</span>
+                                {{ $editing ? __('Save changes') : __('Submit for review') }}
                             </button>
                         </div>
                     </form>
@@ -358,6 +405,7 @@
             const nextButton = document.getElementById('applicationNext');
             const submitButton = document.getElementById('submitButton');
             const stepError = document.getElementById('applicationStepError');
+            const reviewPreview = document.getElementById('applicationReviewPreview');
             const sportsCount = document.getElementById('selected-sports-count');
             const sports = [...form.querySelectorAll('input[name="sports[]"]')];
             const sportsPanel = sportsCount.closest('.application-wizard-step');
@@ -370,6 +418,7 @@
                 sportsCount.textContent = selected
                     ? @js(__('Sports selected: :count')).replace(':count', selected)
                     : @js(__('No sports selected yet'));
+                sportsCount.classList.remove('is-error');
             };
             sports.forEach((sport) => sport.addEventListener('change', updateSportsCount));
             updateSportsCount();
@@ -390,6 +439,15 @@
             const steps = [...progress.querySelectorAll('li')];
             const lastStep = panels.length - 1;
             let currentStep = 0;
+            let submitting = false;
+
+            const updateReview = () => {
+                document.getElementById('applicationPreviewFacility').textContent = form.elements.namedItem('facility_name').value;
+                document.getElementById('applicationPreviewAddress').textContent = form.elements.namedItem('address').value;
+                document.getElementById('applicationPreviewCourts').textContent = form.elements.namedItem('courts_count').value;
+                const selectedSports = sports.filter(sport => sport.checked).map(sport => sport.labels[0].textContent.trim());
+                document.getElementById('applicationPreviewSports').textContent = new Intl.ListFormat(document.documentElement.lang).format(selectedSports);
+            };
 
             const showStep = (index, moveFocus = false) => {
                 const panel = panels[index];
@@ -415,6 +473,7 @@
                 nextButton.hidden = index === lastStep;
                 submitButton.hidden = index !== lastStep;
                 stepError.hidden = true;
+                if (index === lastStep) updateReview();
 
                 if (moveFocus) {
                     panel.querySelector('h2').focus({ preventScroll: true });
@@ -429,6 +488,14 @@
                     sportsCount.textContent = @js(__('Choose at least one sport to continue.'));
                     sportsCount.classList.add('is-error');
                     (sports[0] ?? panel.querySelector('h2')).focus();
+                    return false;
+                }
+
+                if (index === lastStep && filesInput && filesInput.files.length > Number(filesInput.dataset.maxFiles)) {
+                    if (index !== currentStep) showStep(index, true);
+                    stepError.textContent = @js(__('You can have up to five existing and new attachments in total.'));
+                    stepError.hidden = false;
+                    filesInput.focus();
                     return false;
                 }
 
@@ -457,6 +524,10 @@
             form.addEventListener('input', () => { stepError.hidden = true; });
 
             form.addEventListener('submit', (event) => {
+                if (submitting) {
+                    event.preventDefault();
+                    return;
+                }
                 if (currentStep < lastStep) {
                     event.preventDefault();
                     advance();
@@ -464,11 +535,9 @@
                 }
                 if (!panels.every((_, index) => validateStep(index))) {
                     event.preventDefault();
-                    sportsCount.textContent = @js(__('Select at least one sport to continue.'));
-                    sportsCount.style.color = '#E63946';
-                    sports[0]?.focus();
                     return;
                 }
+                submitting = true;
                 submitButton.disabled = true;
                 submitButton.textContent = @js(__('Submitting your application…'));
             });
@@ -477,6 +546,7 @@
             showStep(Math.max(0, firstError));
             form.noValidate = true;
             progress.hidden = false;
+            reviewPreview.hidden = false;
         })();
     </script>
 </body>

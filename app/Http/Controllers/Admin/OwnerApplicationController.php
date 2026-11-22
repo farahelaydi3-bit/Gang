@@ -63,7 +63,7 @@ class OwnerApplicationController extends Controller
         }
 
         // Only one application can be under review
-        if ($admin->applications()->where('status', 'submitted')->exists()) {
+        if ($applicationId === null && $admin->applications()->where('status', 'submitted')->exists()) {
             return redirect()->route('admin.pending')
                 ->with('error', __('You already have an application under review. Please wait for a response.'));
         }

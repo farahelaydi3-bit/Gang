@@ -2879,6 +2879,12 @@ fieldset {
         font-size: 0.76rem;
         text-align: center;
     }
+
+    .mobile-nav.player-mobile-nav {
+        grid-template-columns: none;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, 1fr);
+    }
     body {
         padding-bottom: calc(68px + env(safe-area-inset-bottom));
     }
