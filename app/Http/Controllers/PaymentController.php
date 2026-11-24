@@ -9,8 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
-use Stripe\Checkout\Session as StripeSession;
-use Stripe\Stripe;
+use App\Services\StripeBookingPaymentService;
 
 class PaymentController extends Controller
 {
@@ -27,85 +26,87 @@ class PaymentController extends Controller
             ? $booking->booking_status === 'pending'
             : $booking->booking_status === 'completed', 404);
 
-        $payment = DB::transaction(function () use ($booking, $stage): Payment {
-            $lockedBooking = Booking::query()
-                ->whereKey($booking->id)
-                ->lockForUpdate()
-                ->firstOrFail();
+        [$payment, $url, $alreadyPaid] = DB::transaction(function () use ($booking, $stage): array {
+            $lockedBooking = Booking::query()->whereKey($booking->id)->lockForUpdate()->firstOrFail();
+            abort_unless($stage === 'deposit'
+                ? in_array($lockedBooking->booking_status, ['pending', 'confirmed', 'completed'], true)
+                : $lockedBooking->booking_status === 'completed', 404);
 
-            $successfulTotal = (float) Payment::query()
-                ->where('booking_id', $lockedBooking->id)
-                ->where('status', 'successful')
-                ->sum('amount');
+            $payment = Payment::query()->where('booking_id', $lockedBooking->id)
+                ->where('payment_stage', $stage)->lockForUpdate()->first();
+            if ($payment?->status === 'successful') {
+                return [$payment, null, true];
+            }
+            abort_if($payment?->status === 'refunded' || ($stage === 'deposit' && $lockedBooking->booking_status !== 'pending'), 422);
 
+            $gateway = config('payments.gateway');
+            $stripePayments = app(StripeBookingPaymentService::class);
+            $oldReference = $payment?->transaction_reference;
+            if ($oldReference && $stripePayments->isSessionReference($oldReference)) {
+                // Do not replace or lose a previously created Stripe session.
+                abort_unless($gateway === 'stripe', 422, __('A Stripe checkout already exists for this booking.'));
+                $session = $stripePayments->client()->checkout->sessions->retrieve($oldReference);
+                $stripePayments->assertSessionMatches($session, $payment);
+                if ($session->payment_status === 'paid') {
+                    $stripePayments->markPaid($lockedBooking, $payment, $session);
+                    return [$payment, null, true];
+                }
+                if ($session->status === 'open' && $session->url) {
+                    return [$payment, $session->url, false];
+                }
+                abort_unless($session->status === 'expired' && $session->payment_status === 'unpaid', 422,
+                    __('Your previous payment is still processing.'));
+            } elseif ($oldReference) {
+                abort(422, __('Payment reference requires review.'));
+            }
+
+            $successfulTotal = (float) Payment::query()->where('booking_id', $lockedBooking->id)
+                ->where('status', 'successful')->sum('amount');
             $amount = $stage === 'deposit'
                 ? ((float) $lockedBooking->deposit_amount > 0
                     ? min((float) $lockedBooking->deposit_amount, (float) $lockedBooking->total_price)
                     : (float) $lockedBooking->total_price)
                 : max(0, (float) $lockedBooking->total_price - $successfulTotal);
-
             abort_unless($amount > 0, 422, __('There is no amount due for this payment.'));
 
-            $payment = Payment::query()->firstOrNew([
-                'booking_id' => $lockedBooking->id,
-                'payment_stage' => $stage,
+            $payment ??= new Payment(['booking_id' => $lockedBooking->id, 'payment_stage' => $stage]);
+            $payment->fill([
+                'subscription_id' => null,
+                'payment_type' => $stage === 'deposit' && $amount < (float) $lockedBooking->total_price ? 'deposit' : 'full',
+                'payment_method' => 'card', 'amount' => $amount, 'status' => 'pending',
+                'transaction_reference' => null, 'payment_date' => null,
             ]);
-
-            if ($payment->status !== 'successful') {
-                $payment->fill([
-                    'subscription_id' => null,
-                    'payment_type' => $stage === 'deposit' && $amount < (float) $lockedBooking->total_price
-                        ? 'deposit'
-                        : 'full',
-                    'payment_method' => 'card',
-                    'amount' => $amount,
-                    'status' => 'pending',
-                    'transaction_reference' => null,
-                    'payment_date' => null,
-                ]);
-                $payment->save();
+            $payment->save();
+            if ($gateway !== 'stripe') {
+                return [$payment, null, false];
             }
 
-            return $payment;
+            // Keep the original project currency/amount convention. See README before live use.
+            $currency = strtolower(config('payments.currency', 'usd'));
+            $unitAmount = (int) round((float) $payment->amount * 100);
+            $metadata = ['payment_id' => (string) $payment->id, 'booking_id' => (string) $lockedBooking->id, 'stage' => $stage];
+            $session = $stripePayments->client()->checkout->sessions->create([
+                'mode' => 'payment', 'allowed_payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price_data' => ['currency' => $currency,
+                        'product_data' => ['name' => "Booking #{$lockedBooking->id} ({$stage})"],
+                        'unit_amount' => $unitAmount], 'quantity' => 1,
+                ]],
+                'metadata' => $metadata,
+                'payment_intent_data' => ['metadata' => $metadata],
+                'success_url' => route('courtbook.payments.success', [$lockedBooking, $stage]).'?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('courtbook.payments.cancel', [$lockedBooking, $stage]),
+            ], ['idempotency_key' => 'gang-checkout-v1-'.$payment->id.'-'.hash('sha256', ($oldReference ?? 'initial').'|'.$currency.'|'.$unitAmount)]);
+            $payment->update(['transaction_reference' => $session->id]);
+            return [$payment, $session->url, false];
         });
 
-        // إذا كانت البوابة Stripe: ننشئ جلسة دفع ونحوّل المستخدم لصفحة Stripe
-        if (config('payments.gateway') === 'stripe') {
-            Stripe::setApiKey(config('services.stripe.secret'));
-
-            // ملاحظة: Stripe يتعامل بأصغر وحدة عملة (مثلاً cents للـ USD؛ بعض العملات مثل JOD لها 3 منازل عشرية أو قد تحتاج معالجة خاصة حسب إعداد حسابك)
-            $unitAmount = (int) round(((float) $payment->amount) * 100);
-
-            $session = StripeSession::create([
-                'mode' => 'payment',
-                'payment_method_types' => ['card'],
-                'line_items' => [[
-                    'price_data' => [
-                        'currency' => strtolower(config('payments.currency', 'usd')),
-                        'product_data' => [
-                            'name' => "Booking #{$booking->id} ({$stage})",
-                        ],
-                        'unit_amount' => $unitAmount,
-                    ],
-                    'quantity' => 1,
-                ]],
-                'metadata' => [
-                    'payment_id' => (string) $payment->id,
-                    'booking_id' => (string) $booking->id,
-                    'stage' => $stage,
-                ],
-                'success_url' => route('courtbook.payments.success', [$booking, $stage]) . '?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => route('courtbook.payments.cancel', [$booking, $stage]),
-            ]);
-
-            $payment->update([
-                'transaction_reference' => $session->id,
-            ]);
-
-            return redirect()->away($session->url);
+        if ($alreadyPaid) {
+            return redirect()->route('courtbook.payments.success', [$booking, $stage]);
         }
-
-        // وضع Demo الحالي يبقى شغالاً كما هو
+        if ($url !== null) {
+            return redirect()->away($url);
+        }
         return view('pages.payment-checkout', compact('booking', 'payment', 'stage'));
     }
 
@@ -134,6 +135,7 @@ class PaymentController extends Controller
             if ($payment->status === 'successful') {
                 return true;
             }
+            abort_if($payment->status === 'refunded' || str_starts_with((string) $payment->transaction_reference, 'cs_'), 422);
 
             abort_unless(
                 $stage === 'deposit'
@@ -170,31 +172,25 @@ class PaymentController extends Controller
         $this->authorizeBooking($request, $booking);
         abort_unless(in_array($stage, ['deposit', 'balance'], true), 404);
 
-        // في حال العودة من Stripe مع session_id نتحقق من حالة الجلسة ونحدث الدفع بأمان
         if (config('payments.gateway') === 'stripe' && $request->filled('session_id')) {
-            Stripe::setApiKey(config('services.stripe.secret'));
-            $session = StripeSession::retrieve($request->string('session_id')->toString());
-
-            if ($session->payment_status === 'paid') {
-                DB::transaction(function () use ($booking, $stage, $session): void {
-                    $lockedBooking = Booking::query()
-                        ->whereKey($booking->id)
-                        ->lockForUpdate()
-                        ->firstOrFail();
-
-                    $payment = Payment::query()
-                        ->where('booking_id', $lockedBooking->id)
-                        ->where('payment_stage', $stage)
-                        ->lockForUpdate()
-                        ->firstOrFail();
-
-                    if ($payment->status !== 'successful') {
-                        $reference = (string) ($session->payment_intent ?: $session->id);
-                        $this->markPaymentAsPaid($lockedBooking, $payment, $reference);
-                    }
-                });
-            }
+            $stripePayments = app(StripeBookingPaymentService::class);
+            $session = $stripePayments->client()->checkout->sessions->retrieve($request->string('session_id')->toString());
+            abort_unless($session->payment_status === 'paid', 422, __('Payment is not complete.'));
+            DB::transaction(function () use ($booking, $stage, $session, $stripePayments): void {
+                $lockedBooking = Booking::query()->whereKey($booking->id)->lockForUpdate()->firstOrFail();
+                abort_if($lockedBooking->booking_status === 'cancelled', 409, __('This booking has been cancelled.'));
+                $payment = Payment::query()->where('booking_id', $lockedBooking->id)
+                    ->where('payment_stage', $stage)->lockForUpdate()->firstOrFail();
+                $stripePayments->assertSessionMatches($session, $payment);
+                if ($payment->status === 'successful') {
+                    abort_unless($payment->transaction_reference === $session->payment_intent, 422);
+                    return;
+                }
+                abort_unless($payment->status === 'pending' && $payment->transaction_reference === $session->id, 422);
+                $stripePayments->markPaid($lockedBooking, $payment, $session);
+            });
         }
+        $booking->refresh();
 
         $payment = Payment::query()
             ->where('booking_id', $booking->id)

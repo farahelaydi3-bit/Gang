@@ -12,6 +12,7 @@ use App\Models\Subscription;
 use App\Events\BookingCancelled;
 use App\Services\BookingPricingService;
 use App\Services\CourtSlotAvailabilityService;
+use App\Services\StripeRefundService;
 class BookingController extends Controller
 {
     public function create(Request $request)
@@ -32,6 +33,7 @@ public function index(Request $request)
     $completedCount = 0;
     $cancelledCount = 0;
     $hasAnyBookings = false;
+    $cancelledBookings = collect();
 
     if ($request->user()) {
         $userBookings = Booking::query()
@@ -52,7 +54,7 @@ public function index(Request $request)
         $hasAnyBookings = $statusCounts->isNotEmpty();
 
         $bookings = (clone $userBookings)
-            ->with(['court.sports', 'review', 'subscription'])
+            ->with(['court.sports', 'review', 'subscription', 'payments'])
             ->whereIn('booking_status', ['pending', 'confirmed', 'completed'])
             ->orderByRaw(
                 'CASE WHEN booking_date >= ? THEN 0 ELSE 1 END',
@@ -62,6 +64,11 @@ public function index(Request $request)
             ->orderBy('start_time')
             ->paginate(5)
             ->withQueryString();
+
+        $cancelledBookings = (clone $userBookings)
+            ->with(['court', 'payments'])
+            ->where('booking_status', 'cancelled')
+            ->latest('updated_at')->limit(10)->get();
     }
 
     return view('pages.bookings', compact(
@@ -70,6 +77,7 @@ public function index(Request $request)
         'completedCount',
         'cancelledCount',
         'hasAnyBookings',
+        'cancelledBookings',
     ));
 }
 
@@ -335,9 +343,9 @@ public function store(Request $request)
     }
 
    
-public function cancel(Request $request, Booking $booking)
+public function cancel(Request $request, Booking $booking, StripeRefundService $refunds)
 {
-    $cancelledBooking = DB::transaction(function () use ($request, $booking) {
+    $cancelledBooking = DB::transaction(function () use ($request, $booking, $refunds) {
 
         // Lock court first to preserve consistent lock order.
         $court = Court::whereKey($booking->court_id)
@@ -398,12 +406,21 @@ public function cancel(Request $request, Booking $booking)
             $subscription->decrement('used_hours', $hours);
         }
 
+        if ($booking->booking_type === 'individual' && $booking->subscription_id === null) {
+            $refunds->prepare($booking, $booking->refundWindowOpen());
+        }
+
         $booking->update([
             'booking_status' => 'cancelled',
         ]);
 
         return $booking->refresh();
     });
+
+    // Cancellation and refund request have committed before any refund API call.
+    if ($cancelledBooking->booking_type === 'individual' && $cancelledBooking->subscription_id === null) {
+        $refunds->processBooking($cancelledBooking->id);
+    }
 
     BookingCancelled::dispatch($cancelledBooking);
 
@@ -413,7 +430,7 @@ public function cancel(Request $request, Booking $booking)
 
     return redirect()
         ->route('courtbook.bookings')
-        ->with('success', __('Booking cancelled. The time is available again.'));
+        ->with('success', __('refunds.cancelled_message'));
 }
 
 

@@ -18,6 +18,12 @@
                 </a>
             </header>
 
+            @if ($errors->any())
+                <div class="booking-cancel-success" role="alert">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
             @if (session('success'))
                 <div class="booking-cancel-success" role="status">
                     <span aria-hidden="true">✓</span>{{ session('success') }}
@@ -115,7 +121,19 @@
 @if (in_array($booking->booking_status, ['pending', 'confirmed'], true)
     && ! $booking->subscription?->is_fixed_schedule
     && \Illuminate\Support\Carbon::parse($booking->booking_date->format('Y-m-d') . ' ' . $booking->start_time)->isFuture())
-    <button type="button" class="booking-pass-action" data-booking-cancel-open data-cancel-url="{{ route('courtbook.bookings.cancel', $booking) }}">
+    @php
+        $individualRefund = $booking->booking_type === 'individual' && $booking->subscription_id === null;
+        $successfulPayments = $booking->payments->whereNull('game_player_id')->where('status', 'successful');
+        $recordedPaid = $successfulPayments->sum('amount');
+        $hasOpenCheckout = $booking->payments->where('status', 'pending')->contains(fn ($p) => str_starts_with((string) $p->transaction_reference, 'cs_'));
+        $refundMessage = !$individualRefund ? __('refunds.other_booking')
+            : (!$booking->refundWindowOpen() ? __('refunds.outside_window')
+            : ($recordedPaid > 0 ? __('refunds.eligible_paid', ['amount' => number_format($recordedPaid, 2)])
+            : ($hasOpenCheckout ? __('refunds.verify_checkout') : __('refunds.unpaid'))));
+    @endphp
+    <button type="button" class="booking-pass-action" data-booking-cancel-open
+        data-cancel-url="{{ route('courtbook.bookings.cancel', $booking) }}"
+        data-refund-message="{{ $refundMessage }}">
         {{ __('Cancel booking') }}
     </button>
 @endif
@@ -139,6 +157,35 @@
                     @endif
                 </section>
             @endif
+            @if ($cancelledBookings->isNotEmpty())
+                <section class="booking-section" aria-labelledby="cancelled-bookings-title">
+                    <div class="booking-section-heading"><h2 id="cancelled-bookings-title">{{ __('refunds.history') }}</h2></div>
+                    <div class="booking-pass-list">
+                        @foreach ($cancelledBookings as $cancelled)
+                            <article class="booking-pass booking-pass-cancelled">
+                                <div class="booking-pass-main">
+                                    <div class="booking-pass-topline">
+                                        <span class="booking-status booking-status-cancelled">{{ __('Cancelled') }}</span>
+                                    </div>
+                                    <h3>{{ $cancelled->court?->name ?? __('Court unavailable') }} · #{{ $cancelled->id }}</h3>
+                                    <p>{{ $cancelled->booking_date->translatedFormat('l, M j, Y') }}</p>
+                                    @forelse ($cancelled->payments->whereNotNull('refund_status') as $payment)
+                                        <p>{{ __('refunds.status') }}: <strong>{{ __('refunds.states.'.$payment->refund_status) }}</strong>
+                                            @if ($payment->refundDisplayAmount())
+                                                · {{ $payment->refundDisplayAmount() }}
+                                            @elseif ($payment->refund_status === 'demo_refunded')
+                                                · {{ number_format((float) $payment->amount, 2) }} ({{ __('refunds.demo') }})
+                                            @endif
+                                        </p>
+                                    @empty
+                                        <p>{{ __('refunds.no_record') }}</p>
+                                    @endforelse
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
         @endauth
 
         @auth
@@ -149,6 +196,7 @@
                     <span class="gang-logout-kicker">{{ __('GANG · BOOKINGS') }}</span>
                     <h2 id="booking-cancel-title">{{ __('Cancel this booking?') }}</h2>
                     <p id="booking-cancel-message">{{ __('Your booking will be cancelled and this court time will be released.') }}</p>
+                    <p id="booking-refund-message" role="status"></p>
                     <div class="gang-logout-actions">
                         <button type="button" class="gang-logout-stay" data-booking-cancel-close>{{ __('Keep booking') }}</button>
                         <form method="POST" id="booking-cancel-form">
@@ -162,14 +210,21 @@
                 (() => {
                     const dialog = document.getElementById('gang-booking-cancel-dialog');
                     const form = document.getElementById('booking-cancel-form');
+                    const refundMessage = document.getElementById('booking-refund-message');
                     if (!dialog || !form) return;
 
                     document.querySelectorAll('[data-booking-cancel-open]').forEach((button) => {
                         button.addEventListener('click', () => {
                             form.action = button.dataset.cancelUrl;
+                            if (refundMessage) refundMessage.textContent = button.dataset.refundMessage || '';
                             dialog.showModal();
                         });
                     });
+                    form.addEventListener('submit', () => {
+                        const submit = form.querySelector('button[type=submit]');
+                        if (submit) submit.disabled = true;
+                    });
+
                     dialog.querySelectorAll('[data-booking-cancel-close]').forEach((button) => {
                         button.addEventListener('click', () => dialog.close());
                     });

@@ -59,4 +59,8 @@ return [
         'device_id' => env('TEXTBEE_DEVICE_ID'),
         'base_url' => env('TEXTBEE_BASE_URL', 'https://api.textbee.dev/api/v1'),
     ],
+    'stripe' => [
+    'key' => env('STRIPE_KEY'),
+    'secret' => env('STRIPE_SECRET'),
+],
 ];
