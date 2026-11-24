@@ -36,10 +36,10 @@ class GangSiteStudioController extends Controller
     public function store(Request $request, GangSiteBuilder $builder)
     {
         if (OwnerWebsite::where('admin_id', auth('admin')->id())->exists()) {
-            return redirect()->route('admin.site-studio.index')->with('error', 'You already have a website.');
+            return redirect()->route('admin.site-studio.index')->with('error', __('You already have a website.'));
         }
         if ($builder->approvedSports(auth('admin')->id())->isEmpty()) {
-            throw ValidationException::withMessages(['name' => 'You need at least one approved court to create a website.']);
+            throw ValidationException::withMessages(['name' => __('You need at least one approved court to create a website.')]);
         }
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
@@ -67,7 +67,7 @@ class GangSiteStudioController extends Controller
         if ($request->hasFile('hero_image')) {
             $website->update(['hero_image_path' => $request->file('hero_image')->store('site-studio/' . $website->id . '/hero', 'public')]);
         }
-        return redirect()->route('admin.site-studio.index')->with('success', 'Website created. Add images, then preview or publish.');
+        return redirect()->route('admin.site-studio.index')->with('success', __('Website created. Add images, then preview or publish.'));
     }
 
     public function update(Request $request, GangSiteBuilder $builder)
@@ -95,7 +95,7 @@ class GangSiteStudioController extends Controller
             if ($oldHero) Storage::disk('public')->delete($oldHero);
         }
         $this->refreshPublished($website, $builder);
-        return back()->with('success', 'Website settings saved.');
+        return back()->with('success', __('Website settings saved.'));
     }
 
 /** Only official Google Maps sharing links; confirmation means owner checked it, not geolocation verification. */
@@ -114,10 +114,10 @@ private function validateMapsUrl(Request $request, ?string $url, ?string $existi
         || ($host === 'goo.gl' && str_starts_with($path, '/maps/'))
     );
     if (!$valid) {
-        throw ValidationException::withMessages(['maps_url' => 'Use an HTTPS share link from Google Maps.']);
+        throw ValidationException::withMessages(['maps_url' => __('Use an HTTPS share link from Google Maps.')]);
     }
     if (!$request->boolean('maps_confirm')) {
-        throw ValidationException::withMessages(['maps_confirm' => 'Confirm the Google Maps link points to your facility before saving.']);
+        throw ValidationException::withMessages(['maps_confirm' => __('Confirm the Google Maps link points to your facility before saving.')]);
     }
 }
 
@@ -142,7 +142,7 @@ private function validateMapsUrl(Request $request, ?string $url, ?string $existi
         $current = $item->images ?? [];
         $newImages = $request->file('images', []);
         if (count($current) + count($newImages) > 5) {
-            throw ValidationException::withMessages(['images' => 'Maximum 5 photos per sport. Delete an image before adding another.']);
+            throw ValidationException::withMessages(['images' => __('Maximum 5 photos per sport. Delete an image before adding another.')]);
         }
         $added = [];
         foreach ($newImages as $file) {
@@ -153,7 +153,7 @@ private function validateMapsUrl(Request $request, ?string $url, ?string $existi
             'sort_order' => $data['sort_order'], 'images' => array_merge($current, $added),
         ]);
         $this->refreshPublished($item->website, $builder);
-        return back()->with('success', 'Sport section updated.');
+        return back()->with('success', __('Sport section updated.'));
     }
 
     public function deleteImage(Request $request, int $section, GangSiteBuilder $builder)
@@ -167,7 +167,7 @@ private function validateMapsUrl(Request $request, ?string $url, ?string $existi
         $item->update(['images' => $images]);
         Storage::disk('public')->delete($path);
         $this->refreshPublished($item->website, $builder);
-        return back()->with('success', 'Photo removed.');
+        return back()->with('success', __('Photo removed.'));
     }
 
     public function generate(GangSiteGemini $gemini, GangSiteBuilder $builder)
@@ -176,7 +176,7 @@ private function validateMapsUrl(Request $request, ?string $url, ?string $existi
         $builder->syncSections($website);
         $allowed = $builder->approvedSports($website->admin_id)->pluck('id');
         $sections = $website->sections()->with('sport')->whereIn('sport_id', $allowed)->get();
-        if ($sections->isEmpty()) return back()->with('error', 'No approved sports available yet.');
+        if ($sections->isEmpty()) return back()->with('error', __('No approved sports available yet.'));
         $context = $sections->map(fn ($s) => [
             'sport_id' => $s->sport_id, 'sport_name' => $s->sport->name,
             'current_title' => $s->title, 'current_description' => $s->description,
@@ -185,7 +185,7 @@ private function validateMapsUrl(Request $request, ?string $url, ?string $existi
             $result = $gemini->generate($website, $context);
         } catch (Throwable $e) {
             Log::warning('Gang Site Studio AI failed', ['owner_website_id' => $website->id, 'error' => $e->getMessage()]);
-            return back()->with('error', 'AI generation failed: check Gemini configuration or quota, and retry.');
+            return back()->with('error', __('AI generation failed: check Gemini configuration or quota, and retry.'));
         }
         DB::transaction(function () use ($website, $sections, $result) {
             $website->update([
@@ -203,7 +203,7 @@ private function validateMapsUrl(Request $request, ?string $url, ?string $existi
             }
         });
         $this->refreshPublished($website, $builder);
-        return back()->with('success', 'Website copy updated. Your selected theme was preserved.');
+        return back()->with('success', __('Website copy updated. Your selected theme was preserved.'));
     }
 
     public function preview(GangSiteBuilder $builder)
@@ -215,19 +215,19 @@ private function validateMapsUrl(Request $request, ?string $url, ?string $existi
     public function publish(GangSiteBuilder $builder)
     {
         $website = $this->mine();
-        if ($builder->approvedSports($website->admin_id)->isEmpty()) return back()->with('error', 'At least one approved court is required.');
+        if ($builder->approvedSports($website->admin_id)->isEmpty()) return back()->with('error', __('At least one approved court is required.'));
         if (!$website->trial_started_at) {
             $website->update(['trial_started_at' => now(), 'trial_ends_at' => now()->addMonthsNoOverflow(6)]);
         }
         $builder->saveHtml($website);
         $website->update(['is_published' => true]);
-        return back()->with('success', 'Site published. Your 6-month free trial begins at first publication.');
+        return back()->with('success', __('Site published. Your 6-month free trial begins at first publication.'));
     }
 
     public function unpublish()
     {
         $this->mine()->update(['is_published' => false]);
-        return back()->with('success', 'Website unpublished.');
+        return back()->with('success', __('Website unpublished.'));
     }
 
     private function refreshPublished(OwnerWebsite $website, GangSiteBuilder $builder): void
@@ -237,6 +237,6 @@ private function validateMapsUrl(Request $request, ?string $url, ?string $existi
 
     private function csp(): string
     {
-        return "default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'";
+        return "default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'";
     }
 }

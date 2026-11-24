@@ -15,7 +15,7 @@
         <div class="panel stack">
             <p><strong>{{ $game->court->name }}</strong></p>
             <p>{{ $game->game_date->translatedFormat('D, M j, Y') }} — {{ $game->start_time }}–{{ $game->end_time }}</p>
-            <p>{{ $payment->payment_stage === 'balance' ? __('Remaining balance due') : __('Deposit due now') }}: <strong>{{ number_format((float) $payment->amount, 2) }} JOD</strong></p>
+            <p>{{ $payment->payment_stage === 'balance' ? __('Remaining balance due') : __('Deposit due now') }}: <strong>{{ number_format((float) $payment->amount, 2) }} {{ __('JOD') }}</strong></p>
 
             @if($errors->any())
                 <div role="alert">

@@ -10,9 +10,9 @@
         <header class="visa-checkout-heading">
             <div>
                 <span class="visa-checkout-kicker"><i></i>{{ __('SECURE CHECKOUT') }}</span>
-                <h1>{{ $stage === 'deposit' ? __('Pay the deposit to confirm') : __('Pay the remaining balance') }}</h1>
+                <h1>{{ $stage === 'deposit' ? __('Amount needed to confirm your booking') : __('Pay the remaining balance') }}</h1>
                 <p>{{ $stage === 'deposit'
-                    ? __('Pay the deposit now to confirm your booking. The rest is due after the booking.')
+                    ? __('Pay the amount needed to confirm your booking now. The rest is due after the booking.')
                     : __('Your booking has ended. Pay the remaining amount to settle the booking.') }}</p>
             </div>
         </header>
@@ -79,7 +79,7 @@
                         <p class="visa-card-error" id="card-error" role="alert" aria-live="polite"></p>
                         <button class="visa-pay-button" type="submit">
                             <span><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>{{ __('Pay securely') }}</span>
-                            <strong>{{ number_format((float) $payment->amount, 2) }} JOD</strong>
+                            <strong>{{ number_format((float) $payment->amount, 2) }} {{ __('JOD') }}</strong>
                         </button>
                     </form>
 
@@ -91,7 +91,7 @@
                             <small>{{ __('Use any future expiry date and any 3-digit CVC.') }}</small>
                         </div>
                     </details>
-                    <p class="visa-balance-note"><span aria-hidden="true">✓</span>{{ __('Your deposit locks in your booking. The rest is paid in cash at the court after your game.') }}</p>
+                    <p class="visa-balance-note"><span aria-hidden="true">✓</span>{{ __('This amount confirms your booking. The rest is paid in cash at the court after your game.') }}</p>
                 </section>
             </main>
 
@@ -104,10 +104,10 @@
                     </div>
                     <div class="visa-order-detail"><span>{{ __('Date') }}</span><strong>{{ $booking->booking_date->translatedFormat('D, M j, Y') }}</strong></div>
                     <div class="visa-order-detail"><span>{{ __('Time') }}</span><strong>{{ $booking->start_time }} – {{ $booking->end_time }}</strong></div>
-                    <div class="visa-order-detail"><span>{{ __('Booking total') }}</span><strong>{{ number_format((float) $booking->total_price, 2) }} JOD</strong></div>
+                    <div class="visa-order-detail"><span>{{ __('Booking total') }}</span><strong>{{ number_format((float) $booking->total_price, 2) }} {{ __('JOD') }}</strong></div>
                     <div class="visa-order-amount">
-                        <span>{{ $stage === 'deposit' ? __('Deposit due now') : __('Remaining balance due') }}</span>
-                        <strong>{{ number_format((float) $payment->amount, 2) }} <small>JOD</small></strong>
+                        <span>{{ $stage === 'deposit' ? __('Amount needed to confirm booking') : __('Remaining balance due') }}</span>
+                        <strong>{{ number_format((float) $payment->amount, 2) }} <small>{{ __('JOD') }}</small></strong>
                     </div>
                     <div class="visa-order-status"><span></span>{{ __(ucfirst($booking->booking_status)) }}</div>
                 </section>
@@ -118,7 +118,7 @@
                 </div>
 
                 @if ($stage === 'deposit')
-                    <p class="visa-refund-note">{{ __('The deposit is refundable only when you cancel within 24 hours after confirming the booking.') }}</p>
+                    <p class="visa-refund-note">{{ __('Any refund for this amount is subject to review and the payment method used.') }}</p>
                     <form method="POST" action="{{ route('courtbook.bookings.cancel', $booking) }}" class="visa-cancel-form">
                         @csrf
                         <button class="visa-cancel-button" type="submit"><span aria-hidden="true">×</span>{{ __('Cancel booking and release this time') }}</button>

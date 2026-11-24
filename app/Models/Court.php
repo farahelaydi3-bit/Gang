@@ -52,6 +52,23 @@ class Court extends Model
             : null;
     }
 
+    public function thumbnailUrl(): string
+    {
+        $bundled = $this->bundledPhotoUrl();
+        if ($bundled !== null) {
+            return $bundled;
+        }
+
+        $image = $this->image;
+        if ($image && preg_match('~\A(?:images|courtbook-assets/images)/[^/\\\\]+\z~', $image) && is_file(public_path($image))) {
+            return asset($image);
+        }
+
+        $uploaded = $this->uploadedPhotoPath();
+
+        return $uploaded === null ? asset('courtbook-assets/images/hero-football.png') : asset('storage/' . $uploaded);
+    }
+
     public function uploadedPhotoPath(): ?string
     {
         $path = $this->image;
@@ -75,11 +92,5 @@ class Court extends Model
     {
         return $this->hasMany(Subscription::class);
     }
-
-
-	public function reviewSummary()
-	{
-		return $this->hasOne(CourtReviewSummary::class, 'court_id');
-	}
 
 }

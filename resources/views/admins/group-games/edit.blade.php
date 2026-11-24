@@ -1,16 +1,16 @@
 
 @extends('admins.layout.app')
 
-@section('title', 'Edit Group Game')
+@section('title', __('Edit Group Game'))
 
 @section('content')
 
 <div class="group-game-edit-page">
 
     {{-- Page Header --}}
-    <x-super-admin.page-header title="Edit Group Game" description="Update the game schedule and player settings.">
+    <x-super-admin.page-header title="{{ __('Edit Group Game') }}" description="{{ __('Update the game schedule and player settings.') }}">
         <x-slot:actions>
-            <a class="admin-button admin-button-outline" href="{{ route('admin.group-games.index') }}">Back to group games</a>
+            <a class="admin-button admin-button-outline" href="{{ route('admin.group-games.index') }}">{{ __('Back to group games') }}</a>
         </x-slot:actions>
     </x-super-admin.page-header>
 
@@ -23,10 +23,10 @@
 
             {{-- Court --}}
             <div class="form-group">
-                <label for="court_id" class="form-label">Select Court</label>
+                <label for="court_id" class="form-label">{{ __('Select Court') }}</label>
 
                 <select name="court_id" id="court_id" class="form-control" required>
-                    <option value="">Choose your court</option>
+                    <option value="">{{ __('Choose your court') }}</option>
 
                     @foreach($courts as $court)
                         <option value="{{ $court->id }}"
@@ -43,14 +43,14 @@
 
             {{-- Title --}}
             <div class="form-group">
-                <label for="title" class="form-label">Game Title</label>
+                <label for="title" class="form-label">{{ __('Game Title') }}</label>
 
                 <input type="text"
                        name="title"
                        id="title"
                        class="form-control"
                        value="{{ old('title', $game->title) }}"
-                       placeholder="e.g. Football 5 Vs 5"
+                       placeholder="{{ __('e.g. Football 5 Vs 5') }}"
                        required>
 
                 @error('title')
@@ -60,13 +60,13 @@
 
             {{-- Description --}}
             <div class="form-group">
-                <label for="description" class="form-label">Description</label>
+                <label for="description" class="form-label">{{ __('Description') }}</label>
 
                 <textarea name="description"
                           id="description"
                           class="form-control"
                           rows="4"
-                          placeholder="Describe your group game...">{{ old('description', $game->description) }}</textarea>
+                          placeholder="{{ __('Describe your group game...') }}">{{ old('description', $game->description) }}</textarea>
 
                 @error('description')
                     <span class="form-error">{{ $message }}</span>
@@ -75,7 +75,7 @@
 
             {{-- Game Date --}}
             <div class="form-group">
-                <label for="game_date" class="form-label">Game Date</label>
+                <label for="game_date" class="form-label">{{ __('Game Date') }}</label>
 
                 <input type="date"
                        name="game_date"
@@ -94,7 +94,7 @@
             <div class="group-game-edit-row">
 
                 <div class="form-group">
-                    <label for="start_time" class="form-label">Start Time</label>
+                    <label for="start_time" class="form-label">{{ __('Start Time') }}</label>
 
                     <input type="time"
                            name="start_time"
@@ -109,7 +109,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="end_time" class="form-label">End Time</label>
+                    <label for="end_time" class="form-label">{{ __('End Time') }}</label>
 
                     <input type="time"
                            name="end_time"
@@ -129,7 +129,7 @@
             <div class="group-game-edit-row">
 
                 <div class="form-group">
-                    <label for="max_players" class="form-label">Maximum Players</label>
+                    <label for="max_players" class="form-label">{{ __('Maximum Players') }}</label>
 
                     <input type="number"
                            name="max_players"
@@ -145,18 +145,18 @@
                     @enderror
                 </div>
 
-                <p class="muted">The court price is divided evenly among the maximum number of players.</p>
+                <p class="muted">{{ __('The court price is divided evenly among the maximum number of players.') }}</p>
 
             </div>
 
             {{-- Form Actions --}}
             <div class="group-game-edit-actions">
                 <a href="{{ route('admin.group-games.index') }}" class="admin-button admin-button-outline">
-                    Cancel
+                    {{ __('Cancel') }}
                 </a>
 
                 <button type="submit" class="admin-button">
-                    Update Group Game
+                    {{ __('Update Group Game') }}
                 </button>
             </div>
 

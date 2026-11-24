@@ -48,13 +48,13 @@ class GroupGameController extends Controller
 
             $startsAt = Carbon::parse($locked->game_date->format('Y-m-d') . ' ' . $locked->start_time);
             if ($locked->status !== 'open' || $startsAt->lte(now())) {
-                throw ValidationException::withMessages(['game' => 'This game is not available to join.']);
+                throw ValidationException::withMessages(['game' => __('This game is not available to join.')]);
             }
 
             if (WaitingList::where('group_game_id', $locked->id)
                 ->whereIn('status', ['offered', 'accepted'])
                 ->where('offer_expires_at', '>', now())->exists()) {
-                throw ValidationException::withMessages(['game' => 'A place is currently being offered to the next player in line.']);
+                throw ValidationException::withMessages(['game' => __('A place is currently being offered to the next player in line.')]);
             }
 
             $existing = DB::table('game_players')
@@ -63,11 +63,11 @@ class GroupGameController extends Controller
                 ->first();
 
             if ($existing && in_array($existing->status, ['pending', 'joined', 'attended'], true)) {
-                throw ValidationException::withMessages(['game' => 'You have already joined this game.']);
+                throw ValidationException::withMessages(['game' => __('You have already joined this game.')]);
             }
 
             if ($locked->reservedPlayers()->count() >= $locked->max_players) {
-                throw ValidationException::withMessages(['game' => 'This game is full.']);
+                throw ValidationException::withMessages(['game' => __('This game is full.')]);
             }
 
             $payload = [
@@ -134,7 +134,7 @@ class GroupGameController extends Controller
         if ($pendingPayment->status === 'successful') {
             app(WaitingListOfferService::class)->afterGroupGameSpotAvailable($game->id);
             return redirect()->route('games.show', $game->id)
-                ->with('success', 'You joined the game.');
+                ->with('success', __('You joined the game.'));
         }
 
         return redirect()->route('games.payment.checkout', [$game->id, $pendingPayment->id]);
@@ -189,7 +189,7 @@ class GroupGameController extends Controller
                             ->where('user_id', $request->user()->id)->where('status', 'accepted')
                             ->lockForUpdate()->first();
                         if ($offer && $offer->offer_expires_at?->lte(now())) {
-                            throw ValidationException::withMessages(['payment' => 'The 15-minute game offer has expired.']);
+                            throw ValidationException::withMessages(['payment' => __('The 15-minute game offer has expired.')]);
                         }
                         $otherReservedCount = DB::table('game_players')
                             ->where('group_game_id', $locked->id)
@@ -198,7 +198,7 @@ class GroupGameController extends Controller
                         abort_unless(in_array($locked->status, ['open', 'full'], true)
                             && $otherReservedCount < $locked->max_players, 422);
                         if ($pivot->reservation_expires_at && Carbon::parse($pivot->reservation_expires_at)->lte(now())) {
-                            throw ValidationException::withMessages(['payment' => 'The 15-minute place reservation has expired.']);
+                            throw ValidationException::withMessages(['payment' => __('The 15-minute place reservation has expired.')]);
                         }
                     } else {
                         abort_unless(in_array($pivot->status, ['joined', 'attended'], true)
@@ -224,7 +224,7 @@ class GroupGameController extends Controller
 
                 return redirect()->route('games.show', $game->id)->with('success', $stage === 'deposit'
                     ? 'Deposit paid. You joined the game.'
-                    : 'Remaining balance paid.');
+                    : __('Remaining balance paid.'));
             }
         }
 
@@ -243,7 +243,7 @@ class GroupGameController extends Controller
             });
             if ($stage === 'deposit') app(WaitingListOfferService::class)->afterGroupGameSpotAvailable($game->id);
             return redirect()->route('games.show', $game->id)
-                ->with('error', 'Payment was cancelled. You can continue when ready.');
+                ->with('error', __('Payment was cancelled. You can continue when ready.'));
         }
 
         if ($stripeAllowed) {
@@ -323,10 +323,10 @@ class GroupGameController extends Controller
             $offer = WaitingList::where('group_game_id', $locked->id)
                 ->where('user_id', $request->user()->id)->where('status', 'accepted')->lockForUpdate()->first();
             if ($offer && $offer->offer_expires_at?->lte(now())) {
-                throw ValidationException::withMessages(['payment' => 'The 15-minute game offer has expired.']);
+                throw ValidationException::withMessages(['payment' => __('The 15-minute game offer has expired.')]);
             }
             if ($pivot->reservation_expires_at && Carbon::parse($pivot->reservation_expires_at)->lte(now())) {
-                throw ValidationException::withMessages(['payment' => 'The 15-minute place reservation has expired.']);
+                throw ValidationException::withMessages(['payment' => __('The 15-minute place reservation has expired.')]);
             }
 
             $otherReservedCount = DB::table('game_players')
@@ -335,7 +335,7 @@ class GroupGameController extends Controller
                 ->where('id', '!=', $pivot->id)
                 ->count();
             if ($locked->status !== 'open' || $otherReservedCount >= $locked->max_players) {
-                throw ValidationException::withMessages(['game' => 'This game is no longer available.']);
+                throw ValidationException::withMessages(['game' => __('This game is no longer available.')]);
             }
 
             $lockedPayment->update([
@@ -360,11 +360,11 @@ class GroupGameController extends Controller
 
         if ($outcome === 'failure') {
             return redirect()->route('games.show', $game->id)
-                ->with('error', 'Payment failed. You were not added to the game.');
+                ->with('error', __('Payment failed. You were not added to the game.'));
         }
 
         return redirect()->route('games.show', $game->id)
-            ->with('success', $stage === 'deposit' ? 'Payment successful. You joined the game.' : 'Remaining balance paid.');
+            ->with('success', $stage === 'deposit' ? __('Payment successful. You joined the game.') : __('Remaining balance paid.'));
     }
 
     public function cancelPayment(Request $request, GroupGame $game, Payment $payment)
@@ -402,7 +402,7 @@ class GroupGameController extends Controller
         if ($released) app(WaitingListOfferService::class)->afterGroupGameSpotAvailable($game->id);
 
         return redirect()->route('games.show', $game->id)
-            ->with('success', 'Payment cancelled.');
+            ->with('success', __('Payment cancelled.'));
     }
 
     public function leave(Request $request, GroupGame $game)
@@ -415,7 +415,7 @@ class GroupGameController extends Controller
             $startsAt = Carbon::parse($locked->game_date->format('Y-m-d') . ' ' . $locked->start_time);
 
             if (!in_array($locked->status, ['open', 'full'], true) || $startsAt->lte(now())) {
-                throw ValidationException::withMessages(['game' => 'You cannot leave this game now.']);
+                throw ValidationException::withMessages(['game' => __('You cannot leave this game now.')]);
             }
 
             $pivot = DB::table('game_players')
@@ -424,7 +424,7 @@ class GroupGameController extends Controller
                 ->first();
 
             if (!$pivot || $pivot->status !== 'joined') {
-                throw ValidationException::withMessages(['game' => 'You are not a joined player.']);
+                throw ValidationException::withMessages(['game' => __('You are not a joined player.')]);
             }
 
             $locked->players()->updateExistingPivot($userId, ['status' => 'cancelled']);
@@ -436,7 +436,7 @@ class GroupGameController extends Controller
 
         app(WaitingListOfferService::class)->afterGroupGameSpotAvailable($game->id);
 
-        return back()->with('success', 'You left the game.');
+        return back()->with('success', __('You left the game.'));
     }
 
     public function balancePayment(Request $request, GroupGame $game)

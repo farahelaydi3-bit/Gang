@@ -1,6 +1,6 @@
 @extends('admins.layout.app')
 
-@section('title', 'Add Court')
+@section('title', __('Add Court'))
 @section('page-title', 'Add New Court')
 
 @section('content')
@@ -21,9 +21,9 @@
 <div class="dashboard-wrapper">
 
     {{-- Page Header --}}
-    <x-super-admin.page-header title="Add Court" description="Set the court location, working hours, and prices.">
+    <x-super-admin.page-header title="{{ __('Add Court') }}" description="{{ __('Set the court location, working hours, and prices.') }}">
         <x-slot:actions>
-            <a class="admin-button admin-button-outline" href="{{ route('admin.courts.index') }}">Back to my courts</a>
+            <a class="admin-button admin-button-outline" href="{{ route('admin.courts.index') }}">{{ __('Back to my courts') }}</a>
         </x-slot:actions>
     </x-super-admin.page-header>
 
@@ -37,15 +37,15 @@
             @csrf
 
             <div class="form-group">
-                <label class="form-label" for="sport_id">Sport</label>
+                <label class="form-label" for="sport_id">{{ __('Sport') }}</label>
 
                 <select name="sport_id" id="sport_id" class="form-control">
-                    <option value="">Select Sport</option>
+                    <option value="">{{ __('Select Sport') }}</option>
 
                     @foreach ($sports as $sport)
                     <option value="{{ $sport->id }}"
                         {{ old('sport_id') == $sport->id ? 'selected' : '' }}>
-                        {{ $sport->name }}
+                        {{ __($sport->name) }}
                     </option>
                     @endforeach
                 </select>
@@ -56,14 +56,14 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="name">Court Name</label>
+                <label class="form-label" for="name">{{ __('Court Name') }}</label>
 
                 <input type="text"
                     name="name"
                     id="name"
                     class="form-control"
                     value="{{ old('name') }}"
-                    placeholder="Enter court name">
+                    placeholder="{{ __('Enter court name') }}">
 
                 @error('name')
                 <small class="text-danger">{{ $message }}</small>
@@ -71,14 +71,14 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="address">Address</label>
+                <label class="form-label" for="address">{{ __('Address') }}</label>
 
                 <input type="text"
                     name="address"
                     id="address"
                     class="form-control"
                     value="{{ old('address') }}"
-                    placeholder="Enter court address">
+                    placeholder="{{ __('Enter court address') }}">
 
                 @error('address')
                 <small class="text-danger">{{ $message }}</small>
@@ -88,11 +88,11 @@
 
             {{-- Court Location --}}
             <div class="form-group">
-                <label class="form-label">Court Location</label>
-                <p>Click on the map to select your court location.</p>
+                <label class="form-label">{{ __('Court Location') }}</label>
+                <p>{{ __('Click on the map to select your court location.') }}</p>
 
                 <button type="button" id="my-location-btn">
-                    📍 Use My Location
+                    {{ __('📍 Use My Location') }}
                 </button>
 
                 <p id="location-message"></p>
@@ -114,7 +114,7 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="image">Court Image</label>
+                <label class="form-label" for="image">{{ __('Court Image') }}</label>
 
                 <input type="file"
                     name="image"
@@ -129,11 +129,11 @@
 
             {{-- Working Hours --}}
             <div class="section-header">
-                <h3>Working Hours</h3>
+                <h3>{{ __('Working Hours') }}</h3>
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="opening_time">Opening Time</label>
+                <label class="form-label" for="opening_time">{{ __('Opening Time') }}</label>
 
                 <input type="time"
                     name="opening_time"
@@ -147,7 +147,7 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="closing_time">Closing Time</label>
+                <label class="form-label" for="closing_time">{{ __('Closing Time') }}</label>
 
                 <input type="time"
                     name="closing_time"
@@ -162,7 +162,7 @@
 
             <div class="form-group">
                 <label class="form-label" for="min_booking_minutes">
-                    Minimum Booking Duration (Minutes)
+                    {{ __('Minimum Booking Duration (Minutes)') }}
                 </label>
 
                 <input type="number"
@@ -180,11 +180,11 @@
 
             {{-- Prices --}}
             <div class="section-header">
-                <h3>Pricing (JOD)</h3>
+                <h3>{{ __('Pricing (JOD)') }}</h3>
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="weekday_price">Weekday Price</label>
+                <label class="form-label" for="weekday_price">{{ __('Weekday Price') }}</label>
 
                 <input type="number"
                     name="weekday_price"
@@ -200,7 +200,7 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="weekend_price">Weekend Price</label>
+                <label class="form-label" for="weekend_price">{{ __('Weekend Price') }}</label>
 
                 <input type="number"
                     name="weekend_price"
@@ -216,7 +216,7 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="evening_price">Evening Price</label>
+                <label class="form-label" for="evening_price">{{ __('Evening Price') }}</label>
 
                 <input type="number"
                     name="evening_price"
@@ -232,7 +232,7 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label" for="deposit_amount">Deposit Amount (JOD)</label>
+                <label class="form-label" for="deposit_amount">{{ __('Deposit Amount (JOD)') }}</label>
 
                 <input type="number"
                     name="deposit_amount"
@@ -250,12 +250,12 @@
             {{-- Actions --}}
             <div class="form-actions">
                 <button type="submit" class="admin-button">
-                    Add Court
+                    {{ __('Add Court') }}
                 </button>
 
                 <a href="{{ route('admin.courts.index') }}"
                     class="admin-button admin-button-outline">
-                    Cancel
+                    {{ __('Cancel') }}
                 </a>
             </div>
 
@@ -319,11 +319,11 @@
     locationBtn.addEventListener('click', function() {
 
         if (!navigator.geolocation) {
-            locationMessage.textContent = 'Geolocation is not supported.';
+            locationMessage.textContent = @js(__('Geolocation is not supported.'));
             return;
         }
 
-        locationMessage.textContent = 'Getting your location...';
+        locationMessage.textContent = @js(__('Getting your location...'));
 
         navigator.geolocation.getCurrentPosition(
             function(position) {
@@ -333,11 +333,11 @@
                 map.setView([lat, lng], 16);
                 selectLocation(lat, lng);
 
-                locationMessage.textContent = 'Location selected successfully!';
+                locationMessage.textContent = @js(__('Location selected successfully!'));
             },
             function() {
                 locationMessage.textContent =
-                    'Unable to get your location. Please select it manually.';
+                    @js(__('Unable to get your location. Please select it manually.'));
             }, {
                 enableHighAccuracy: true,
                 timeout: 10000

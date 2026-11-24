@@ -1,4 +1,4 @@
-<a class="brand brand-sports" href="{{ route('courtbook.home') }}" aria-label="Gang — Home">
+<a class="brand brand-sports" href="{{ route('courtbook.home') }}" aria-label="{{ __('Gang — Home') }}">
     <span class="brand-sports-mark" aria-hidden="true">
         <span class="brand-ball-shape is-active" data-sport-ball="football">
             <svg viewBox="0 0 48 48" fill="none">

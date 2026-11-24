@@ -23,11 +23,11 @@ $submitLabel = 'Log in';
 
         @if ($mode === 'login')
         <div class="login-form-heading">
-            <div><strong>رجعت تلعب معنا؟</strong><small>سجّل دخولك وشوف حجوزاتك الجاية.</small></div>
+            <div><strong>{{ __('Ready to play again?') }}</strong><small>{{ __('Log in to see your upcoming bookings.') }}</small></div>
         </div>
         @elseif ($mode === 'register')
         <div class="login-form-heading">
-            <div><strong>يلا نبلّش لعب؟</strong><small>اعمل حسابك وخلي الملعب علينا.</small></div>
+            <div><strong>{{ __('Ready to play?') }}</strong><small>{{ __('Create your account and we’ll help you find a court.') }}</small></div>
         </div>
         @endif
 
@@ -100,38 +100,70 @@ $submitLabel = 'Log in';
         @endif
 
         <button type="submit">{{ __($submitLabel) }}</button>
+
+        @if (in_array($mode, ['login', 'register']))
+        <div style="margin-top: 16px; text-align: center;">
+
+
+            <a href="{{ route('auth.google') }}"
+                class="button outline"
+                style="
+               display: inline-flex;
+               align-items: center;
+               justify-content: center;
+               gap: 12px;
+               width: 100%;
+               padding: 14px;
+               text-decoration: none;
+           ">
+
+                <span style="font-weight: bold; font-size: 20px;">
+                    G
+                </span>
+
+                Continue with Google
+            </a>
+
+            @error('google')
+            <p style="color: #dc2626; margin-top: 12px;">
+                {{ $message }}
+            </p>
+            @enderror
+
+        </div>
+        @endif
     </form>
 
     @if ($gangAuthCard)
-    <aside class="login-sport-panel" aria-label="عن Gang">
-        <span class="login-sport-kicker"><i></i> بطاقة اللاعب · GANG</span>
+    <aside class="login-sport-panel" aria-label="{{ __('About Gang') }}">
+        <span class="login-sport-kicker"><i></i> {{ __('Player card · GANG') }}</span>
         <div class="login-sport-orbit" aria-hidden="true">
             <span>⚽</span><i>🏀</i><b>🎾</b>
         </div>
         <div class="login-sport-copy">
-            <strong>منحب اللعبة،<br>وعشان هيك عملنا Gang.</strong>
-            <p>ملعبك وحجزك ومباراتك الجاية… كلهم أقرب هون.</p>
+            <strong>{{ __('We love the game,') }}<br>{{ __('so we built Gang.') }}</strong>
+            <p>{{ __('Your court, booking, and next game are all within reach.') }}</p>
         </div>
-        <div class="login-sport-tags" aria-hidden="true"><span>كرة قدم</span><span>سلة</span><span>بادل</span><span>تنس</span><span>ريشة</span></div>
+        <div class="login-sport-tags" aria-hidden="true"><span>{{ __('Football') }}</span><span>{{ __('Basketball') }}</span><span>{{ __('Padel') }}</span><span>{{ __('Tennis') }}</span><span>{{ __('Badminton') }}</span></div>
     </aside>
     @endif
 
     @unless ($gangAuthCard)
-        <img
-            class="gallery"
-            src="{{ asset('courtbook-assets/images/hero-football.png') }}"
-            alt="{{ __('Football under floodlights') }}">
+    <img
+        class="gallery"
+        src="{{ asset('courtbook-assets/images/hero-football.png') }}"
+        alt="{{ __('Football under floodlights') }}">
     @endunless
 </div>
 
 <div class="row section {{ $gangAuthCard ? 'login-form-links' : '' }}">
     @if ($mode === 'login')
     <a class="button outline" href="{{ route('register') }}">
-        Create account
+        {{ __('Create account') }}
     </a>
 
     <a class="button outline" href="{{ route('password.request') }}">
-        Forgot password?
+        {{ __('Forgot password?') }}
     </a>
     @else
     <a class="button outline" href="{{ route('login') }}">{{ $register ? __('Already have an account? Log in') : __('Back to login') }}</a>

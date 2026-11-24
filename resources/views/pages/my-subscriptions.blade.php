@@ -113,7 +113,7 @@
                                     @endif
 
                                     <div class="booking-pass-footer">
-                                        <span>{{ __('Subscription total') }} <strong>{{ number_format((float) $subscription->amount, 2) }} JOD</strong></span>
+                                        <span>{{ __('Subscription total') }} <strong>{{ number_format((float) $subscription->amount, 2) }} {{ __('JOD') }}</strong></span>
                                         <div class="subscription-pass-actions">
                                             @if ($subscription->status === 'pending' && $subscription->paid_at === null)
                                                 <a class="booking-pass-action" href="{{ route('subscriptions.invoice', $subscription) }}">{{ __('Continue payment') }}</a>

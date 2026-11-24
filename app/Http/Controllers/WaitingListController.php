@@ -50,22 +50,22 @@ class WaitingListController extends Controller
                 $game = GroupGame::whereKey($valid['group_game_id'])->lockForUpdate()->firstOrFail();
                 $startsAt = Carbon::parse($game->game_date->format('Y-m-d').' '.$game->start_time);
                 if (! in_array($game->status, ['open', 'full'], true) || $startsAt->lte(now())) {
-                    throw ValidationException::withMessages(['group_game_id' => 'This game is not accepting waiting-list requests.']);
+                    throw ValidationException::withMessages(['group_game_id' => __('This game is not accepting waiting-list requests.')]);
                 }
                 if ($game->reservedPlayers()->count() < $game->max_players
                     && ! WaitingList::where('group_game_id', $game->id)->whereIn('status', ['offered', 'accepted'])
                         ->where('offer_expires_at', '>', now())->exists()) {
-                    throw ValidationException::withMessages(['group_game_id' => 'This game still has a place. Join it directly.']);
+                    throw ValidationException::withMessages(['group_game_id' => __('This game still has a place. Join it directly.')]);
                 }
                 $alreadyPlaying = DB::table('game_players')->where('group_game_id', $game->id)
                     ->where('user_id', $request->user()->id)->whereIn('status', ['pending', 'joined', 'attended'])->exists();
                 if ($alreadyPlaying) {
-                    throw ValidationException::withMessages(['group_game_id' => 'You already have a place in this game.']);
+                    throw ValidationException::withMessages(['group_game_id' => __('You already have a place in this game.')]);
                 }
                 $duplicate = WaitingList::where('group_game_id', $game->id)->where('user_id', $request->user()->id)
                     ->whereIn('status', ['waiting', 'offered', 'accepted'])->exists();
                 if ($duplicate) {
-                    throw ValidationException::withMessages(['group_game_id' => 'You already have an active request for this game.']);
+                    throw ValidationException::withMessages(['group_game_id' => __('You already have an active request for this game.')]);
                 }
                 WaitingList::create([
                     'user_id' => $request->user()->id,
@@ -78,7 +78,7 @@ class WaitingListController extends Controller
                 ]);
             });
 
-            return back()->with('success', 'Added to the group-game waiting list.');
+            return back()->with('success', __('Added to the group-game waiting list.'));
         }
 
         $valid = $request->validate([
@@ -91,7 +91,7 @@ class WaitingListController extends Controller
         $endAt = Carbon::parse($valid['booking_date'].' '.$valid['end_time']);
         $minutes = (int) $startAt->diffInMinutes($endAt);
         if ($startAt->lte(now()) || $minutes < 60 || $minutes % 30 !== 0) {
-            throw ValidationException::withMessages(['start_time' => 'Choose a future slot of at least 60 minutes in 30-minute increments.']);
+            throw ValidationException::withMessages(['start_time' => __('Choose a future slot of at least 60 minutes in 30-minute increments.')]);
         }
 
         DB::transaction(function () use ($request, $valid, $minutes) {
@@ -99,7 +99,7 @@ class WaitingListController extends Controller
             if ($court->status !== 'approved' || $minutes < (int) $court->min_booking_minutes ||
                 $valid['start_time'] < Carbon::parse($court->opening_time)->format('H:i') ||
                 $valid['end_time'] > Carbon::parse($court->closing_time)->format('H:i')) {
-                throw ValidationException::withMessages(['start_time' => 'Slot is outside court booking rules.']);
+                throw ValidationException::withMessages(['start_time' => __('Slot is outside court booking rules.')]);
             }
             $occupied = Booking::where('court_id', $court->id)
                 ->whereDate('booking_date', $valid['booking_date'])
@@ -107,7 +107,7 @@ class WaitingListController extends Controller
                 ->where('start_time', '<', $valid['end_time'])
                 ->where('end_time', '>', $valid['start_time'])->exists();
             if (! $occupied) {
-                throw ValidationException::withMessages(['start_time' => 'Slot is available; book it directly.']);
+                throw ValidationException::withMessages(['start_time' => __('Slot is available; book it directly.')]);
             }
             $alreadyBooked = Booking::where('user_id', $request->user()->id)
                 ->where('court_id', $court->id)
@@ -117,7 +117,7 @@ class WaitingListController extends Controller
                 ->where('end_time', '>', $valid['start_time'])
                 ->exists();
             if ($alreadyBooked) {
-                throw ValidationException::withMessages(['start_time' => 'You already have an active booking that overlaps this time.']);
+                throw ValidationException::withMessages(['start_time' => __('You already have an active booking that overlaps this time.')]);
             }
             $duplicate = WaitingList::where('user_id', $request->user()->id)
                 ->where('court_id', $court->id)->whereDate('booking_date', $valid['booking_date'])
@@ -125,11 +125,11 @@ class WaitingListController extends Controller
                 ->where('end_time', '>', $valid['start_time'])
                 ->whereIn('status', ['waiting', 'offered', 'accepted'])->exists();
             if ($duplicate) {
-                throw ValidationException::withMessages(['start_time' => 'You already have an active request for this slot.']);
+                throw ValidationException::withMessages(['start_time' => __('You already have an active request for this slot.')]);
             }
             WaitingList::create([...$valid, 'user_id' => $request->user()->id, 'status' => 'waiting']);
         });
-        return back()->with('success', 'Added to waiting list.');
+        return back()->with('success', __('Added to waiting list.'));
     }
 
     public function destroy(Request $request, WaitingList $waitingList, WaitingListOfferService $service)
@@ -143,11 +143,11 @@ class WaitingListController extends Controller
             $entry = WaitingList::whereKey($waitingList->id)->lockForUpdate()->firstOrFail();
             abort_unless((int) $entry->user_id === (int) $request->user()->id, 403);
             if (! in_array($entry->status, ['waiting', 'offered', 'accepted'], true)) {
-                throw ValidationException::withMessages(['waiting_list' => 'Cannot cancel this request.']);
+                throw ValidationException::withMessages(['waiting_list' => __('Cannot cancel this request.')]);
             }
             if ($entry->status === 'accepted'
                 && (! $entry->offer_expires_at || $entry->offer_expires_at->lte(now()))) {
-                throw ValidationException::withMessages(['waiting_list' => 'This waiting-list offer has already been accepted.']);
+                throw ValidationException::withMessages(['waiting_list' => __('This waiting-list offer has already been accepted.')]);
             }
             $released = $entry->group_game_id && in_array($entry->status, ['offered', 'accepted'], true)
                 ? ['game', $entry->group_game_id]
@@ -169,7 +169,7 @@ class WaitingListController extends Controller
         });
         if ($released && $released[0] === 'game') $service->afterGroupGameSpotAvailable($released[1]);
         elseif ($released) $service->offerNext(...array_slice($released, 1));
-        return back()->with('success', 'Waiting list request cancelled.');
+        return back()->with('success', __('Waiting list request cancelled.'));
     }
 
     public function accept(Request $request, WaitingList $waitingList)
@@ -184,7 +184,7 @@ class WaitingListController extends Controller
             abort_unless((int) $entry->user_id === (int) $request->user()->id, 403);
             abort_unless($court->status === 'approved', 404);
             if ($entry->status !== 'offered' || ! $entry->offer_expires_at || $entry->offer_expires_at->lte(now())) {
-                throw ValidationException::withMessages(['waiting_list' => 'Offer is no longer valid.']);
+                throw ValidationException::withMessages(['waiting_list' => __('Offer is no longer valid.')]);
             }
             $date = $entry->booking_date->format('Y-m-d');
             $start = substr((string) $entry->start_time, 0, 5);
@@ -192,13 +192,13 @@ class WaitingListController extends Controller
             $startAt = Carbon::parse($date.' '.$start);
             $minutes = (int) $startAt->diffInMinutes(Carbon::parse($date.' '.$end));
             if ($startAt->lte(now()) || $minutes < max(60, (int) $court->min_booking_minutes) || $minutes % 30 !== 0) {
-                throw ValidationException::withMessages(['waiting_list' => 'Slot is no longer bookable.']);
+                throw ValidationException::withMessages(['waiting_list' => __('Slot is no longer bookable.')]);
             }
             $occupied = Booking::where('court_id', $court->id)->whereDate('booking_date', $date)
                 ->whereIn('booking_status', ['pending', 'confirmed'])
                 ->where('start_time', '<', $end)->where('end_time', '>', $start)->exists();
             if ($occupied) {
-                throw ValidationException::withMessages(['waiting_list' => 'Slot is already booked.']);
+                throw ValidationException::withMessages(['waiting_list' => __('Slot is already booked.')]);
             }
             $prices = app(BookingPricingService::class)->calculate($court, $date, $start, $end);
             $booking = Booking::create([
@@ -219,10 +219,10 @@ class WaitingListController extends Controller
 
         if ((float) $booking->total_price > 0) {
             return redirect()->route('courtbook.payments.checkout', [$booking, 'deposit'])
-                ->with('success', 'Slot reserved. Complete payment to confirm your booking.');
+                ->with('success', __('Slot reserved. Complete payment to confirm your booking.'));
         }
 
-        return redirect()->route('courtbook.bookings')->with('success', 'Your free booking is confirmed.');
+        return redirect()->route('courtbook.bookings')->with('success', __('Your free booking is confirmed.'));
     }
 
     private function acceptGameOffer(Request $request, WaitingList $waitingList)
@@ -232,19 +232,19 @@ class WaitingListController extends Controller
             $entry = WaitingList::whereKey($waitingList->id)->lockForUpdate()->firstOrFail();
             abort_unless((int) $entry->user_id === (int) $request->user()->id, 403);
             if ($entry->status !== 'offered' || ! $entry->offer_expires_at || $entry->offer_expires_at->lte(now())) {
-                throw ValidationException::withMessages(['waiting_list' => 'This 15-minute game offer has expired.']);
+                throw ValidationException::withMessages(['waiting_list' => __('This 15-minute game offer has expired.')]);
             }
 
             $startsAt = Carbon::parse($game->game_date->format('Y-m-d').' '.$game->start_time);
             if ($startsAt->lte(now()) || ! in_array($game->status, ['open', 'full'], true)
                 || $game->reservedPlayers()->count() >= $game->max_players) {
-                throw ValidationException::withMessages(['waiting_list' => 'This game place is no longer available.']);
+                throw ValidationException::withMessages(['waiting_list' => __('This game place is no longer available.')]);
             }
 
             $player = DB::table('game_players')->where('group_game_id', $game->id)
                 ->where('user_id', $request->user()->id)->lockForUpdate()->first();
             if ($player && in_array($player->status, ['pending', 'joined', 'attended'], true)) {
-                throw ValidationException::withMessages(['waiting_list' => 'You already have a place in this game.']);
+                throw ValidationException::withMessages(['waiting_list' => __('You already have a place in this game.')]);
             }
             if ($player) {
                 DB::table('game_players')->where('id', $player->id)->update([
@@ -301,9 +301,9 @@ class WaitingListController extends Controller
         [$game, $payment] = $result;
         if ($payment->status === 'pending') {
             return redirect()->route('games.payment.checkout', [$game->id, $payment->id])
-                ->with('success', 'Place reserved. Pay the deposit within the offer window to confirm your place.');
+                ->with('success', __('Place reserved. Pay the deposit within the offer window to confirm your place.'));
         }
         app(WaitingListOfferService::class)->afterGroupGameSpotAvailable($game->id);
-        return redirect()->route('games.show', $game->id)->with('success', 'You have joined the game.');
+        return redirect()->route('games.show', $game->id)->with('success', __('You have joined the game.'));
     }
 }

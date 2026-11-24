@@ -8,6 +8,7 @@ class OwnerApplicationAttachment extends Model
 {
     protected $fillable = [
         'owner_application_id',
+        'document_type',
         'original_name',
         'file_path',
         'mime_type',

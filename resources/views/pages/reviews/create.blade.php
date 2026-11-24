@@ -6,7 +6,7 @@
 @endpush
 @section('content')
 <div class="wrap page review-page">
-  <header class="review-hero"><span class="review-eyebrow">GANG · YOUR EXPERIENCE</span><h1>{{ __('Write a Review') }}</h1><p>{{ __('Share your experience and help other players choose their next court.') }}</p></header>
+  <header class="review-hero"><span class="review-eyebrow">{{ __('GANG · YOUR EXPERIENCE') }}</span><h1>{{ __('Write a Review') }}</h1><p>{{ __('Share your experience and help other players choose their next court.') }}</p></header>
   <div class="review-form-card">
     <a class="review-link review-back" href="{{ route('reviews.index') }}">← {{ __('Back to Reviews') }}</a>
     <div class="review-booking-pill">{{ __('Booking') }} #{{ $booking->id }}</div>

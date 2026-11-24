@@ -5,6 +5,24 @@
 
 @section('content')
     <div class="wrap page courts-page phone-verify-page">
+        @if (auth()->user()->phone === null)
+            @include('pages.heading', [
+                'heading' => 'Add your phone number',
+                'description' => 'Enter your mobile number to receive a verification code.',
+            ])
+            <section class="panel phone-verify-form-card">
+                <form method="POST" action="{{ route('phone.send') }}" class="phone-verify-form">
+                    @csrf
+                    <label for="phone-number">{{ __('Phone number') }}</label>
+                    <input id="phone-number" name="phone" type="tel" dir="ltr" autocomplete="tel"
+                        pattern="07[0-9]{8}" maxlength="10" value="{{ old('phone') }}" placeholder="07XXXXXXXX" required>
+                    @error('phone')
+                        <span class="phone-verify-error" role="alert">{{ $message }}</span>
+                    @enderror
+                    <button type="submit">{{ __('Send verification code') }}</button>
+                </form>
+            </section>
+        @else
         @include('pages.heading', [
             'eyebrow' => 'One more step',
             'heading' => 'Let’s verify your number',
@@ -60,5 +78,6 @@
                 </form>
             </aside>
         </div>
+        @endif
     </div>
 @endsection

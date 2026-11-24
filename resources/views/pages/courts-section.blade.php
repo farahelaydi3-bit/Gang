@@ -26,7 +26,7 @@
             <option value="">{{ __('All sports') }}</option>
             @foreach ($sports as $sport)
                 <option value="{{ $sport->id }}" @selected((string) $selectedSport === (string) $sport->id)>
-                    {{ $sport->name }}
+                    {{ __($sport->name) }}
                 </option>
             @endforeach
         </select>
@@ -54,7 +54,7 @@
         <article class="card court-list-card">
             <a class="card-photo court-list-photo" href="{{ route('courtbook.court', $court->id) }}">
                 <img
-                 src="{{ $court->image ? asset($court->image) : asset('courtbook-assets/images/hero-football.png') }}"
+                 src="{{ $court->thumbnailUrl() }}"
                     alt="{{ $court->name }}">
                 <span class="tag">{{ $court->sports->name }}</span>
             </a>
@@ -68,7 +68,7 @@
                 <p class="muted">{{ $court->address }}</p>
                 <div class="row spread">
                     <span class="price">
-                        {{ number_format($court->weekday_price, 2) }} JOD
+                        {{ number_format($court->weekday_price, 2) }} {{ __('JOD') }}
                         <small class="muted">/ {{ __('hour') }}</small>
                     </span>
                     <span class="rating">

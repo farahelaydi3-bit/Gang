@@ -28,7 +28,7 @@
                 <div>
                     <label>{{ __('Court') }}</label>
                     <select name="court_id" required>
-                        <option value="">— Select court —</option>
+                        <option value="">{{ __('— Select court —') }}</option>
                         @foreach($courts as $court)
                             <option value="{{ $court->id }}" @selected(old('court_id') == $court->id)>
                                 {{ $court->name }} ({{ $court->sports->name ?? '' }})
@@ -50,11 +50,11 @@
                 <div>
                     <label>{{ __('Skill Level') }}</label>
                     <select name="skill_level" required>
-                        <option value="">— Select skill —</option>
-                        <option value="beginner" @selected(old('skill_level') === 'beginner')>Beginner</option>
-                        <option value="intermediate" @selected(old('skill_level') === 'intermediate')>Intermediate</option>
-                        <option value="advanced" @selected(old('skill_level') === 'advanced')>Advanced</option>
-                        <option value="professional" @selected(old('skill_level') === 'professional')>Professional</option>
+                        <option value="">{{ __('— Select skill —') }}</option>
+                        <option value="beginner" @selected(old('skill_level') === 'beginner')>{{ __('Beginner') }}</option>
+                        <option value="intermediate" @selected(old('skill_level') === 'intermediate')>{{ __('Intermediate') }}</option>
+                        <option value="advanced" @selected(old('skill_level') === 'advanced')>{{ __('Advanced') }}</option>
+                        <option value="professional" @selected(old('skill_level') === 'professional')>{{ __('Professional') }}</option>
                     </select>
                 </div>
 

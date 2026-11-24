@@ -80,7 +80,7 @@ class ReviewController extends Controller
 
     return redirect()
         ->route('reviews.show', $review)
-        ->with('success', 'Review submitted. AI moderation running in background.');
+        ->with('success', __('Review submitted. AI moderation running in background.'));
 }
 
 
@@ -129,7 +129,7 @@ class ReviewController extends Controller
 
         return redirect()
             ->route('reviews.show', $review)
-            ->with('success', 'Review updated successfully.');
+            ->with('success', __('Review updated successfully.'));
     }
 
     // Delete an existing review.
@@ -150,7 +150,7 @@ class ReviewController extends Controller
 
         return redirect()
             ->route('reviews.index')
-            ->with('success', 'Review deleted successfully.');
+            ->with('success', __('Review deleted successfully.'));
     }
 
     // Ensure the booking belongs to the current user
