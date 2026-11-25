@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 
 class Booking extends Model
@@ -21,15 +23,34 @@ class Booking extends Model
         'total_price',
         'deposit_amount',
         'booking_status',
+        'confirmed_at',
     ];
     protected function casts(): array
     {
         return [
             'booking_date' => 'date',
+            'confirmed_at' => 'datetime',
             'duration_minutes' => 'integer',
             'total_price' => 'decimal:2',
             'deposit_amount' => 'decimal:2',
         ];
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function refundWindowOpen(?Carbon $at = null): bool
+    {
+        $at ??= now();
+        $startsAt = Carbon::parse($this->booking_date->format('Y-m-d').' '.$this->start_time);
+
+        return $this->booking_type === 'individual'
+            && $this->subscription_id === null
+            && $this->created_at !== null
+            && $at->lt($startsAt)
+            && $at->lte($this->created_at->copy()->addHours(24));
     }
 
     public function court(): BelongsTo

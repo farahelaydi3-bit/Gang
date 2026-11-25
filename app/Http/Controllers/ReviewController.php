@@ -50,40 +50,7 @@ class ReviewController extends Controller
         return view('pages.reviews.create', compact('booking'));
     }
 
-    // Store a new review.
-    // public function store(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'booking_id' => ['required', 'integer'],
-    //         'rating' => ['required', 'integer', 'between:1,5'],
-    //         'comment' => ['nullable', 'string', 'max:2000'],
-    //     ]);
-
-    //     $booking = $this->reviewableBooking(
-    //         (int) $validated['booking_id']
-    //     );
-
-    //     abort_if(
-    //         Review::where('booking_id', $booking->id)->exists(),
-    //         409,
-    //         'This booking has already been reviewed.'
-    //     );
-
-    //     $review = new Review();
-
-    //     $review->booking_id = $booking->id;
-    //     $review->user_id = Auth::id();
-    //     $review->court_id = $booking->court_id;
-    //     $review->rating = $validated['rating'];
-    //     $review->comment = $validated['comment'] ?? null;
-
-    //     $review->save();
-
-    //     return redirect()
-    //         ->route('reviews.show', $review)
-    //         ->with('success', 'Review submitted successfully.');
-    // }
-
+   
 
 	public function store(Request $request)
 {
@@ -105,6 +72,7 @@ class ReviewController extends Controller
         'comment'    => $validated['comment'] ?? null,
         'ai_decision'=> 'pending',
     ]);
+    
 
     if (! empty($validated['comment'])) {
         ModerateReview::dispatch($review->id);
