@@ -6,11 +6,11 @@
 
 @php
     $themes = [
-        'forest' => 'White + green | Football',
-        'sand' => 'White + sand | Tennis',
-        'ocean' => 'White + navy | Badminton and padel',
-        'orange' => 'White + orange | Basketball',
-        'midnight' => 'White + grey | Classic',
+        'forest' => __('White + green · Football'),
+        'sand' => __('White + sand · Tennis'),
+        'ocean' => __('White + navy · Badminton and padel'),
+        'orange' => __('White + orange · Basketball'),
+        'midnight' => __('White + grey · Classic'),
     ];
 @endphp
 
@@ -23,7 +23,7 @@
     .studio {
         max-width: none;
         margin: 0 auto;
-        color: #24324a;
+        color: light-dark(#234C38, var(--night-ink));
     }
 
     .studio-grid {
@@ -38,13 +38,13 @@
         background: var(--admin-surface);
         border: 1px solid var(--admin-border);
         border-radius: 16px;
-        box-shadow: 0 5px 20px rgba(15, 30, 50, 0.035);
+        box-shadow: 0 5px 20px light-dark(rgba(15, 30, 50, 0.035), var(--night-shadow));
         overflow-wrap: anywhere;
     }
 
     .studio-panel h3 {
         margin: 0 0 16px;
-        color: #15253d;
+        color: light-dark(#153E2B, var(--night-ink));
         font-size: 21px;
     }
 
@@ -72,7 +72,7 @@
 
     .studio-hint {
         margin: 8px 0 16px;
-        color: #64748b;
+        color: light-dark(#64748b, var(--night-info-ink));
         font-size: 14px;
         line-height: 1.9;
     }
@@ -87,20 +87,20 @@
     }
 
     .studio-pill {
-        background: #e5f9ee;
-        color: #236448;
+        background: light-dark(#e5f9ee, var(--night-raised));
+        color: light-dark(#236448, var(--night-green));
     }
 
 
 .studio-number {
-        background: #FAF2E8;
-        color: #89501D;
+        background: light-dark(#F4FAF5, var(--night-panel));
+        color: light-dark(#17643A, var(--night-green));
     }
 
     .studio-url {
         display: block;
         margin-top: 12px;
-        color: #17635c;
+        color: light-dark(#17635c, var(--night-green));
         font-size: 14px;
         word-break: break-all;
     }
@@ -122,7 +122,7 @@
     }
 
     .studio-field label {
-        color: #43516b;
+        color: light-dark(#375849, var(--night-green));
         font-size: 14px;
         font-weight: 700;
         line-height: 1.7;
@@ -141,7 +141,7 @@
         border: 1px solid var(--admin-border);
         border-radius: 10px;
 
-        color: #1e293b;
+        color: light-dark(#1A4030, var(--night-ink));
         font: inherit;
         font-size: 15px;
         line-height: 1.6;
@@ -155,21 +155,21 @@
     .studio-form input:focus,
     .studio-form select:focus,
     .studio-form textarea:focus {
-        outline: 2px solid #D4AE86;
+        outline: 2px solid light-dark(#9BC9A4, var(--night-line));
         outline-offset: 1px;
         border-color: var(--admin-primary);
     }
 
     .studio-form input[type="file"] {
         padding: 10px;
-        background: #f8fafc;
+        background: light-dark(#f8fafc, var(--night-panel));
         cursor: pointer;
     }
 
     .studio-form input[type="file"]::file-selector-button {
         margin-inline-end: 12px;
         padding: 7px 12px;
-        background: #F3E9DC;
+        background: light-dark(#EDF6EE, var(--night-raised));
         border: 1px solid var(--admin-border);
         border-radius: 8px;
         color: var(--admin-text);
@@ -186,11 +186,11 @@
         gap: 12px;
 
         padding: 14px;
-        background: #FAF2E8;
+        background: light-dark(#F4FAF5, var(--night-panel));
         border: 1px solid var(--admin-border);
         border-radius: 12px;
 
-        color: #43516b;
+        color: light-dark(#375849, var(--night-green));
         font-size: 14px;
         font-weight: 600;
         line-height: 1.8;
@@ -208,13 +208,13 @@
 
     .studio-check.is-invalid {
         border-color: #dc2626;
-        background: #fff1f2;
+        background: light-dark(#fff1f2, var(--night-panel));
     }
 
     .studio-validation-message {
         display: none;
         margin: 0;
-        color: #b91c1c;
+        color: light-dark(#b91c1c, var(--night-danger-ink));
         font-size: 13px;
     }
 
@@ -251,8 +251,8 @@
 
 .studio-empty {
         padding: 25px;
-        background: #fff8e9;
-        color: #825817;
+        background: light-dark(#fff8e9, var(--night-warning-bg));
+        color: light-dark(#466B45, var(--night-green));
         border-radius: 13px;
         text-align: center;
     }
@@ -267,7 +267,7 @@
         height: 220px;
         object-fit: contain;
 
-        background: #f8fafc;
+        background: light-dark(#f8fafc, var(--night-panel));
         border: 1px solid var(--admin-border);
         border-radius: 12px;
     }
@@ -297,7 +297,7 @@
         height: 150px;
         object-fit: contain;
 
-        background: #f8fafc;
+        background: light-dark(#f8fafc, var(--night-panel));
         border-radius: 8px;
     }
 
@@ -308,10 +308,10 @@
     .studio-photo button {
         width: 100%;
         padding: 8px 10px;
-        background: #fff7f7;
-        border: 1px solid #fecaca;
+        background: light-dark(#fff7f7, var(--night-panel));
+        border: 1px solid light-dark(#fecaca, var(--night-line));
         border-radius: 7px;
-        color: #b91c1c;
+        color: light-dark(#b91c1c, var(--night-danger-ink));
         cursor: pointer;
     }
 
@@ -322,8 +322,8 @@
     .studio-sport {
         margin-bottom: 16px;
         padding: 20px;
-        background: #fbfdff;
-        border: 1px solid #e6edf3;
+        background: light-dark(#fbfdff, var(--night-panel));
+        border: 1px solid light-dark(#E4F0E6, var(--night-line));
         border-radius: 15px;
     }
 
@@ -336,7 +336,7 @@
         width: 100%;
         height: 500px;
         background: var(--admin-surface);
-        border: 1px solid #d7e0ea;
+        border: 1px solid light-dark(#D8E7DB, var(--night-line));
         border-radius: 14px;
     }
 
@@ -381,28 +381,28 @@
          Hero
     ========================================= --}}
 
-    <x-super-admin.page-header title="Gang Site Studio" description="Build and manage your facility website and connect visitors to court bookings." />
+    <x-super-admin.page-header title="Gang Site Studio" description="{{ __('Build and manage your facility website and connect visitors to court bookings.') }}" />
     <x-super-admin.form-errors />
 
     @if (!$website)
 
         <section class="admin-card studio-panel">
-            <h3>Create a website</h3>
+            <h3>{{ __('Create a website') }}</h3>
 
             <p class="studio-hint">
-                Create one website for your facility. Sports sections are generated from your approved courts.
+                {{ __('Create one website for your facility. Sports sections are generated from your approved courts.') }}
             </p>
 
             @if ($sports->isEmpty())
 
                 <div class="studio-empty">
-                    You need an approved court before you can create a website.
+                    {{ __('You need an approved court before you can create a website.') }}
                 </div>
 
             @else
 
                 <p class="studio-hint">
-                    Available sports:
+                    {{ __('Available sports:') }}
                     {{ $sports->pluck('name')->join(' · ') }}
                 </p>
 
@@ -416,7 +416,7 @@
 
                     <div class="studio-field">
                         <label for="create-name">
-                            Website name
+                            {{ __('Website name') }}
                         </label>
 
                         <input
@@ -425,14 +425,14 @@
                             name="name"
                             value="{{ old('name', auth('admin')->user()?->business_name) }}"
                             maxlength="120"
-                            placeholder="MO HUB"
+                            placeholder="{{ __('MO HUB') }}"
                             required
                         >
                     </div>
 
                     <div class="studio-field">
                         <label for="create-tagline">
-                            Tagline (optional)
+                            {{ __('Tagline (optional)') }}
                         </label>
 
                         <input
@@ -441,13 +441,13 @@
                             name="tagline"
                             maxlength="180"
                             value="{{ old('tagline') }}"
-                            placeholder="Your local sports destination"
+                            placeholder="{{ __('Your local sports destination') }}"
                         >
                     </div>
 
                     <div class="studio-field">
                         <label for="create-intro">
-                            About the facility (optional)
+                            {{ __('About the facility (optional)') }}
                         </label>
 
                         <textarea
@@ -459,7 +459,7 @@
 
                     <div class="studio-field">
                         <label for="create-theme">
-                            Website theme
+                            {{ __('Website theme') }}
                         </label>
 
                         <select
@@ -480,7 +480,7 @@
 
                     <div class="studio-field">
                         <label for="create-logo">
-                            Website logo (optional)
+                            {{ __('Website logo (optional)') }}
                         </label>
 
                         <input
@@ -491,13 +491,13 @@
                         >
 
                         <p class="studio-hint">
-                            JPG, PNG or WEBP, up to 4 MB.
+                            {{ __('JPG, PNG or WEBP, up to 4 MB.') }}
                         </p>
                     </div>
 
                     <div class="studio-field">
                         <label for="create-hero">
-                            Cover photo (optional)
+                            {{ __('Cover photo (optional)') }}
                         </label>
 
                         <input
@@ -508,13 +508,13 @@
                         >
 
                         <p class="studio-hint">
-                            Shown at the top of your website. Maximum 6 MB.
+                            {{ __('Shown at the top of your website. Maximum 6 MB.') }}
                         </p>
                     </div>
 
                     <div class="studio-field">
                         <label for="create-maps">
-                            Facility link on Google Maps (optional)
+                            {{ __('Facility link on Google Maps (optional)') }}
                         </label>
 
                         <input
@@ -540,7 +540,7 @@
                             >
 
                             <span>
-                                I confirm the link points to my facility.
+                                {{ __('I confirm the link points to my facility.') }}
                             </span>
                         </label>
 
@@ -549,12 +549,12 @@
                             data-studio-map-error
                             role="alert"
                         >
-                            Confirm the facility location before saving.
+                            {{ __('Confirm the facility location before saving.') }}
                         </p>
                     </div>
 
                     <button type="submit" class="admin-button">
-                        Create website
+                        {{ __('Create website') }}
                     </button>
                 </form>
 
@@ -578,15 +578,15 @@
 
                 <p class="studio-hint">
                     @if ($website->trial_ends_at)
-                        Trial ends:
+                        {{ __('Trial ends:') }}
                         {{ $website->trial_ends_at->format('Y-m-d') }}
                     @else
-                        The free trial starts when you first publish your website.
+                        {{ __('The free trial starts when you first publish your website.') }}
                     @endif
 
                     @if ($website->paid_until)
                         <br>
-                        Paid through:
+                        {{ __('Paid through:') }}
                         {{ $website->paid_until->format('Y-m-d') }}
                     @endif
                 </p>
@@ -615,7 +615,7 @@
                             type="submit"
                             class="admin-button admin-button-outline"
                         >
-                            Unpublish website
+                            {{ __('Unpublish website') }}
                         </button>
                     </form>
                 @else
@@ -629,7 +629,7 @@
                             type="submit"
                             class="admin-button"
                         >
-                            Publish website
+                            {{ __('Publish website') }}
                         </button>
                     </form>
                 @endif
@@ -647,7 +647,7 @@
                 {{-- Website Settings --}}
 
                 <section class="admin-card studio-panel">
-                    <h3>Website settings</h3>
+                    <h3>{{ __('Website settings') }}</h3>
 
                     <form
                         class="studio-form"
@@ -660,7 +660,7 @@
 
                         <div class="studio-field">
                             <label for="edit-name">
-                                Website name
+                                {{ __('Website name') }}
                             </label>
 
                             <input
@@ -675,7 +675,7 @@
 
                         <div class="studio-field">
                             <label for="edit-tagline">
-                                Tagline
+                                {{ __('Tagline') }}
                             </label>
 
                             <input
@@ -689,7 +689,7 @@
 
                         <div class="studio-field">
                             <label for="edit-intro">
-                                Website introduction
+                                {{ __('Website introduction') }}
                             </label>
 
                             <textarea
@@ -701,7 +701,7 @@
 
                         <div class="studio-field">
                             <label for="edit-theme">
-                                Website theme
+                                {{ __('Website theme') }}
                             </label>
 
                             <select
@@ -722,7 +722,7 @@
 
                         <div class="studio-field">
                             <label for="edit-logo">
-                                Replace logo
+                                {{ __('Replace logo') }}
                             </label>
 
                             <input
@@ -735,7 +735,7 @@
 
                         <div class="studio-field">
                             <label for="edit-hero">
-                                Cover photo
+                                {{ __('Cover photo') }}
                             </label>
 
                             <input
@@ -746,14 +746,14 @@
                             >
 
                             <p class="studio-hint">
-                                Maximum 6 MB.
+                                {{ __('Maximum 6 MB.') }}
                             </p>
 
                             @if ($website->hero_image_path)
                                 <img
                                     class="studio-cover-thumb"
                                     src="{{ '/storage/' . ltrim($website->hero_image_path, '/') }}"
-                                    alt="Current cover photo"
+                                    alt="{{ __('Current cover photo') }}"
                                     loading="lazy"
                                 >
                             @endif
@@ -761,7 +761,7 @@
 
                         <div class="studio-field">
                             <label for="edit-maps">
-                                Facility link on Google Maps
+                                {{ __('Facility link on Google Maps') }}
                             </label>
 
                             <input
@@ -787,7 +787,7 @@
                                 >
 
                                 <span>
-                                    I confirm the link points to my facility.
+                                    {{ __('I confirm the link points to my facility.') }}
                                 </span>
                             </label>
 
@@ -796,7 +796,7 @@
                                 data-studio-map-error
                                 role="alert"
                             >
-                                Confirm the facility location before saving.
+                                {{ __('Confirm the facility location before saving.') }}
                             </p>
                         </div>
 
@@ -804,7 +804,7 @@
                             type="submit"
                             class="admin-button"
                         >
-                            Save changes
+                            {{ __('Save changes') }}
                         </button>
                     </form>
                 </section>
@@ -812,10 +812,10 @@
                 {{-- Gemini --}}
 
                 <section class="admin-card studio-panel">
-                    <h3>AI copywriting</h3>
+                    <h3>{{ __('AI copywriting') }}</h3>
 
                     <p class="studio-hint">
-                        Use Gemini to write the tagline, introduction, and descriptions for approved sports. Your theme, colours, and photos stay the same.
+                        {{ __('Use Gemini to write the tagline, introduction, and descriptions for approved sports. Your theme, colours, and photos stay the same.') }}
                     </p>
 
                     <form
@@ -829,7 +829,7 @@
                             type="submit"
                             class="admin-button"
                         >
-                            Generate new copy
+                            {{ __('Generate new copy') }}
                         </button>
                     </form>
                 </section>
@@ -845,7 +845,7 @@
 
                 <section class="admin-card studio-panel">
                     <div class="studio-row">
-                        <h3>Website preview</h3>
+                        <h3>{{ __('Website preview') }}</h3>
 
                         <a
                             class="admin-button admin-button-outline"
@@ -853,29 +853,29 @@
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            Open preview
+                            {{ __('Open preview') }}
                         </a>
                     </div>
 
                     <iframe
                         class="studio-preview"
-                        title="Sports website preview"
+                        title="{{ __('Sports website preview') }}"
                         loading="lazy"
                         src="{{ route('admin.site-studio.preview') }}"
                     ></iframe>
 
                     <p class="studio-hint">
-                        The published website updates when you save. Refresh the page to see the latest preview.
+                        {{ __('The published website updates when you save. Refresh the page to see the latest preview.') }}
                     </p>
                 </section>
 
                 {{-- Subscription --}}
 
                 <section class="admin-card studio-panel">
-                    <h3>Subscription policy</h3>
+                    <h3>{{ __('Subscription policy') }}</h3>
 
                     <p class="studio-hint">
-                        The six-month free trial starts when you first publish. After that, the website costs 5 JOD per month. An administrator renews it after confirming payment. Online payment is currently unavailable.
+                        {{ __('The six-month free trial starts when you first publish. After that, the website costs 5 JOD per month. An administrator renews it after confirming payment. Online payment is currently unavailable.') }}
                     </p>
                 </section>
             </div>
@@ -888,15 +888,15 @@
         <section class="admin-card studio-panel">
 
             <div class="studio-row">
-                <h3>Sport sections</h3>
+                <h3>{{ __('Sport sections') }}</h3>
 
                 <span class="studio-number">
-                    Up to 5 photos per sport
+                    {{ __('Up to 5 photos per sport') }}
                 </span>
             </div>
 
             <p class="studio-hint">
-                These sections come from your approved courts. You can edit their titles, descriptions, order, and photos. Each court gets a booking link automatically.
+                {{ __('These sections come from your approved courts. You can edit their titles, descriptions, order, and photos. Each court gets a booking link automatically.') }}
             </p>
 
             @forelse (
@@ -908,10 +908,10 @@
                 <article class="studio-sport">
 
                     <div class="studio-row">
-                        <h4>{{ $section->sport->name }}</h4>
+                        <h4>{{ __($section->sport->name) }}</h4>
 
                         <span class="studio-number">
-                            {{ count($section->images ?? []) }} / 5 photos
+                            {{ count($section->images ?? []) }} {{ __('/ 5 photos') }}
                         </span>
                     </div>
 
@@ -926,7 +926,7 @@
 
                         <div class="studio-field">
                             <label for="section-title-{{ $section->id }}">
-                                Section title
+                                {{ __('Section title') }}
                             </label>
 
                             <input
@@ -941,7 +941,7 @@
 
                         <div class="studio-field">
                             <label for="section-description-{{ $section->id }}">
-                                Sport description
+                                {{ __('Sport description') }}
                             </label>
 
                             <textarea
@@ -953,7 +953,7 @@
 
                         <div class="studio-field">
                             <label for="section-order-{{ $section->id }}">
-                                Display order
+                                {{ __('Display order') }}
                             </label>
 
                             <input
@@ -969,7 +969,7 @@
 
                         <div class="studio-field">
                             <label for="section-images-{{ $section->id }}">
-                                Add sport photos
+                                {{ __('Add sport photos') }}
                             </label>
 
                             <input
@@ -981,7 +981,7 @@
                             >
 
                             <p class="studio-hint">
-                                JPG, PNG or WEBP, up to 4 MB per photo and 5 photos per sport.
+                                {{ __('JPG, PNG or WEBP, up to 4 MB per photo and 5 photos per sport.') }}
                             </p>
                         </div>
 
@@ -989,7 +989,7 @@
                             type="submit"
                             class="admin-button"
                         >
-                            Save section for {{ $section->sport->name }}
+                            {{ __('Save section for') }} {{ $section->sport->name }}
                         </button>
                     </form>
 
@@ -1026,7 +1026,7 @@
                                             type="submit"
                                             aria-label="Delete photo for {{ $section->sport->name }}"
                                         >
-                                            Delete photo
+                                            {{ __('Delete photo') }}
                                         </button>
                                     </form>
 
@@ -1043,7 +1043,7 @@
             @empty
 
                 <div class="studio-empty">
-                    No sports are linked to approved courts yet.
+                    {{ __('No sports are linked to approved courts yet.') }}
                 </div>
 
             @endforelse

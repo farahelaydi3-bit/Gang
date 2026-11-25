@@ -1,7 +1,7 @@
 <a
     class="brand"
     href="{{ route('courtbook.home') }}"
-    aria-label="GANG — Home"
+    aria-label="{{ __('GANG — Home') }}"
 >
     <img
         class="brand-logo"

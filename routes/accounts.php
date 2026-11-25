@@ -14,7 +14,6 @@ use App\Http\Controllers\SuperAdmin\SportsController;
 use App\Http\Controllers\SuperAdmin\OwnerApplicationController as SuperOwnerApplicationController;
 use App\Http\Controllers\SuperAdmin\ProfileController as SuperAdminProfileController;
 use App\Http\Controllers\SuperAdmin\GangSiteManagementController;
-use App\Http\Controllers\SuperAdmin\SuperAdminReviewController;
 
 use App\Http\Controllers\Admin\OwnerApplicationController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -125,13 +124,6 @@ Route::prefix('super-admin')->name('super_admin.')->group(function () {
         Route::patch('/site-studio/{website}/renew', [GangSiteManagementController::class, 'renew'])
             ->name('site-studio.renew');
 
-      // AI Moderation — report & summaries page
-		Route::get('/flagged-reviews', [SuperAdminReviewController::class, 'flagged'])
-			->name('reviews.flagged');
-
-		// Unban an owner (undo AI action)
-		Route::post('/admins/{admin}/unban', [SuperAdminReviewController::class, 'unbanOwner'])
-			->name('admins.unban');
         // Logout
         Route::post('/logout', [SuperAdminAuthController::class, 'logout'])
             ->name('logout');
@@ -232,6 +224,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
                 ->name('profile.update');
 
             // Subscriptions Management
+            Route::get('/subscriptions/players', [SubscriptionController::class, 'players'])
+                ->name('subscriptions.players');
             Route::resource('subscriptions', SubscriptionController::class);
 
             // Preserve Tarifi subscription URL

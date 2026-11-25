@@ -41,7 +41,7 @@
             <option value="">{{ __('All sports') }}</option>
             @foreach ($sports as $sport)
                 <option value="{{ $sport->id }}" @selected((string) $selectedSport === (string) $sport->id)>
-                    {{ $sport->name }}
+                    {{ __($sport->name) }}
                 </option>
             @endforeach
         </select>
@@ -51,10 +51,10 @@
         <span class="sr-only">{{ __('Skill') }}</span>
         <select name="skill_level">
             <option value="">{{ __('All skill levels') }}</option>
-            <option value="beginner" @selected($selectedSkill === 'beginner')>Beginner</option>
-            <option value="intermediate" @selected($selectedSkill === 'intermediate')>Intermediate</option>
-            <option value="advanced" @selected($selectedSkill === 'advanced')>Advanced</option>
-            <option value="professional" @selected($selectedSkill === 'professional')>Professional</option>
+            <option value="beginner" @selected($selectedSkill === 'beginner')>{{ __('Beginner') }}</option>
+            <option value="intermediate" @selected($selectedSkill === 'intermediate')>{{ __('Intermediate') }}</option>
+            <option value="advanced" @selected($selectedSkill === 'advanced')>{{ __('Advanced') }}</option>
+            <option value="professional" @selected($selectedSkill === 'professional')>{{ __('Professional') }}</option>
         </select>
     </label>
 
@@ -86,7 +86,7 @@
             <div class="open-game-topline">
                 <span class="open-game-sport">{{ $game->court->sports->name }}</span>
                 @if ($game->skill_level)
-                    <span>{{ ucfirst($game->skill_level) }}</span>
+                    <span>{{ __(ucfirst($game->skill_level)) }}</span>
                 @endif
                 <span class="open-game-capacity">{{ $game->reserved_players_count }} / {{ $game->max_players }} {{ __('players') }}</span>
             </div>

@@ -23,6 +23,7 @@ class User extends Authenticatable
         'phone',
         'password',
         'status',
+        'google_id',
     ];
 
     /**
@@ -49,7 +50,8 @@ class User extends Authenticatable
         ];
     }
 
-    public function reviews(){
+    public function reviews()
+    {
         return $this->hasMany(Review::class);
     }
 
@@ -72,7 +74,6 @@ class User extends Authenticatable
 
     public function subscription()
     {
-    return $this->hasMany(Subscription ::class);
-
+        return $this->hasMany(Subscription::class);
     }
 }

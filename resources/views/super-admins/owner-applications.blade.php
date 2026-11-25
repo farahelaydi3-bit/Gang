@@ -1,41 +1,28 @@
 @extends('layouts.super-admin')
 
-@section('title', 'Owner Applications')
+@section('title', __('Owner Applications'))
 
 @section('content')
-    <x-super-admin.page-header title="Owner Applications" description="Review applications from sports facility owners." />
+    <x-super-admin.page-header title="{{ __('Owner Applications') }}" description="{{ __('Review applications from sports facility owners.') }}" />
     <x-super-admin.form-errors />
 
-    <section class="admin-card super-admin-filter" aria-label="Filter applications">
-        <form class="super-admin-filter-form" method="GET" action="{{ route('super_admin.applications.index') }}">
-            <div class="super-admin-filter-field">
-                <label class="form-label" for="status">Status</label>
-                <select class="form-control" name="status" id="status">
-                    <option value="">All statuses</option>
-                    <option value="submitted" @selected(request('status') === 'submitted')>Under review</option>
-                    <option value="approved" @selected(request('status') === 'approved')>Approved</option>
-                    <option value="rejected" @selected(request('status') === 'rejected')>Rejected</option>
-                </select>
-            </div>
-            <button type="submit" class="admin-button">Filter</button>
-            @if (request()->filled('status'))
-                <a href="{{ route('super_admin.applications.index') }}" class="admin-button admin-button-outline">Clear</a>
-            @endif
-        </form>
-    </section>
+    <x-super-admin.list-filters :action="route('super_admin.applications.index')"
+        placeholder="Facility, address, owner or email"
+        :selects="['status' => ['Status', 'All statuses', $statuses]]"
+        :dates="true" />
 
     <section class="admin-card super-admin-table-card" aria-labelledby="owner-applications-results">
-        <div class="admin-card-header"><h2 id="owner-applications-results">Applications ({{ $applications->total() }})</h2></div>
+        <div class="admin-card-header"><h2 id="owner-applications-results">{{ __('Applications (') }}{{ $applications->total() }})</h2></div>
         <div class="admin-table-wrap">
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Owner</th>
-                        <th scope="col">Facility</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Submitted</th>
-                        <th scope="col">Actions</th>
+                        <th scope="col">{{ __('ID') }}</th>
+                        <th scope="col">{{ __('Owner') }}</th>
+                        <th scope="col">{{ __('Facility') }}</th>
+                        <th scope="col">{{ __('Status') }}</th>
+                        <th scope="col">{{ __('Submitted') }}</th>
+                        <th scope="col">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -57,10 +44,10 @@
                             <td dir="auto">{{ $application->facility_name }}</td>
                             <td><span class="badge {{ $statusClass }}">{{ $statusLabel }}</span></td>
                             <td>{{ $application->submitted_at?->format('M j, Y') ?? '—' }}</td>
-                            <td><a href="{{ route('super_admin.applications.show', $application) }}" class="admin-button">Review</a></td>
+                            <td><a href="{{ route('super_admin.applications.show', $application) }}" class="admin-button">{{ __('Review') }}</a></td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="super-admin-empty">No applications found.</td></tr>
+                        <tr><td colspan="6" class="super-admin-empty">{{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'No applications found.') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>

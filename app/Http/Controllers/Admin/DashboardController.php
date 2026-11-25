@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -58,6 +58,8 @@ class DashboardController extends Controller
         // Get Admin Courts
         $MyCourts = Court::with('sports')
             ->where('admin_id', $adminId)
+            ->latest('id')
+            ->limit(5)
             ->get();
 
 
@@ -70,8 +72,5 @@ class DashboardController extends Controller
             'RecentReservations',
             'MyCourts'
         ));
-
-
     }
-
 }

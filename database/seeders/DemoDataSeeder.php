@@ -6,10 +6,8 @@ use App\Models\Admin;
 use App\Models\AiConversation;
 use App\Models\Booking;
 use App\Models\Court;
-use App\Models\CourtReviewSummary;
 use App\Models\GamePlayer;
 use App\Models\GroupGame;
-use App\Models\ModerationReport;
 use App\Models\OwnerWebsite;
 use App\Models\Payment;
 use App\Models\PhoneVerificationCode;
@@ -59,7 +57,7 @@ class DemoDataSeeder extends Seeder
             [$reviewer, $owners, $players] = $this->accounts();
             [$sports, $courts] = $this->venues($owners);
             $this->applications($reviewer, $owners, $sports['football']);
-            $this->bookingsAndReviews($reviewer, $players['player'], $courts);
+            $this->bookingsAndReviews($players['player'], $courts);
             $this->gamesAndWaitingLists($owners['owner'], $players, $courts['football']);
             $this->subscriptions($players['player'], $owners['owner'], $courts);
             $this->websites($owners);
@@ -203,7 +201,7 @@ class DemoDataSeeder extends Seeder
         }
     }
 
-    private function bookingsAndReviews(SuperAdmin $reviewer, User $player, array $courts): void
+    private function bookingsAndReviews(User $player, array $courts): void
     {
         foreach ([
             ['pending', 1, 'pending', null],
@@ -220,38 +218,19 @@ class DemoDataSeeder extends Seeder
         }
 
         foreach ([
-            ['safe', null, 'football', 5, 'Clean court and helpful staff.'],
-            ['spam', 'flagged', 'football', 2, 'Demo review flagged as promotional.'],
-            ['abusive', 'auto_banned', 'inactive', 1, 'Demo review marked as abusive for moderation testing.'],
-            ['pending', null, 'padel', 4, 'Good lighting and convenient parking.'],
-            ['spam', 'dismissed', 'football', 3, 'Demo report dismissed after review.'],
-        ] as $index => [$decision, $action, $key, $rating, $comment]) {
+            ['football', 5, 'Clean court and helpful staff.'],
+            ['football', 2, 'The court needs maintenance.'],
+            ['inactive', 1, 'The facility was not ready for our booking.'],
+            ['padel', 4, 'Good lighting and convenient parking.'],
+            ['football', 3, 'The booking process could be clearer.'],
+        ] as $index => [$key, $rating, $comment]) {
             $court = $courts[$key];
             $booking = $this->booking($court, $player, 'completed', -5 - $index, '16:00:00', '17:00:00');
-            $review = Review::create([
+            Review::create([
                 'booking_id' => $booking->id, 'user_id' => $player->id, 'court_id' => $court->id,
-                'rating' => $rating, 'comment' => $comment, 'ai_decision' => $decision,
-                'ai_reason' => $action ? 'Pre-seeded moderation example.' : null,
-                'ai_checked_at' => $decision === 'pending' ? null : $this->now,
+                'rating' => $rating, 'comment' => $comment,
             ]);
-            if ($action) {
-                ModerationReport::create([
-                    'review_id' => $review->id, 'court_id' => $court->id, 'admin_id' => $court->admin_id,
-                    'action' => $action, 'ai_decision' => $decision, 'ai_reason' => 'Pre-seeded moderation example.',
-                    'reviewed_by_super_admin_id' => $action === 'dismissed' ? $reviewer->id : null,
-                    'pre_ban_state' => $action === 'auto_banned' ? [
-                        'owner_status' => 'active', 'court_statuses' => [$court->id => 'approved'],
-                    ] : null,
-                ]);
-            }
         }
-
-        CourtReviewSummary::create([
-            'court_id' => $courts['football']->id, 'total_reviews' => 3, 'safe_reviews' => 1, 'spam_reviews' => 2,
-            'abusive_reviews' => 0, 'average_rating' => 3.33, 'summary' => 'Players like the clean court and helpful staff.',
-            'top_praises' => 'Court cleanliness and staff.', 'top_complaints' => 'No recurring facility complaint.',
-            'generated_at' => $this->now,
-        ]);
     }
 
     private function gamesAndWaitingLists(Admin $owner, array $players, Court $court): void

@@ -4,16 +4,27 @@ namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Sports;
+use App\Support\DashboardList;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class SportsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $sports = Sports::withCount('courts')->latest()->get();
+        $search = DashboardList::search($request);
+        $usageOptions = ['used' => 'In Use', 'unused' => 'No linked courts'];
+        $usage = DashboardList::choice($request, 'usage', array_keys($usageOptions));
 
-        return view('super-admins.sports', compact('sports'));
+        $sports = Sports::withCount('courts')
+            ->when($search, fn ($query) => $query->where('name', 'like', $search))
+            ->when($usage === 'used', fn ($query) => $query->has('courts'))
+            ->when($usage === 'unused', fn ($query) => $query->doesntHave('courts'))
+            ->latest('id')
+            ->paginate(DashboardList::PER_PAGE)
+            ->withQueryString();
+
+        return view('super-admins.sports', compact('sports', 'usageOptions'));
     }
 
     public function store(Request $request)
@@ -24,7 +35,7 @@ class SportsController extends Controller
 
         Sports::create($validated);
 
-        return redirect()->route('super_admin.sports.index')->with('success', 'Sport added successfully.');
+        return redirect()->route('super_admin.sports.index')->with('success', __('Sport added successfully.'));
     }
 
     public function update(Request $request, Sports $sport)
@@ -40,7 +51,7 @@ class SportsController extends Controller
 
         $sport->update($validated);
 
-        return back()->with('success', 'Sport updated successfully.');
+        return back()->with('success', __('Sport updated successfully.'));
     }
 
     public function destroy(Sports $sport)
@@ -53,6 +64,6 @@ class SportsController extends Controller
 
         $sport->delete();
 
-        return back()->with('success', 'Sport deleted successfully.');
+        return back()->with('success', __('Sport deleted successfully.'));
     }
 }

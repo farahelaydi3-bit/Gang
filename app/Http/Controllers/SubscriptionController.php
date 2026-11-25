@@ -264,7 +264,7 @@ public function destroy(Request $request, string $id)
         }
 
         return redirect()->route('courtbook.my-subscriptions')
-            ->with('success', 'تم إلغاء طلب الاشتراك وتحرير المواعيد المحجوزة.');
+            ->with('success', __('The subscription request was cancelled and its reserved times were released.'));
     });
 }
 

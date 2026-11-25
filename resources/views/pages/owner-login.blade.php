@@ -1,16 +1,16 @@
 @extends('layouts.demo')
 
-@section('title', 'دخول مالك الملعب')
+@section('title', __('Court Owner Login'))
 @section('page', 'owner-login')
 
 @section('content')
-    <div class="wrap page login-page owner-login-page" lang="ar" dir="rtl">
+    <div class="wrap page login-page owner-login-page">
         <div class="details login-auth-layout">
             <form class="panel stack login-form-card" method="POST" action="{{ route('admin.login.submit') }}">
                 @csrf
 
                 <div class="login-form-heading">
-                    <div><strong>إدارة ملعبك بتبلّش من هون</strong><small>سجّل دخولك لحساب المنشأة وتابع حجوزاتك.</small></div>
+                    <div><strong>{{ __('Court management starts here') }}</strong><small>{{ __('Sign in to your facility account to manage your bookings.') }}</small></div>
                 </div>
 
                 @if (session('success'))
@@ -22,34 +22,24 @@
                 @endif
 
                 <label>
-                    الإيميل
+                    {{ __('Email') }}
                     <input type="email" name="email" value="{{ old('email') }}" autocomplete="email" required autofocus>
                 </label>
 
                 <label>
-                    كلمة السر
+                    {{ __('Password') }}
                     <input type="password" name="password" autocomplete="current-password" required>
                 </label>
 
-                <button type="submit">دخول مالك الملعب</button>
+                <button type="submit">{{ __('Court Owner Login') }}</button>
             </form>
 
-            <aside class="login-sport-panel" aria-label="عن Gang">
-                <span class="login-sport-kicker"><i></i> بطاقة مالك الملعب · GANG</span>
-                <div class="login-sport-orbit" aria-hidden="true">
-                    <span>⚽</span><i>🏀</i><b>🎾</b>
-                </div>
-                <div class="login-sport-copy">
-                    <strong>منحب اللعبة،<br>وعشان هيك عملنا Gang.</strong>
-                    <p>خلّي ملاعبك أقرب للاعبين، وتابع حجوزاتهم من مكان واحد.</p>
-                </div>
-                <div class="login-sport-tags" aria-hidden="true"><span>كرة قدم</span><span>سلة</span><span>بادل</span><span>تنس</span><span>ريشة</span></div>
-            </aside>
+            @include('pages.owner-auth-panel')
         </div>
 
         <div class="row section login-form-links">
-            <a class="button outline" href="{{ route('admin.register') }}">مالك ملعب؟ سجّل منشأتك</a>
-            <a class="button outline" href="{{ route('login') }}">داخل كلاعب؟ سجّل دخولك</a>
+            <a class="button outline" href="{{ route('admin.register') }}">{{ __('Own a court? Register your facility') }}</a>
+            <a class="button outline" href="{{ route('login') }}">{{ __('Playing instead? Log in') }}</a>
         </div>
     </div>
 @endsection

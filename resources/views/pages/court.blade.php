@@ -2,17 +2,12 @@
 
 @php
     $court = \App\Models\Court::query()
-        ->with(['sports', 'reviewSummary'])
+        ->with(['sports'])
         ->withAvg('reviews', 'rating')
         ->findOrFail(request()->route('court'));
 
-    // Public reviews = only safe ones
     $publicReviews = $court->reviews()
         ->with('user')
-        ->where(function ($q) {
-            $q->whereNotIn('ai_decision', ['spam', 'abusive'])
-              ->orWhereNull('ai_decision');
-        })
         ->latest()
         ->get();
 @endphp
@@ -22,9 +17,9 @@
 
 @push('styles')
 <style>
-    .court-booking-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .court-booking-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     .court-booking-actions .button { text-align: center; display: flex; align-items: center;
-        justify-content: center; min-height: 48px; }
+        justify-content: center; min-width: 0; min-height: 48px; white-space: normal; overflow-wrap: anywhere; }
     @media(max-width: 480px) { .court-booking-actions { grid-template-columns: 1fr; } }
 </style>
 @endpush
@@ -44,14 +39,7 @@
         <div class="details">
             <section class="court-detail-main">
                 <div class="court-detail-photo">
-                    <img
-    src="{{ $court->image
-        ? (\Illuminate\Support\Str::startsWith($court->image, 'images/')
-            ? asset($court->image)
-            : asset('storage/' . $court->image))
-        : asset('courtbook-assets/images/hero-football.png') }}"
-    alt="{{ $court->name }}"
->
+                    <img src="{{ $court->thumbnailUrl() }}" alt="{{ $court->name }}">
                     <span class="court-photo-sport">{{ $court->sports->name }}</span>
                 </div>
 
@@ -74,31 +62,30 @@
                     </section>
 
                     <section class="court-detail-card court-prices-card">
-                        <span class="court-fact-icon" aria-hidden="true">JD</span>
+                        <span class="court-fact-icon" aria-hidden="true">{{ __('JD') }}</span>
                         <span class="court-card-kicker">{{ __('PLAY YOUR WAY') }}</span>
                         <h2>{{ __('Prices') }}</h2>
                         <dl class="court-price-list">
-                            <div><dt>{{ __('Weekday') }}</dt><dd>{{ number_format($court->weekday_price, 2) }} <small>JOD / {{ __('hour') }}</small></dd></div>
-                            <div><dt>{{ __('Weekend') }}</dt><dd>{{ number_format($court->weekend_price, 2) }} <small>JOD / {{ __('hour') }}</small></dd></div>
-                            <div><dt>{{ __('Evening') }}</dt><dd>{{ number_format($court->evening_price, 2) }} <small>JOD / {{ __('hour') }}</small></dd></div>
+                            <div><dt>{{ __('Weekday') }}</dt><dd>{{ number_format($court->weekday_price, 2) }} <small>{{ __('JOD /') }} {{ __('hour') }}</small></dd></div>
+                            <div><dt>{{ __('Weekend') }}</dt><dd>{{ number_format($court->weekend_price, 2) }} <small>{{ __('JOD /') }} {{ __('hour') }}</small></dd></div>
+                            <div><dt>{{ __('Evening') }}</dt><dd>{{ number_format($court->evening_price, 2) }} <small>{{ __('JOD /') }} {{ __('hour') }}</small></dd></div>
                         </dl>
                     </section>
                 </div>
 
                 @if($court->reviewSummary)
                     <div class="panel" style="margin-top:1rem;">
-                        <h3>🤖 AI Review Summary</h3>
+                        <h3>{{ __('🤖 AI Review Summary') }}</h3>
                         <p>{{ $court->reviewSummary->summary }}</p>
                         <p class="muted">
-                            Based on {{ $court->reviewSummary->total_reviews }} reviews ·
-                            Avg {{ $court->reviewSummary->average_rating }}/5
+                            {{ __('Based on') }} {{ $court->reviewSummary->total_reviews }} {{ __('reviews · Avg') }} {{ $court->reviewSummary->average_rating }}/5
                         </p>
                         @if($court->reviewSummary->top_praises)
-                            <p><strong>What players love:</strong>
+                            <p><strong>{{ __('What players love:') }}</strong>
                                 {{ $court->reviewSummary->top_praises }}</p>
                         @endif
                         @if($court->reviewSummary->top_complaints)
-                            <p><strong>What players complain about:</strong>
+                            <p><strong>{{ __('What players complain about:') }}</strong>
                                 {{ $court->reviewSummary->top_complaints }}</p>
                         @endif
                     </div>
@@ -125,9 +112,9 @@
             <aside class="court-booking-card">
                 <span class="court-card-kicker">{{ __('READY WHEN YOU ARE') }}</span>
                 <h2>{{ __('Book this court') }}</h2>
-                <p>{{ number_format($court->weekday_price, 2) }} JOD / {{ __('hour') }}</p>
+                <p>{{ number_format($court->weekday_price, 2) }} {{ __('JOD /') }} {{ __('hour') }}</p>
                 <p>{{ __('Minimum booking') }}: {{ $court->min_booking_minutes }} {{ __('minutes') }}</p>
-                <p>{{ __('Deposit') }}: {{ number_format($court->deposit_amount, 2) }} JOD</p>
+                <p>{{ __('Deposit') }}: {{ number_format($court->deposit_amount, 2) }} {{ __('JOD') }}</p>
                 <div class="court-booking-actions">
                     @auth('web')
                         <a class="button court-booking-button" href="{{ route('courtbook.booking.create', ['court_id' => $court->id]) }}">

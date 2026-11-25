@@ -87,7 +87,7 @@
                                         </span>
                                     </div>
                                     <div class="booking-pass-footer">
-                                        <span>{{ __('Booking total') }} <strong>{{ number_format((float) $booking->total_price, 2) }} JOD</strong></span>
+                                        <span>{{ __('Booking total') }} <strong>{{ number_format((float) $booking->total_price, 2) }} {{ __('JOD') }}</strong></span>
                                         
 
 @if ($booking->booking_status === 'pending')
@@ -112,6 +112,14 @@
 
 @endif
 
+@if (in_array($booking->booking_status, ['pending', 'confirmed'], true)
+    && ! $booking->subscription?->is_fixed_schedule
+    && \Illuminate\Support\Carbon::parse($booking->booking_date->format('Y-m-d') . ' ' . $booking->start_time)->isFuture())
+    <button type="button" class="booking-pass-action" data-booking-cancel-open data-cancel-url="{{ route('courtbook.bookings.cancel', $booking) }}">
+        {{ __('Cancel booking') }}
+    </button>
+@endif
+
 
                                     </div>
                                 </div>
@@ -131,6 +139,45 @@
                     @endif
                 </section>
             @endif
+        @endauth
+
+        @auth
+            <dialog class="gang-logout-modal" id="gang-booking-cancel-dialog" aria-labelledby="booking-cancel-title" aria-describedby="booking-cancel-message">
+                <div class="gang-logout-card">
+                    <button type="button" class="gang-logout-close" data-booking-cancel-close aria-label="{{ __('Close') }}">×</button>
+                    <div class="gang-logout-ball" aria-hidden="true">↺</div>
+                    <span class="gang-logout-kicker">{{ __('GANG · BOOKINGS') }}</span>
+                    <h2 id="booking-cancel-title">{{ __('Cancel this booking?') }}</h2>
+                    <p id="booking-cancel-message">{{ __('Your booking will be cancelled and this court time will be released.') }}</p>
+                    <div class="gang-logout-actions">
+                        <button type="button" class="gang-logout-stay" data-booking-cancel-close>{{ __('Keep booking') }}</button>
+                        <form method="POST" id="booking-cancel-form">
+                            @csrf
+                            <button type="submit" class="gang-logout-leave">{{ __('Yes, cancel booking') }}</button>
+                        </form>
+                    </div>
+                </div>
+            </dialog>
+            <script>
+                (() => {
+                    const dialog = document.getElementById('gang-booking-cancel-dialog');
+                    const form = document.getElementById('booking-cancel-form');
+                    if (!dialog || !form) return;
+
+                    document.querySelectorAll('[data-booking-cancel-open]').forEach((button) => {
+                        button.addEventListener('click', () => {
+                            form.action = button.dataset.cancelUrl;
+                            dialog.showModal();
+                        });
+                    });
+                    dialog.querySelectorAll('[data-booking-cancel-close]').forEach((button) => {
+                        button.addEventListener('click', () => dialog.close());
+                    });
+                    dialog.addEventListener('click', (event) => {
+                        if (event.target === dialog) dialog.close();
+                    });
+                })();
+            </script>
         @endauth
 
         @guest

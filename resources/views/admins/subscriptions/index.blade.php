@@ -1,14 +1,13 @@
 @extends('admins.layout.app')
 
-@section('title', 'My Subscriptions')
-@section('page-title', 'My Subscriptions')
-@section('html-lang', 'en')
+@section('title', __('My Subscriptions'))
+@section('page-title', __('My Subscriptions'))
 
 @section('content')
-<div class="subscriptions-page" lang="en" dir="ltr">
-    <x-super-admin.page-header title="My Subscriptions" description="Track your court packages, playing hours, schedules, and payment status.">
+<div class="subscriptions-page">
+    <x-super-admin.page-header title="{{ __('My Subscriptions') }}" description="{{ __('Track your court packages, playing hours, schedules, and payment status.') }}">
         <x-slot:actions>
-            <a href="{{ route('admin.subscriptions.create') }}" class="admin-button">+ Create Subscription</a>
+            <a href="{{ route('admin.subscriptions.create') }}" class="admin-button">{{ __('+ Create Subscription') }}</a>
         </x-slot:actions>
     </x-super-admin.page-header>
     <x-super-admin.form-errors />
@@ -18,7 +17,7 @@
             @foreach (['total' => 'All subscriptions', 'active' => 'Active', 'pending' => 'Pending payment', 'expired' => 'Expired', 'cancelled' => 'Cancelled'] as $key => $label)
                 <div class="stat-card">
                     <div class="stat-info">
-                        <span>{{ $label }}</span>
+                        <span>{{ __($label) }}</span>
                         <strong>{{ $subscriptionStats->{$key} ?? 0 }}</strong>
                     </div>
                 </div>
@@ -26,25 +25,13 @@
         </div>
     @endif
 
-    <section class="admin-card super-admin-filter" aria-label="Subscription filters">
-        <form method="GET" action="{{ route('admin.subscriptions.index') }}" class="super-admin-filter-form">
-            <label class="super-admin-filter-field super-admin-filter-field--search">
-                <span class="form-label">Search subscriptions</span>
-                <input type="search" name="search" value="{{ request('search') }}" placeholder="Package, player, or email" class="form-control">
-            </label>
-            <label class="super-admin-filter-field">
-                <span class="form-label">Status</span>
-                <select name="status" class="form-control">
-                    <option value="">All statuses</option>
-                    @foreach (['pending' => 'Pending payment', 'active' => 'Active', 'expired' => 'Expired', 'cancelled' => 'Cancelled'] as $value => $label)
-                        <option value="{{ $value }}" @selected(request('status') === $value)>{{ $label }}</option>
-                    @endforeach
-                </select>
-            </label>
-            <button type="submit" class="admin-button">Search</button>
-            <a href="{{ route('admin.subscriptions.index') }}" class="admin-button admin-button-outline">Clear filters</a>
-        </form>
-    </section>
+    <x-super-admin.list-filters :action="route('admin.subscriptions.index')"
+        placeholder="Package, player, email, phone or court"
+        :selects="[
+        'status' => ['Status', 'All statuses', $statuses],
+        'schedule' => ['Schedule', 'All schedules', $scheduleOptions],
+        'court_id' => ['Court', 'All courts', $courtOptions],
+    ]" />
 
     <section class="admin-card super-admin-table-card">
         <div class="admin-table-wrap">
@@ -52,7 +39,7 @@
                 <thead>
                     <tr>
                         @foreach (['Player', 'Court', 'Package', 'Duration', 'Hours', 'Schedule', 'Amount', 'Status', 'Actions'] as $header)
-                            <th scope="col">{{ $header }}</th>
+                            <th scope="col">{{ __($header) }}</th>
                         @endforeach
                     </tr>
                 </thead>
@@ -67,50 +54,53 @@
                             </td>
                             <td>{{ $subscription->court?->name ?? 'Unknown court' }}</td>
                             <td>{{ $subscription->package_name ?? '—' }}</td>
-                            <td>{{ $subscription->duration_days }} days</td>
+                            <td>{{ $subscription->duration_days }} {{ __('days') }}</td>
                             <td>
                                 @if ($subscription->is_fixed_schedule)
-                                    {{ number_format((float) $subscription->total_hours, 1) }} booked
+                                    {{ number_format((float) $subscription->total_hours, 1) }} {{ __('booked') }}
                                 @else
-                                    {{ number_format((float) $subscription->remaining_hours, 1) }} remaining
+                                    {{ number_format((float) $subscription->remaining_hours, 1) }} {{ __('remaining') }}
                                 @endif
                             </td>
                             <td>
                                 @if ($subscription->is_fixed_schedule)
                                     <div>{{ substr((string) $subscription->scheduled_start_time, 0, 5) }}–{{ substr((string) $subscription->scheduled_end_time, 0, 5) }}</div>
                                     <details>
-                                        <summary>{{ $subscription->bookings->count() }} sessions</summary>
+                                        <summary>{{ $subscription->bookings_count }} {{ __('sessions') }}</summary>
                                         <ul class="subscription-session-list">
                                             @foreach ($subscription->bookings as $booking)
                                                 <li>
                                                     {{ $booking->booking_date?->format('M j, Y') ?? $booking->booking_date }}
-                                                    ({{ ucfirst($booking->booking_status) }})
+                                                    ({{ __(ucfirst($booking->booking_status)) }})
                                                 </li>
                                             @endforeach
                                         </ul>
+                                        @if ($subscription->bookings_count > $subscription->bookings->count())
+                                            <a href="{{ route('admin.subscriptions.show', $subscription) }}">{{ __('View all sessions') }}</a>
+                                        @endif
                                     </details>
                                 @else
-                                    Flexible
+                                    {{ __('Flexible') }}
                                 @endif
                             </td>
-                            <td>{{ number_format((float) $subscription->amount, 2) }} JOD</td>
+                            <td>{{ number_format((float) $subscription->amount, 2) }} {{ __('JOD') }}</td>
                             <td>
                                 <x-dashboard-status :state="$subscription->status" :label="ucfirst($subscription->status)" />
                             </td>
                             <td>
                                 <div class="super-admin-inline-actions">
-                                    <a href="{{ route('admin.subscriptions.show', $subscription->id) }}" class="admin-button admin-button-outline">View</a>
-                                    <a href="{{ route('admin.subscriptions.edit', $subscription->id) }}" class="admin-button admin-button-outline">Edit</a>
-                                    <form action="{{ route('admin.subscriptions.destroy', $subscription->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this subscription?');">
+                                    <a href="{{ route('admin.subscriptions.show', $subscription->id) }}" class="admin-button admin-button-outline">{{ __('View') }}</a>
+                                    <a href="{{ route('admin.subscriptions.edit', $subscription->id) }}" class="admin-button admin-button-outline">{{ __('Edit') }}</a>
+                                    <form action="{{ route('admin.subscriptions.destroy', $subscription->id) }}" method="POST" onsubmit="return confirm(@js(__('Are you sure you want to delete this subscription?')));">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="admin-button admin-button-danger">Delete</button>
+                                        <button type="submit" class="admin-button admin-button-danger">{{ __('Delete') }}</button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="9" class="super-admin-empty">No subscriptions found. Create one to get started.</td></tr>
+                        <tr><td colspan="9" class="super-admin-empty">{{ __(\App\Support\DashboardList::hasFilters(request()) ? 'No results match your filters.' : 'No subscriptions found. Create one to get started.') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -124,7 +114,6 @@
 @push('styles')
 <style>
     .subscriptions-page .subscription-session-list{max-height:160px;overflow:auto;padding-left:17px}
-    .subscriptions-page .super-admin-filter-form{direction:ltr}
     .subscriptions-page .super-admin-inline-actions{justify-content:flex-start}
 </style>
 @endpush

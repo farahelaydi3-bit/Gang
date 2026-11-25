@@ -17,7 +17,7 @@
         </div>
 
         <div class="mt-4">
-            <x-primary-button>Admin Login</x-primary-button>
+            <x-primary-button>{{ __('Admin Login') }}</x-primary-button>
         </div>
     </form>
 </x-guest-layout>

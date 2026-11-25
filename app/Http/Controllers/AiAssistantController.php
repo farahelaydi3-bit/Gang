@@ -48,7 +48,7 @@ class AiAssistantController extends Controller
             'conversation_id'=>['nullable','integer','min:1'],
         ]);
         $text=trim($validated['message']);
-        if ($text==='') throw ValidationException::withMessages(['message'=>'اكتب رسالة أولًا.']);
+        if ($text==='') throw ValidationException::withMessages(['message'=>__('Enter a message first.')]);
         $conversation=null;
         if ($request->user() && !empty($validated['conversation_id'])) {
             $conversation=AiConversation::query()->where('user_id',$request->user()->id)->findOrFail($validated['conversation_id']);
@@ -159,15 +159,15 @@ class AiAssistantController extends Controller
     {
         if ($e instanceof GangGeminiRequestException) {
             return match ($e->httpStatus) {
-                429 => 'وصلت موديلات Gemini لحد الاستخدام المتاح حاليًا. جرّب لاحقًا.',
-                503, 502, 504 => 'خدمة Gemini مشغولة مؤقتًا. جرّب بعد قليل.',
-                401, 403 => 'في مشكلة بصلاحيات مفتاح Gemini. راجع إعدادات API.',
+                429 => __('Gemini has reached its usage limit. Try again later.'),
+                503, 502, 504 => __('Gemini is temporarily busy. Try again shortly.'),
+                401, 403 => __('Gemini could not authenticate. Check the API configuration.'),
                 default => $e->httpStatus === 0
-                    ? 'انتهت مهلة الاتصال بـGemini. جرّب بعد قليل.'
-                    : 'تعذّر الحصول على رد من Gemini. جرّب بعد قليل.',
+                    ? __('The Gemini connection timed out. Try again shortly.')
+                    : __('Could not get a response from Gemini. Try again shortly.'),
             };
         }
-        return 'تعذّر إكمال رد Gemini. جرّب مرة ثانية.';
+        return __('Could not complete the Gemini response. Try again.');
     }
 
     private function buildReply(array $filters, Request $request, AiCourtService $courts): array
@@ -191,7 +191,7 @@ class AiAssistantController extends Controller
             $card = [
                 'id' => $court->id,
                 'name' => $court->name,
-                'sport' => $court->sports?->name,
+                'sport' => $court->sports?->name ? __($court->sports->name) : null,
                 'address' => $court->address,
                 'weekday_price' => number_format((float) $court->weekday_price, 2, '.', ''),
                 'weekend_price' => number_format((float) $court->weekend_price, 2, '.', ''),
@@ -234,30 +234,32 @@ class AiAssistantController extends Controller
         }
 
         if ($matches->isEmpty() || $cards === []) {
-            return ['reply' => 'ما لقيت ملاعب معتمدة مطابقة لهالتفاصيل حاليًا. جرّب تغيّر المنطقة أو الرياضة أو الميزانية.', 'courts' => []];
+            return ['reply' => __('No approved courts match those details right now. Try changing the area, sport, or budget.'), 'courts' => []];
         }
 
         $reply = $intent === 'recommend'
-            ? 'حسب طلبك، هاي الخيارات المطابقة من ملاعب Gang المعتمدة. شوف الأسعار أدناه، وإذا بتحدد اليوم والساعة والمدة بقدر أحسب السعر النهائي وأتأكد من التوفر.'
-            : 'هاي الملاعب المعتمدة اللي لقيتها حسب طلبك. الأسعار بالدينار الأردني للساعة، وبتتغيّر حسب اليوم والوقت.';
+            ? __('These Gang courts match your request. See prices below. Give me the date, time, and duration to check availability and the total price.')
+            : __('Here are the approved courts matching your request. Prices are in Jordanian dinars per hour and vary by day and time.');
         if ($maxTotal !== null) {
-            $reply .= "\nميزانيتك الإجمالية {$maxTotal} د.أ. " . ($date && $start && $end
-                ? 'قارنتها بالسعر المحسوب للفترة المطلوبة.'
-                : 'الأسعار المعروضة للساعة؛ حدّد اليوم والوقت والمدة حتى نتحقق من الإجمالي بدقة.');
+            $reply .= "\n" . __('Your total budget is :amount JOD.', ['amount' => $maxTotal]) . ' ' . ($date && $start && $end
+                ? __('I compared it with the calculated price for the requested time.')
+                : __('Prices are hourly. Give me the date, time, and duration to check the total.'));
         } elseif ($maxHourly !== null) {
-            $reply .= "\nاعتبرت الميزانية حدًا لسعر الساعة.";
+            $reply .= "\n" . __('I used the budget as the hourly price limit.');
         }
         if ($date && $start) {
-            $reply .= "\nالتوفر المعروض لتاريخ {$date} من {$start} " . ($end ? "إلى {$end}" : 'لأقصر مدة يسمح بها كل ملعب') . '، والتوفر ممكن يتغيّر لاحقًا.';
+            $reply .= "\n" . ($end
+                ? __('Availability for :date from :start to :end is subject to change.', compact('date', 'start', 'end'))
+                : __('Availability for :date from :start for the shortest allowed duration is subject to change.', compact('date', 'start')));
         } elseif ($date && $intent === 'availability') {
-            $reply .= "\nأضفت بعض الفترات المتاحة مبدئيًا ليوم {$date}.";
+            $reply .= "\n" . __('I included some times that currently look available for :date.', compact('date'));
         }
         if (count($cards) > 1) {
-            $reply .= "\nممكن تختار ملعب بالاسم أو الرقم عشان أعطيك تفاصيل أكثر.";
+            $reply .= "\n" . __('Choose a court by name or number for more details.');
         }
 
         if ($intent === 'booking') {
-            $reply .= "\nللحجز، افتح صفحة الملعب من الرابط الموجود في البطاقة وأكمل الحجز بنفسك.";
+            $reply .= "\n" . __('Open the court page from its card to complete your booking.');
         }
         return ['reply' => $reply, 'courts' => $cards];
     }
@@ -271,7 +273,7 @@ class AiAssistantController extends Controller
             return $reply;
         }
 
-        return 'أهلًا فيك في Gang! بقدر أساعدك تلاقي ملعب، تقارن الأسعار، تشوف الأوقات المتاحة، أو أوصلك لصفحة الملعب للحجز بنفسك. شو الرياضة أو المنطقة اللي بتدور عليها؟';
+        return __('Welcome to Gang! I can help you find a court, compare prices, check availability, or get to the court page to book. What sport or area are you looking for?');
     }
 
     private function validDate(?string $date): ?string

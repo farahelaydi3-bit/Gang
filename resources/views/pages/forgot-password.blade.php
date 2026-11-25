@@ -1,7 +1,7 @@
 
 @extends('layouts.demo')
 
-@section('title', 'Forgot Password')
+@section('title', __('Forgot Password'))
 @section('page', 'forgot-password')
 
 @section('content')
@@ -28,13 +28,13 @@
             @csrf
 
             <label>
-                Email Address
+                {{ __('Email Address') }}
 
                 <input
                     type="email"
                     name="email"
                     value="{{ old('email') }}"
-                    placeholder="Enter your email address"
+                    placeholder="{{ __('Enter your email address') }}"
                     autocomplete="email"
                     required>
             </label>
@@ -44,7 +44,7 @@
             @enderror
 
             <button type="submit">
-                Send Reset Link
+                {{ __('Send Reset Link') }}
             </button>
 
         </form>
@@ -52,13 +52,13 @@
         <img
             class="gallery"
             src="{{ asset('courtbook-assets/images/hero-football.png') }}"
-            alt="Football Court">
+            alt="{{ __('Football Court') }}">
 
     </div>
 
     <div class="row section">
         <a class="button outline" href="{{ route('login') }}">
-            Back to Login
+            {{ __('Back to Login') }}
         </a>
     </div>
 

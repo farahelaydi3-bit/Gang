@@ -34,7 +34,7 @@ class SubscriptionStripeController extends Controller
             throw $e;
         } catch (\Throwable $e) {
             Log::error('Subscription Stripe Checkout failed', ['subscription' => $subscription->id, 'error' => $e->getMessage()]);
-            return back()->with('payment_error', 'تعذّر بدء الدفع. تأكد من إعداد Stripe أو جرّب مرة ثانية.');
+            return back()->with('payment_error', __('Could not start payment. Check your Stripe settings or try again.'));
         }
     }
 
@@ -45,13 +45,13 @@ class SubscriptionStripeController extends Controller
         try {
             if ($stripe->confirmSession($sessionId, (int) $subscription->id)) {
                 return redirect()->route('courtbook.my-subscriptions')
-                    ->with('success', 'تم الدفع بنجاح وتأكيد جميع مواعيد اشتراكك.');
+                    ->with('success', __('Payment completed and all subscription sessions are confirmed.'));
             }
         } catch (\Throwable $e) {
             Log::warning('Stripe payment requires verification', ['subscription' => $subscription->id, 'error' => $e->getMessage()]);
         }
         return redirect()->route('subscriptions.invoice', $subscription)
-            ->with('payment_error', 'لم يتم تأكيد الدفع بعد. لا تعاود الدفع قبل التحقق من حالة العملية أو تحديث الصفحة.');
+            ->with('payment_error', __('Payment has not been confirmed. Check the payment status or refresh the page before trying again.'));
     }
 
     public function webhook(Request $request, StripeSubscriptionCheckoutService $stripe)
